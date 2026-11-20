@@ -6,12 +6,12 @@ compatibility_date = "2026-06-01"
 [[d1_databases]]
 binding = "DB"
 database_name = "nutricontrole"
-database_id = "PREENCHER_APOS_CRIAR"
+database_id = "a562dce0-750a-498f-b6c9-25672d65d1a4"
 
 # Fotos e vídeos dos exercícios (até 20 MB cada)
 [[kv_namespaces]]
 binding = "MEDIA"
-id = "PREENCHER_APOS_CRIAR"
+id = "34bc7d26b7c141fb9b1b41d5ad9b01d1"
 
 [vars]
 # Equipe do Cloudflare Access, por exemplo "minhaequipe.cloudflareaccess.com"
