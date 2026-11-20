@@ -77,7 +77,7 @@ label.f>span{letter-spacing:.02em}
 .btn.xs{padding:3px 10px;min-height:28px;font-size:12.5px}
 .btn.danger{color:var(--bad-text);border-color:var(--bad-text)}
 .btn:disabled{opacity:.5;cursor:default}
-.btn.ai::before{content:"✦";color:currentColor;font-size:13px}
+.btn.ai::before{content:none}
 
 /* Barra superior: marca, semana clicável e filtro de período da página aberta */
 #topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);display:flex;flex-direction:column;gap:10px;padding-block:10px 10px;border-bottom:1px solid var(--line);margin-bottom:16px}
@@ -253,6 +253,7 @@ tr.sub td{color:var(--ink-2)}
 .cov .c.miss{color:var(--bad-text)}
 .drop{border:1.5px dashed var(--line-2);border-radius:var(--r-sm);padding:14px;text-align:center;color:var(--ink-2);cursor:pointer;background:var(--surface-2)}
 .drop.over{border-color:var(--accent);background:var(--accent-soft)}
+.drop{display:block;position:relative}
 .drop input{display:none}
 .thumbs{display:flex;gap:6px;flex-wrap:wrap}
 .thumbs img{height:64px;width:64px;object-fit:cover;border-radius:6px;border:1px solid var(--line)}
@@ -575,7 +576,7 @@ html[data-layout="painel"] .dayhero{background:linear-gradient(160deg,var(--surf
     </div>
     <div class="row between" style="margin-top:10px"><small id="enHint"></small><small id="enRemain"></small></div>
     <div class="mini" id="enSrc" style="margin-top:4px"></div>
-    <div class="row" style="margin-top:12px;align-items:flex-end;gap:10px"><label class="f" style="flex:1 1 140px;max-width:220px"><span>Peso corporal de hoje (kg)</span><input type="number" step="0.1" inputmode="decimal" id="dayWeight" placeholder="ex.: 91,2" aria-label="Peso corporal de hoje em kg"></label><span class="mini" id="dayWeightHint" style="flex:1 1 140px"></span></div>
+    <div class="row" style="margin-top:12px;align-items:flex-end;gap:10px"><label class="f" style="flex:1 1 140px;max-width:220px"><span>Peso do dia (kg)</span><input type="number" step="0.1" inputmode="decimal" id="dayWeight" placeholder="ex.: 91,2" aria-label="Peso corporal do dia em kg"></label><span class="mini" id="dayWeightHint" style="flex:1 1 140px"></span></div>
   </div>
 
   <div class="card">
@@ -606,7 +607,7 @@ html[data-layout="painel"] .dayhero{background:linear-gradient(160deg,var(--surf
 <!-- ================================================= TREINO -->
 <section id="tab-treino" class="tab" hidden>
   <div class="card" id="sessCard">
-    <div class="card-h"><h3>Treino do dia</h3><span class="mini" id="sessHint"></span></div>
+    <div class="card-h"><h3>Treino do dia</h3><div class="row" style="gap:8px"><span class="mini" id="sessHint"></span><button class="btn sm" onclick="A.openAppleAI()">Apple Fitness</button></div></div>
     <div id="sessSummary"></div>
     <div class="grid g2">
       <label class="f"><span>Treino realizado</span><select id="sWk"></select></label>
@@ -618,7 +619,7 @@ html[data-layout="painel"] .dayhero{background:linear-gradient(160deg,var(--surf
       <label class="f"><span>Passos</span><input type="number" inputmode="numeric" id="sSteps" placeholder="opcional"></label>
       <label class="f"><span>Deslocamento (min)</span><input type="number" inputmode="numeric" id="sCommute" placeholder="opcional"></label>
     </div>
-    <div class="row" style="margin-top:12px"><button class="btn sm" onclick="A.openAppleAI()">Apple Fitness</button><button class="btn sm" onclick="A.goLogWorkout()">Registrar séries e cargas</button><span class="mini" id="sWorkoutLink"></span></div>
+    <div class="row" style="margin-top:12px"><button class="btn sm" onclick="A.goLogWorkout()">Registrar séries e cargas</button><span class="mini" id="sWorkoutLink"></span></div>
   </div>
 
   <div class="card" id="trLogCard">
@@ -630,7 +631,7 @@ html[data-layout="painel"] .dayhero{background:linear-gradient(160deg,var(--surf
     <textarea id="trText" hidden></textarea>
     <div id="trParsed" style="margin-top:14px"></div>
     <details style="margin-top:12px"><summary class="mini" style="cursor:pointer">Preencher pela IA (print ou foto)</summary>
-      <div class="drop" id="trDrop" style="margin-top:10px"><input type="file" id="trFiles" accept="image/*" multiple><span>Toque para anexar prints ou fotos do treino</span></div>
+      <label class="drop" id="trDrop" style="margin-top:10px"><input hidden type="file" id="trFiles" accept="image/*" multiple><span>Toque para anexar prints ou fotos do treino</span></label>
       <div class="thumbs" id="trThumbs" style="margin-top:8px"></div>
       <div class="row" style="margin-top:10px"><button class="btn sm ai" id="trAnalyze" onclick="A.analyzeWorkout()">Ler com IA e preencher a grade</button><span class="mini" id="trStatus"></span></div>
     </details>
@@ -679,14 +680,14 @@ html[data-layout="painel"] .dayhero{background:linear-gradient(160deg,var(--surf
   </div>
 
   <div class="card">
-    <div class="card-h"><h3>Histórico de treinos</h3><span class="row" style="gap:8px"><span class="mini" id="trHistCount"></span><button class="chip ghost xs" onclick="A.openReport()">📄 Relatório executivo</button></span></div>
+    <div class="card-h"><h3>Histórico de treinos</h3><span class="row" style="gap:8px"><span class="mini" id="trHistCount"></span><button class="chip ghost xs" onclick="A.openReport()">Relatório executivo</button></span></div>
     <div class="stack" id="trHist"></div>
   </div>
 </section>
 
 <!-- ================================================= PAINÉIS -->
 <section id="tab-paineis" class="tab" hidden>
-  <div class="row between"><span class="eyebrow">Painéis do período</span><div class="row"><button class="chip ghost" onclick="A.openReport()" title="Relatório executivo para o treinador">📄 Relatório executivo</button><button class="chip ghost" id="validBadge" onclick="A.showValidation()" title="Validação automática de consistência">validando…</button></div></div>
+  <div class="row between"><span class="eyebrow">Painéis do período</span><div class="row"><button class="chip ghost" onclick="A.openReport()" title="Relatório executivo para o treinador">Relatório executivo</button><button class="chip ghost" id="validBadge" onclick="A.showValidation()" title="Validação automática de consistência">validando…</button></div></div>
   <div class="grid g4" id="kpiRow"></div>
 
   <div class="card">
@@ -818,7 +819,7 @@ html[data-layout="painel"] .dayhero{background:linear-gradient(160deg,var(--surf
     </div>
     <div class="card">
       <div class="card-h"><h3>Atualizar protocolo</h3><span class="mini">PDF, foto, Word, Excel, texto…</span></div>
-      <div class="drop" id="protoDrop"><input type="file" id="protoFile"><span>Toque para enviar o arquivo do personal (qualquer extensão)</span></div>
+      <label class="drop" id="protoDrop"><input hidden type="file" id="protoFile"><span>Toque para enviar o arquivo do personal (qualquer extensão)</span></label>
       <div class="mini" id="protoFileInfo" style="margin-top:6px"></div>
       <label class="f" style="margin-top:10px"><span>Ou cole o texto / descreva a mudança</span><textarea id="protoText" placeholder="Ex.: a partir de segunda, dias de baixo carbo passam para 1900 kcal, 290 g proteína, 90 g carbo…"></textarea></label>
       <div class="row" style="margin-top:12px"><button class="btn accent ai" id="protoAnalyze" onclick="A.analyzeProtocol()">Interpretar com IA</button><button class="btn ghost sm" onclick="A.editTargets()">Editar metas à mão</button><span class="mini" id="protoStatus"></span></div>
@@ -880,17 +881,17 @@ html[data-layout="painel"] .dayhero{background:linear-gradient(160deg,var(--surf
         <label class="f"><span>Início do protocolo</span><input type="date" id="cfStart"></label>
         <label class="f"><span>Peso inicial (kg)</span><input type="number" step="0.1" id="cfStartW" inputmode="decimal"></label>
       </div>
-      <div class="row end" style="margin-top:12px"><button class="btn primary" onclick="A.saveConfig()">Salvar configurações</button></div>
+      <p class="mini" style="margin-top:10px">Salvo ao digitar</p>
     </div>
     <div class="card">
       <div class="card-h"><h3>Dados</h3><span class="mini" id="dataStats"></span></div>
-      <p class="mini" id="appVersion" style="margin-bottom:10px">Versão 34 · 20/11/2026</p>
+      <p class="mini" id="appVersion" style="margin-bottom:10px">Versão 35 · 20/11/2026</p><p class="mini" id="lastAiErr" hidden style="margin-bottom:10px"></p>
       <div class="row">
         <button class="btn sm" onclick="A.exportAll()">Exportar backup (JSON)</button>
         <button class="btn sm" onclick="A.exportCSV()">Exportar diário (CSV)</button>
         <label class="btn sm" style="cursor:pointer">Importar backup NutriControle<input type="file" id="impFile" accept=".json,application/json" class="sr"></label>
       </div>
-      <p class="mini" style="margin-top:10px">O backup do NutriControle antigo (menu Exportar) é reconhecido e convertido: dias, refeições, treinos, exames e alimentos próprios.</p>
+      <p class="mini" style="margin-top:10px">Aceita também o backup do NutriControle antigo.</p>
     </div>
   </div>
 </section>
@@ -1539,15 +1540,28 @@ async function readAnyFile(file,opts={}){
 /* ============================================================ IA */
 const AI_COPY={not_granted:'Você não permitiu que esta página use o Claude. Libere em Permissões do artefato.',sampling_disabled:'O Claude não está disponível nesta conta.',rate_limited:'Muitas chamadas seguidas — aguarde um pouco e tente de novo.',images_unavailable:'Esta visualização não aceita imagens; envie como texto.',image_rejected:'Imagem recusada (tipo ou tamanho). Tire a foto de novo, mais perto da tabela, ou envie como captura de tela.',refused:'O Claude não conseguiu responder a este conteúdo.',invalid_json:'A resposta veio fora do formato esperado. Tente novamente ou simplifique.',prompt_too_large:'Conteúdo grande demais; envie menos páginas ou um trecho.',cancelled:'Cancelado.',session_expired:'Sessão expirada — entre novamente no Claude.'};
 function aiErr(e){if(!e)return 'Erro desconhecido';return AI_COPY[e.code]||('Falha na IA: '+(e.message||e.code||e));}
+async function labelAI(images,typed){const r=await aiJSON(`As fotos mostram a embalagem de um alimento, incluindo a TABELA NUTRICIONAL. Leia a tabela e devolva os valores POR 100 g (ou 100 mL). Se a tabela tiver coluna "100 g", use-a; se só tiver "por porção", informe também os valores da porção e a porção em gramas. Informe as medidas caseiras citadas (scoop, fatia, unidade, colher…). Valores ilegíveis = null. Números com ponto decimal, sem unidades. ${JSON_ONLY}\nFormato: {"name":"nome do produto","brand":"marca|null","per100":{"k":kcal,"p":g,"c":g,"f":g,"fib":g|null,"sod":mg|null},"per_portion":{"k":kcal,"p":g,"c":g,"f":g,"fib":g|null,"sod":mg|null},"portion_g":número|null,"units":[{"n":"scoop|fatia|unidade|colher","g":número}],"confidence":"alta|média|baixa"}${typed?'\nNome informado pelo usuário: '+typed:''}`,{images});
+      const N=v=>{const x=numLoose(v);return x!=null&&isFinite(x)&&x>=0?x:null;};const p100=r&&r.per100||{},pp=r&&r.per_portion||{};const pg=N(r&&r.portion_g);const keys=['k','p','c','f','fib','sod'];const out={};
+      keys.forEach(k=>{let v=N(p100[k]);if(v==null&&N(pp[k])!=null&&pg>0)v=Math.round(N(pp[k])*100/pg*10)/10;out[k]=v;});
+      const units=(Array.isArray(r&&r.units)?r.units:[]).map(u=>({n:String((u&&u.n)||'').trim(),g:N(u&&u.g)})).filter(u=>u.n&&u.g>0);if(pg>0&&!units.some(u=>u.g===pg))units.push({n:'porção',g:pg});
+      const name=[(r&&r.name)||typed,(r&&r.brand)].filter(Boolean).join(' ').trim()||typed;
+  return {name,units,out,conf:r&&r.confidence,pg};}
+async function prepImages(images,sample){const list=Array.from(images||[]);if(!list.length)return [];let lim=null;try{lim=sample.limits?await sample.limits():null;}catch(e){lim=null;}
+  if(lim&&!lim.images)throw {code:'images_unavailable',message:'Esta tela do Claude não aceita imagens.'};
+  const L=(lim&&typeof lim.images==='object')?lim.images:{};const types=(L.mediaTypes||['image/jpeg','image/png','image/webp','image/gif']).map(t=>t.toLowerCase());const max=L.maxCount||20;
+  if(list.length>max)toast(`A IA aceita ${max} foto${max>1?'s':''} por vez: usei ${max>1?'as primeiras':'a primeira'}`,5000);
+  const out=[];for(const f of list.slice(0,max)){const b=await toJpeg(f,2000,!types.includes((f.type||'').toLowerCase())||(L.maxInputBytes&&f.size>L.maxInputBytes));out.push(b);}
+  return out;}
+function aiLog(e,images){try{localStorage.setItem('ncperf_lasterr',JSON.stringify({at:new Date().toISOString(),code:(e&&e.code)||'',msg:String((e&&e.message)||e||'').slice(0,200),imgs:Array.from(images||[]).map(f=>(f.type||'?')+' '+Math.round((f.size||0)/1024)+'KB').join(', ')}));}catch(_){}}
 async function aiJSON(prompt,{images,tier='default',effort}={}){
   const sample=await window.claude?.use?.('sample');if(!sample)throw {code:'unavailable',message:'A IA só funciona quando a página é aberta pelo Claude (app ou claude.ai).'};
-  const opts={modelTier:tier,cache:false};if(images&&images.length)opts.images=await Promise.all(Array.from(images).map(x=>toJpeg(x)));if(effort)opts.effort=effort;
-  return sample.json(prompt,opts);
+  try{const opts={modelTier:tier,cache:false};if(images&&images.length)opts.images=await prepImages(images,sample);if(effort)opts.effort=effort;
+  return await sample.json(prompt,opts);}catch(e){aiLog(e,images);throw e;}
 }
 async function aiText(prompt,{images,tier='default',onText}={}){
   const sample=await window.claude?.use?.('sample');if(!sample)throw {code:'unavailable',message:'A IA só funciona quando a página é aberta pelo Claude.'};
-  const opts={modelTier:tier,cache:false};if(images&&images.length)opts.images=await Promise.all(Array.from(images).map(x=>toJpeg(x)));if(onText)opts.onText=onText;
-  return (await sample(prompt,opts)).text;
+  try{const opts={modelTier:tier,cache:false};if(images&&images.length)opts.images=await prepImages(images,sample);if(onText)opts.onText=onText;
+  return (await sample(prompt,opts)).text;}catch(e){aiLog(e,images);throw e;}
 }
 const JSON_ONLY='Responda SOMENTE com JSON válido, sem comentários nem texto fora do JSON. Números com ponto decimal. Use null quando não souber. Não invente valores que não estejam na fonte.';
 
@@ -1700,7 +1714,7 @@ function _render(){
   RENDER_VER=DATA_VER;if(window.Validator)Validator.schedule();
 }
 let PAINEIS_SIG=null, HOJE_SIG=null;
-function renderAlerts(){const al=computeAlerts();const box=$('#alerts');const fut=CUR>todayISO();const noProto=!protoN();if(!al.length&&!fut&&!noProto){box.hidden=true;return;}box.hidden=false;const extra=(fut?`<div class="alertline warn" onclick="setDate(todayISO())"><span class="dot"></span><span class="t">Você está em ${dtBR(CUR)}, um dia futuro: o que lançar vale para essa data</span><span class="arr">voltar a hoje ›</span></div>`:'')+(noProto?`<div class="alertline info" onclick="A.goAlert('proto','')"><span class="dot"></span><span class="t">Metas padrão (2.200 kcal · 180 g de proteína): cadastre seu protocolo</span><span class="arr">›</span></div>`:'');
+function renderAlerts(){const al=computeAlerts();const box=$('#alerts');const fut=CUR>todayISO();const past=CUR<todayISO();const noProto=!protoN();if(!al.length&&!fut&&!past&&!noProto){box.hidden=true;return;}box.hidden=false;const extra=((fut||past)?`<div class="alertline ${fut?'warn':''}" onclick="setDate(todayISO())"><span class="dot"></span><span class="t">Lançando em ${dtBR(CUR)}${fut?' (futuro)':''}</span><span class="arr">voltar a hoje ›</span></div>`:'')+(noProto?`<div class="alertline info" onclick="A.goAlert('proto','')"><span class="dot"></span><span class="t">Metas padrão (2.200 kcal · 180 g de proteína): cadastre seu protocolo</span><span class="arr">›</span></div>`:'');
   const LBL={'saude/labs':'exames laboratoriais','saude/clin':'laudos clínicos','saude/meds':'medicamentos','saude/bio':'bioimpedância','treino/':'treino','paineis/':'painéis','hoje/':'registro do dia'};
   const g={};al.forEach(a=>{const k=a.tab+'/'+(a.sub||'');(g[k]=g[k]||{tab:a.tab,sub:a.sub||'',lv:'info',items:[]}).items.push(a);if(a.lv==='bad'||(a.lv==='warn'&&g[k].lv!=='bad'))g[k].lv=a.lv;});
   box.innerHTML=extra+Object.keys(g).map(k=>{const x=g[k];const n=x.items.length;const lbl=LBL[k]||x.tab;const here=x.tab==='hoje';
@@ -2022,7 +2036,7 @@ function renderFoodsPage(){$('#fdCount').textContent=`${fmt(FOODS.length+allLabe
   const cf=customFoods();$('#fdCustom').innerHTML=cf.length?cf.map(f=>`<div class="item"><div class="t"><b>${esc(f.n)}</b><small>${fmt(f.k)} kcal · P ${fmt(f.p)} · C ${fmt(f.c)} · G ${fmt(f.f)} por 100 g${(f.u||[]).length?' · '+f.u.map(u=>`${esc(u.n)} ${u.g} g`).join(', '):''}</small></div><button class="btn xs ghost" onclick="A.openFoodForm('${f.id}')">✎</button><button class="icon-btn" onclick="A.delFood('${f.id}')">✕</button></div>`).join(''):'<div class="empty">Nenhum alimento próprio. Os rótulos do NutriControle antigo já estão no banco.</div>';
   renderFoodSearch();}
 function renderFoodSearch(){const q=$('#fdSearch').value;const res=searchFoods(q,30);$('#fdResults').innerHTML=q.length<2?'<div class="empty">Digite ao menos 2 letras. Fontes: TACO (Unicamp), Open Food Facts (produtos no Brasil), rótulos e alimentos próprios.</div>':res.map(f=>`<div class="item"><div class="t"><b>${esc(f.n)}</b><small>${f.brand?esc(f.brand)+' · ':''}${f.cat?esc(f.cat)+' · ':''}P ${fmt(f.p,1)} · C ${fmt(f.c,1)} · G ${fmt(f.f,1)} · fib ${fmt(f.fib,1)} · Na ${fmt(f.sod)} mg <span class="pill src-${esc(f.src)}">${esc(f.src)}</span></small></div><div class="num">${fmt(f.k)}<small>kcal/100 g</small></div></div>`).join('')||'<div class="empty">Nada encontrado. Use "Registrar refeição por foto ou texto" em Refeições.</div>';}
-function renderConfig(){const s=settings();setVal('cfNome',s.profile.nome);setVal('cfCoach',s.profile.treinador);setVal('cfAltura',s.profile.altura);setVal('cfIdade',s.profile.idade);setVal('cfTmbMode',s.tmbMode);setVal('cfTmbFixo',s.tmbFixo);setVal('cfExpMode',s.expMode);setVal('cfProtKg',s.proteinPerKg);setVal('cfWater',s.waterGoal);setVal('cfFiber',s.fiberGoal);setVal('cfSodium',s.sodiumGoal);setVal('cfStart',s.protocolStart);setVal('cfStartW',s.protocolStartWeight);setVal('cfTheme',s.theme||'light');
+function renderConfig(){const s=settings();{const le=$('#lastAiErr');try{const x=JSON.parse(localStorage.getItem('ncperf_lasterr')||'null');if(le&&x){le.hidden=false;le.textContent='Último erro da IA: '+new Date(x.at).toLocaleString('pt-BR').slice(0,17)+' · '+(x.code||'sem código')+' · '+x.msg+(x.imgs?' · fotos: '+x.imgs:'');}}catch(e){}}setVal('cfNome',s.profile.nome);setVal('cfCoach',s.profile.treinador);setVal('cfAltura',s.profile.altura);setVal('cfIdade',s.profile.idade);setVal('cfTmbMode',s.tmbMode);setVal('cfTmbFixo',s.tmbFixo);setVal('cfExpMode',s.expMode);setVal('cfProtKg',s.proteinPerKg);setVal('cfWater',s.waterGoal);setVal('cfFiber',s.fiberGoal);setVal('cfSodium',s.sodiumGoal);setVal('cfStart',s.protocolStart);setVal('cfStartW',s.protocolStartWeight);setVal('cfTheme',s.theme||'light');
   $('#dataStats').textContent=`${Object.keys(S.days).length} dias · ${Object.keys(S.workouts).length} treinos · ${Object.keys(S.exams).length} bio · ${Object.keys(S.labs).length} labs · ${Object.keys(S.meds).length} meds · ${Store.mode==='cloud'?'nuvem':'local'}`;}
 
 /* ============================================================ AÇÕES */
@@ -2047,10 +2061,10 @@ const A={
   /* A lista NÃO usa handlers inline de mouse: no iPhone o toque fecha o teclado (blur) antes do mousedown sintético e a escolha se perdia.
      Os itens carregam data-act/data-i/data-n e são tratados por delegação em init() (touchend com preventDefault + mousedown no desktop). */
   acInput(n){const inp=$('#ac'+n),box=$('#acl'+n);const q=inp.value;const st0=AC[n]||{};if(st0.justAdded&&!q.trim()){st0.justAdded=false;box.hidden=true;return;}const row=(f,i,extra)=>`<button type="button" class="${i===0?'sel':''}" data-act="pick" data-i="${i}" data-n="${n}"><span class="n">${esc(f.n)}${f.brand?` <small class="muted">${esc(f.brand)}</small>`:''}${extra||''}</span><span class="pill src-${esc(f.src)}">${esc(f.src)}</span><span class="m">${fmt(f.k)} kcal · P${fmt(f.p)}</span></button>`;
-    if(q.trim().length===0){const sug=frequentFoods(n);AC[n]={res:sug,sel:0,q:''};if(!sug.length){box.innerHTML=`<button type="button" class="act" data-act="label" data-n="${n}"><span class="n">📷 Cadastrar alimento pela foto do rótulo</span></button>`;box.hidden=false;return;}
-      box.innerHTML=`<div class="hd">Mais usados nesta refeição</div>`+sug.map((f,i)=>row(f,i,` <small class="muted">· ${f.uses}× · última ${fmt(f.lastG)} g</small>`)).join('')+`<button type="button" class="act" data-act="label" data-n="${n}"><span class="n">📷 Cadastrar alimento pela foto do rótulo</span></button>`;box.hidden=false;return;}
+    if(q.trim().length===0){const sug=frequentFoods(n);AC[n]={res:sug,sel:0,q:''};if(!sug.length){box.innerHTML=`<button type="button" class="act" data-act="label" data-n="${n}"><span class="n">Registrar rótulo de alimento</span></button>`;box.hidden=false;return;}
+      box.innerHTML=`<div class="hd">Mais usados nesta refeição</div>`+sug.map((f,i)=>row(f,i,` <small class="muted">· ${f.uses}× · última ${fmt(f.lastG)} g</small>`)).join('')+`<button type="button" class="act" data-act="label" data-n="${n}"><span class="n">Registrar rótulo de alimento</span></button>`;box.hidden=false;return;}
     if(q.trim().length<2){box.hidden=true;return;}const res=searchFoods(q);AC[n]={res,sel:0,q};
-    box.innerHTML=res.map((f,i)=>row(f,i)).join('')+`<button type="button" class="act" data-act="label" data-n="${n}"><span class="n">📷 Cadastrar "${esc(q)}" pela foto do rótulo</span></button><button type="button" class="act" data-act="ai" data-n="${n}"><span class="n">✦ Estimar "${esc(q)}" com IA</span></button>`;box.hidden=false;},
+    box.innerHTML=res.map((f,i)=>row(f,i)).join('')+`<button type="button" class="act" data-act="label" data-n="${n}"><span class="n">Registrar rótulo de "${esc(q)}"</span></button><button type="button" class="act" data-act="ai" data-n="${n}"><span class="n">Estimar "${esc(q)}" com IA</span></button>`;box.hidden=false;},
   acAct(btn){const n=+btn.dataset.n,act=btn.dataset.act,st=AC[n]||{};if(act==='pick')A.pickFood(n,st.res&&st.res[+btn.dataset.i]);else if(act==='ai')A.openFoodAI(n,st.q||'');else if(act==='label')A.openLabelAI(n,st.q||'');},
   acKey(ev,n){const st=AC[n];const box=$('#acl'+n);if(box.hidden||!st)return;const items=Array.from(box.querySelectorAll('button[data-act=pick]'));if(ev.key==='ArrowDown'){st.sel=Math.min(st.sel+1,items.length-1);}else if(ev.key==='ArrowUp'){st.sel=Math.max(st.sel-1,0);}else if(ev.key==='Enter'){ev.preventDefault();if(items.length)A.pickFood(n,st.res[st.sel]);return;}else if(ev.key==='Escape'){box.hidden=true;return;}else return;items.forEach((b,i)=>b.classList.toggle('sel',i===st.sel));},
   acPick(n,i){A.pickFood(n,AC[n]&&AC[n].res[i]);},
@@ -2094,7 +2108,7 @@ const A={
   openFoodAI(n,prefill){const defs=mealDefs();openSheet('Lançar por foto ou texto',`
     <label class="f" style="margin-top:10px"><span>Refeição</span><select id="faMeal">${defs.map(m=>`<option value="${m.n}" ${m.n===n?'selected':''}>${esc(m.name)}</option>`).join('')}</select></label>
     <label class="f" style="margin-top:10px"><span>Texto</span><textarea id="faText" placeholder="Ex.: 150 g de frango grelhado, 1 concha de arroz integral, salada à vontade, 1 scoop de whey">${esc(prefill||'')}</textarea></label>
-    <div class="drop" style="margin-top:10px" onclick="document.getElementById('faFiles').click()"><input type="file" id="faFiles" accept="image/*" multiple onchange="A.previewFiles('faFiles','faThumbs')"><span>Anexar fotos</span></div><div class="thumbs" id="faThumbs" style="margin-top:8px"></div>
+    <label class="drop" style="margin-top:10px"><input hidden type="file" id="faFiles" accept="image/*" multiple onchange="A.previewFiles('faFiles','faThumbs')"><span>Tirar foto ou escolher da fototeca</span></label><div class="thumbs" id="faThumbs" style="margin-top:8px"></div>
     <div class="row" style="margin-top:12px"><button class="btn accent ai" id="faGo" onclick="A.analyzeFood()">Analisar</button><span class="mini" id="faStatus"></span></div><div id="faResult" style="margin-top:12px"></div>`);},
   previewFiles(inputId,thumbsId){const inp=document.getElementById(inputId);const box=document.getElementById(thumbsId);box.innerHTML='';filesToImages(inp.files).forEach(async f=>{const img=document.createElement('img');img.src=await blobToDataURL(f);box.appendChild(img);});if(inp.files.length&&!filesToImages(inp.files).length)box.innerHTML=`<span class="chip">${Array.from(inp.files).map(f=>esc(f.name)).join(', ')}</span>`;},
   async analyzeFood(){const text=$('#faText').value.trim();const images=filesToImages($('#faFiles').files);if(!text&&!images.length){toast('Escreva algo ou anexe uma foto');return;}$('#faGo').disabled=true;busy('faStatus',true,'Identificando alimentos…');
@@ -2108,7 +2122,7 @@ const A={
   delActivity(i){const d=getDay(CUR);d.activities.splice(i,1);saveDay(CUR,d);renderAll();},
   acPreset(){const p=TRAINING_PRESETS.find(x=>x.n===$('#acType').value);const min=parseFloat($('#acMin').value)||0;if(p&&p.k30&&min)$('#acKcal').placeholder='≈ '+Math.round(p.k30*min/30);},
   openAppleAI(){openSheet('Apple Fitness',`
-    <div class="drop" style="margin-top:10px" onclick="document.getElementById('apFiles').click()"><input type="file" id="apFiles" accept="image/*" multiple onchange="A.previewFiles('apFiles','apThumbs')"><span>Anexar prints</span></div><div class="thumbs" id="apThumbs" style="margin-top:8px"></div>
+    <label class="drop" style="margin-top:10px"><input hidden type="file" id="apFiles" accept="image/*" multiple onchange="A.previewFiles('apFiles','apThumbs')"><span>Tirar foto ou escolher prints da fototeca</span></label><div class="thumbs" id="apThumbs" style="margin-top:8px"></div>
     <label class="f" style="margin-top:10px"><span>Observação (opcional)</span><input id="apText" placeholder="ex.: o treino de força foi o Treino B"></label>
     <div class="row" style="margin-top:12px"><button class="btn accent ai" id="apGo" onclick="A.analyzeApple()">Ler prints</button><span class="mini" id="apStatus"></span></div><div id="apResult" style="margin-top:12px"></div>`);},
   async analyzeApple(){const images=filesToImages($('#apFiles').files);if(!images.length){toast('Anexe ao menos um print');return;}$('#apGo').disabled=true;busy('apStatus',true,'Lendo prints…');
@@ -2186,7 +2200,7 @@ const A={
   saveExam(){const date=$('#ex_date').value;if(!date){toast('Informe a data');return;}const obj={date,tipo:$('#ex_tipo').value};EXAM_DEFS.forEach(([k])=>{obj[k]=numLoose($('#ex_'+k).value);});Store.set('exams/'+date,obj);closeSheet();renderAll();toast('Exame salvo — TMB e indicadores atualizados');},
   delExam(date){confirmInline('Excluir o exame de '+dtBR(date)+'?',()=>{Store.del('exams/'+date);renderAll();});},
   openExamImport(){A.openImport('Importar laudo de bioimpedância','InBody, FitMass ou similar: PDF ou foto. Os campos são extraídos e você confere antes de salvar.','bio');},
-  openImport(title,hint,kind){openSheet(title,`<div class="drop" style="margin-top:10px" onclick="document.getElementById('imFiles').click()"><input type="file" id="imFiles" multiple onchange="A.previewFiles('imFiles','imThumbs')"><span>Toque para escolher o arquivo (PDF, imagem, Word, texto…)</span></div><div class="thumbs" id="imThumbs" style="margin-top:8px"></div>
+  openImport(title,hint,kind){openSheet(title,`<label class="drop" style="margin-top:10px"><input hidden type="file" id="imFiles" multiple onchange="A.previewFiles('imFiles','imThumbs')"><span>Toque para escolher o arquivo (PDF, imagem, Word, texto…)</span></label><div class="thumbs" id="imThumbs" style="margin-top:8px"></div>
     <label class="f" style="margin-top:10px"><span>Observações / texto adicional</span><textarea id="imText" style="min-height:70px"></textarea></label><div class="row" style="margin-top:12px"><button class="btn accent ai" id="imGo" onclick="A.runImport('${kind}')">Extrair com IA</button><span class="mini" id="imStatus"></span></div><div id="imResult" style="margin-top:12px"></div>`);
     if(JOB.running&&JOB.kind===kind){busy('imStatus',true,JOB.msg);$('#imGo').disabled=true;}else if(JOB.show&&JOB.kind===kind){const s=JOB.show;JOB.show=null;jobHide();s();}},
   async runImport(kind){const files=Array.from($('#imFiles').files||[]);const extra=$('#imText').value.trim();if(!files.length&&!extra){toast('Escolha um arquivo');return;}
@@ -2299,27 +2313,32 @@ const A={
     if(S.protoN)histSave({at:new Date().toISOString(),kind:'nutrition',source:'edição manual',summary:'Metas editadas à mão',snapshot:S.protoN});Store.set('protocol/nutrition',n);const s=settings();if(n.water)s.waterGoal=n.water;Store.set('settings/main',s);closeSheet();renderAll();toast('Metas salvas');},
   /* ---------- Mais · alimentos */
   /* mealN (opcional): refeição que pediu o cadastro — ao salvar, o alimento já fica escolhido na linha de lançamento dela */
-  openFoodForm(id,prefill,mealN){const f=prefill||(id?S.foods[id]:null)||{};const m=Number.isInteger(mealN)?mealN:null;openSheet(id?'Editar alimento':'Novo alimento (por 100 g)',`${f._fromLabel?`<p class="mini">Lido do rótulo${f._conf?' · confiança '+esc(f._conf):''}. Confira os valores por 100 g antes de salvar${f._portion?` (porção do rótulo: ${fmt(f._portion)} g)`:''}.</p>`:''}<div class="grid g2"><label class="f" style="grid-column:1/-1"><span>Nome</span><input id="nfName" value="${esc(f.n||'')}"></label>${[['k','kcal'],['p','Proteína (g)'],['c','Carbo (g)'],['f','Gordura (g)'],['fib','Fibras (g)'],['sod','Sódio (mg)']].map(([k,l])=>`<label class="f"><span>${l}</span><input type="number" step="0.1" id="nf_${k}" value="${esc(f[k]??'')}"></label>`).join('')}<label class="f" style="grid-column:1/-1"><span>Medidas caseiras (nome=gramas, separadas por vírgula)</span><input id="nfU" value="${esc((f.u||[]).map(u=>`${u.n}=${u.g}`).join(', '))}" placeholder="scoop=30, fatia=25"></label></div><div class="row end" style="margin-top:12px"><button class="btn primary" onclick="A.saveFood('${id||''}',${m===null?'null':m})">${m!==null?'Salvar e usar na refeição':'Salvar'}</button></div>`);},
+  openFoodForm(id,prefill,mealN){const f=prefill||(id?S.foods[id]:null)||{};const m=Number.isInteger(mealN)?mealN:null;openSheet(id?'Editar alimento':'Novo alimento (por 100 g)',`${!f._fromLabel?`<div class="row" style="margin-bottom:10px"><label class="btn sm" style="cursor:pointer">Ler rótulo por foto<input type="file" accept="image/*" hidden onchange="A.formLabel(this)"></label><span class="mini" id="nfStatus"></span></div>`:''}${f._fromLabel?`<p class="mini">Lido do rótulo${f._conf?' · confiança '+esc(f._conf):''}. Confira os valores por 100 g antes de salvar${f._portion?` (porção do rótulo: ${fmt(f._portion)} g)`:''}.</p>`:''}<div class="grid g2"><label class="f" style="grid-column:1/-1"><span>Nome</span><input id="nfName" value="${esc(f.n||'')}"></label>${[['k','kcal'],['p','Proteína (g)'],['c','Carbo (g)'],['f','Gordura (g)'],['fib','Fibras (g)'],['sod','Sódio (mg)']].map(([k,l])=>`<label class="f"><span>${l}</span><input type="number" step="0.1" id="nf_${k}" value="${esc(f[k]??'')}"></label>`).join('')}<label class="f" style="grid-column:1/-1"><span>Medidas caseiras (nome=gramas, separadas por vírgula)</span><input id="nfU" value="${esc((f.u||[]).map(u=>`${u.n}=${u.g}`).join(', '))}" placeholder="scoop=30, fatia=25"></label></div><div class="row end" style="margin-top:12px"><button class="btn primary" onclick="A.saveFood('${id||''}',${m===null?'null':m})">${m!==null?'Salvar e usar na refeição':'Salvar'}</button></div>`);},
   saveFood(id,mealN){const n=$('#nfName').value.trim();if(!n){toast('Informe o nome');return;}const k=numLoose($('#nf_k').value)||0;if(!(k>0)){toast('Informe as kcal por 100 g');$('#nf_k').focus();return;}if(['p','c','f','fib','sod'].some(f=>{const el=$('#nf_'+f);const v=el?numLoose(el.value):null;return v!=null&&v<0;})){toast('Macros não podem ser negativos');return;}id=id||uid();const u=$('#nfU').value.split(',').map(x=>x.split('=')).filter(x=>x[0]&&x[1]).map(x=>({n:x[0].trim(),g:numLoose(x[1])})).filter(x=>x.g>0);
     const doc={id,n,k,p:numLoose($('#nf_p').value)||0,c:numLoose($('#nf_c').value)||0,f:numLoose($('#nf_f').value)||0,fib:numLoose($('#nf_fib').value)||0,sod:numLoose($('#nf_sod').value)||0,u,kw:norm(n),createdAt:(S.foods[id]||{}).createdAt||new Date().toISOString()};
     Store.set('foods/'+id,doc);closeSheet();
     if(Number.isInteger(mealN)){renderMeals.open=renderMeals.open||{};renderMeals.open[mealN]=true;renderMeals();A.pickFood(mealN,Object.assign({src:'Meu'},doc));renderAll();toast(`${n} cadastrado · informe a quantidade`);}
     else{renderAll();toast('Alimento salvo');}},
   delFood(id){Store.del('foods/'+id);renderAll();},
-  openLabelAI(mealN,name){const m=Number.isInteger(mealN)?mealN:null;openSheet('Registrar rótulo de alimento',`<div class="drop" style="margin-top:10px" onclick="document.getElementById('lbFiles').click()"><input type="file" id="lbFiles" accept="image/*" multiple onchange="A.previewFiles('lbFiles','lbThumbs')"><span>📷 Foto do rótulo</span></div><div class="thumbs" id="lbThumbs" style="margin-top:8px"></div><label class="f" style="margin-top:10px"><span>Nome do produto (opcional)</span><input id="lbName" value="${esc(name||'')}" placeholder="ex.: Cacao Whey Essential"></label><div class="row" style="margin-top:12px"><button class="btn accent ai" id="lbGo" onclick="A.analyzeLabel(${m===null?'null':m})">Ler rótulo</button><button class="btn ghost sm" onclick="A.openFoodForm(null,{n:document.getElementById('lbName').value},${m===null?'null':m})">Digitar valores</button><span class="mini" id="lbStatus"></span></div>`);},
+  openLabelAI(mealN,name){const m=Number.isInteger(mealN)?mealN:null;openSheet('Registrar rótulo de alimento',`<label class="drop" style="margin-top:10px"><input hidden type="file" id="lbFiles" accept="image/*" multiple onchange="A.previewFiles('lbFiles','lbThumbs')"><span>Tirar foto ou escolher da fototeca</span></label><div class="thumbs" id="lbThumbs" style="margin-top:8px"></div><label class="f" style="margin-top:10px"><span>Nome do produto (opcional)</span><input id="lbName" value="${esc(name||'')}" placeholder="ex.: Cacao Whey Essential"></label><div class="row" style="margin-top:12px"><button class="btn accent ai" id="lbGo" onclick="A.analyzeLabel(${m===null?'null':m})">Ler rótulo</button><button class="btn ghost sm" onclick="A.openFoodForm(null,{n:document.getElementById('lbName').value},${m===null?'null':m})">Digitar valores</button><span class="mini" id="lbStatus"></span></div>`);},
   async analyzeLabel(mealN){const images=filesToImages(($('#lbFiles')||{}).files);if(!images.length){toast('Anexe a foto do rótulo');return;}const typed=(($('#lbName')||{}).value||'').trim();const go=$('#lbGo');if(go)go.disabled=true;busy('lbStatus',true,'Lendo rótulo…');
-    try{const r=await aiJSON(`As fotos mostram a embalagem de um alimento, incluindo a TABELA NUTRICIONAL. Leia a tabela e devolva os valores POR 100 g (ou 100 mL). Se a tabela tiver coluna "100 g", use-a; se só tiver "por porção", informe também os valores da porção e a porção em gramas. Informe as medidas caseiras citadas (scoop, fatia, unidade, colher…). Valores ilegíveis = null. Números com ponto decimal, sem unidades. ${JSON_ONLY}\nFormato: {"name":"nome do produto","brand":"marca|null","per100":{"k":kcal,"p":g,"c":g,"f":g,"fib":g|null,"sod":mg|null},"per_portion":{"k":kcal,"p":g,"c":g,"f":g,"fib":g|null,"sod":mg|null},"portion_g":número|null,"units":[{"n":"scoop|fatia|unidade|colher","g":número}],"confidence":"alta|média|baixa"}${typed?'\nNome informado pelo usuário: '+typed:''}`,{images});
-      const N=v=>{const x=numLoose(v);return x!=null&&isFinite(x)&&x>=0?x:null;};const p100=r&&r.per100||{},pp=r&&r.per_portion||{};const pg=N(r&&r.portion_g);const keys=['k','p','c','f','fib','sod'];const out={};
-      keys.forEach(k=>{let v=N(p100[k]);if(v==null&&N(pp[k])!=null&&pg>0)v=Math.round(N(pp[k])*100/pg*10)/10;out[k]=v;});
-      const units=(Array.isArray(r&&r.units)?r.units:[]).map(u=>({n:String((u&&u.n)||'').trim(),g:N(u&&u.g)})).filter(u=>u.n&&u.g>0);if(pg>0&&!units.some(u=>u.g===pg))units.push({n:'porção',g:pg});
-      const name=[(r&&r.name)||typed,(r&&r.brand)].filter(Boolean).join(' ').trim()||typed;
-      if(!$('#lbGo')){toast('Rótulo lido, mas a tela foi fechada: abra de novo para conferir',5000);return;}busy('lbStatus',false,'');closeSheet();A.openFoodForm(null,Object.assign({n:name,u:units,_fromLabel:true,_conf:r&&r.confidence,_portion:pg},out),mealN);
-      if(!(out.k>0))toast('Não consegui ler as kcal do rótulo: confira e preencha antes de salvar',4500);}
+    try{const L=await labelAI(images,typed);
+      if(!$('#lbGo')){toast('Rótulo lido, mas a tela foi fechada: abra de novo para conferir',5000);return;}busy('lbStatus',false,'');closeSheet();A.openFoodForm(null,Object.assign({n:L.name,u:L.units,_fromLabel:true,_conf:L.conf,_portion:L.pg},L.out),mealN);
+      if(!(L.out.k>0))toast('Não consegui ler as kcal do rótulo: confira e preencha antes de salvar',4500);}
     catch(e){console.warn('rótulo',e);busy('lbStatus',false,aiErr(e)+(e&&e.code?' ['+e.code+']':''));const b=$('#lbGo');if(b)b.disabled=false;}},
+  async formLabel(inp){const images=filesToImages(inp.files);if(!images.length)return;busy('nfStatus',true,'Lendo rótulo…');
+    try{const L=await labelAI(images,(($('#nfName')||{}).value||'').trim());if(!$('#nfName')){toast('Rótulo lido, mas a tela foi fechada',4000);return;}
+      if(!$('#nfName').value.trim()&&L.name)$('#nfName').value=L.name;['k','p','c','f','fib','sod'].forEach(k=>{const el=$('#nf_'+k);if(el&&L.out[k]!=null)el.value=L.out[k];});
+      if(L.units.length&&!$('#nfU').value.trim())$('#nfU').value=L.units.map(u=>`${u.n}=${u.g}`).join(', ');
+      busy('nfStatus',false,L.out.k>0?'Lido do rótulo · confira antes de salvar':'Não li as kcal: preencha à mão');}
+    catch(e){busy('nfStatus',false,aiErr(e)+(e&&e.code?' ['+e.code+']':''));}finally{inp.value='';}},
+  pickDay(){const t=todayISO();const days=[0,1,2,3,4,5,6].map(k=>addDays(t,-k));
+    openSheet('Escolher dia',`<div class="row" style="gap:6px;flex-wrap:wrap">${days.map((d,k)=>`<button class="btn sm${d===CUR?' primary':''}" onclick="setDate('${d}');closeSheet()">${k===0?'Hoje':k===1?'Ontem':dtBR(d).slice(0,5)+' '+WDS[weekdayIdx(d)]}</button>`).join('')}</div>
+      <label class="f" style="margin-top:12px"><span>Outra data</span><input type="date" id="pdDate" value="${CUR}"></label><div class="row end" style="margin-top:10px"><button class="btn primary" onclick="const v=$('#pdDate').value;if(v){setDate(v);closeSheet();}">Abrir dia</button></div>`);},
   /* ---------- Mais · config */
   setLayout(l){const s=settings();s.layout=['compacto','painel'].includes(l)?l:'equilibrado';applyLayout(s.layout);Store.set('settings/main',s);renderAll();toast('Layout '+({equilibrado:'equilibrado',compacto:'compacto',painel:'painel'})[s.layout]);},
   setTheme(t){const s=settings();s.theme=t==='dark'?'dark':'light';applyTheme(s.theme);Store.set('settings/main',s);renderAll();toast(s.theme==='dark'?'Tema preto e dourado':'Tema clean claro');},
-  saveConfig(){const s=settings();s.profile={nome:$('#cfNome').value.trim(),treinador:$('#cfCoach').value.trim(),altura:numLoose($('#cfAltura').value),idade:numLoose($('#cfIdade').value)};s.tmbMode=$('#cfTmbMode').value;s.tmbFixo=numLoose($('#cfTmbFixo').value);s.expMode=$('#cfExpMode').value;s.proteinPerKg=numLoose($('#cfProtKg').value);s.waterGoal=numLoose($('#cfWater').value)||5000;s.fiberGoal=numLoose($('#cfFiber').value)||30;s.sodiumGoal=numLoose($('#cfSodium').value)||2300;s.protocolStart=$('#cfStart').value||null;s.protocolStartWeight=numLoose($('#cfStartW').value);s.theme=$('#cfTheme').value;applyTheme(s.theme);Store.set('settings/main',s);renderAll();toast('Configurações salvas');},
+  saveConfig(quiet){const s=settings();s.profile={nome:$('#cfNome').value.trim(),treinador:$('#cfCoach').value.trim(),altura:numLoose($('#cfAltura').value),idade:numLoose($('#cfIdade').value)};s.tmbMode=$('#cfTmbMode').value;s.tmbFixo=numLoose($('#cfTmbFixo').value);s.expMode=$('#cfExpMode').value;s.proteinPerKg=numLoose($('#cfProtKg').value);s.waterGoal=numLoose($('#cfWater').value)||5000;s.fiberGoal=numLoose($('#cfFiber').value)||30;s.sodiumGoal=numLoose($('#cfSodium').value)||2300;s.protocolStart=$('#cfStart').value||null;s.protocolStartWeight=numLoose($('#cfStartW').value);s.theme=$('#cfTheme').value;applyTheme(s.theme);Store.set('settings/main',s);renderAll();if(!quiet)toast('Configurações salvas');},
   exportAll(){const out={app:'NutriControle Performance',version:1,exportedAt:new Date().toISOString(),settings:S.settings,protocol:{nutrition:S.protoN,training:S.protoT},days:S.days,workouts:S.workouts,exams:S.exams,labs:S.labs,meds:S.meds,meddoses:S.meddoses,clinical:S.clinical,foods:S.foods,protocol_history:S.protoHist,prescriptions:S.rx};download(`ncperf_backup_${todayISO()}.json`,JSON.stringify(out,null,1));},
   exportCSV(){const rows=[['data','tipo','kcal','meta_kcal','prot','carb','gord','fibra','sodio','gasto','saldo','peso','agua','treino','musc_min','cardio_min','ativas_apple','passos']];Object.keys(S.days).sort().forEach(d=>{const t=dayTotals(d),e=energy(d),s=sessionOf(d),m=metaFor(d);rows.push([d,m.label,t.k.toFixed(0),m.k,t.p.toFixed(0),t.c.toFixed(0),t.f.toFixed(0),t.fib.toFixed(0),t.sod.toFixed(0),e.expend.toFixed(0),e.net.toFixed(0),S.days[d].weight??'',S.days[d].water??'',s.wk||'',s.trainMin??'',s.cardioMin??'',s.activeKcal??'',s.steps??'']);});download(`ncperf_diario_${todayISO()}.csv`,rows.map(r=>r.join(';')).join('\n'));},
   async importBackup(file){if(!file)return;let d;try{d=JSON.parse(await file.text());}catch(e){toast('Arquivo inválido');return;}
@@ -2391,7 +2410,7 @@ const Validator={
     return R;
   }
 };
-A.showValidation=function(rerender){const R=(Validator.last||{}).R||Validator.run();const html=`<p class="mini">Executado ${Validator.last?Validator.last.at.toLocaleTimeString('pt-BR'):''} · roda sozinho após cada alteração de dados e troca de aba/filtro. Vermelho = inconsistência (dado na tela não bate com a base); amarelo = aviso.</p><div class="list" id="valList" style="margin-top:8px">${R.map(x=>`<div class="item"><span class="status ${x.s==='ok'?'ok':x.s==='warn'?'warn':'bad'}"></span><div class="t"><b style="white-space:normal">${esc(x.n)}</b>${x.d?`<small>${esc(x.d)}</small>`:''}</div></div>`).join('')}</div><div class="row end" style="margin-top:12px"><button class="btn ghost sm" onclick="renderAll();setTimeout(()=>Validator.run(),400)">Recalcular tela</button><button class="btn primary sm" onclick="Validator.run()">Validar de novo</button></div>`;
+A.showValidation=function(rerender){const R=(Validator.last||{}).R||Validator.run();const html=`<p class="mini">Executado ${Validator.last?Validator.last.at.toLocaleTimeString('pt-BR'):''} · vermelho = inconsistência, amarelo = aviso.</p><div class="list" id="valList" style="margin-top:8px">${R.map(x=>`<div class="item"><span class="status ${x.s==='ok'?'ok':x.s==='warn'?'warn':'bad'}"></span><div class="t"><b style="white-space:normal">${esc(x.n)}</b>${x.d?`<small>${esc(x.d)}</small>`:''}</div></div>`).join('')}</div><div class="row end" style="margin-top:12px"><button class="btn ghost sm" onclick="renderAll();setTimeout(()=>Validator.run(),400)">Recalcular tela</button><button class="btn primary sm" onclick="Validator.run()">Validar de novo</button></div>`;
   if(rerender&&$('#valList')){$('#sheetBody').innerHTML=html;return;}openSheet('Validação de consistência',html);};
 window.Validator=Validator;
 function promptBio(text,hasImages){return `Extraia os dados de um laudo de bioimpedância (InBody, FitMass/BlueFit ou similar) ${hasImages?'das imagens e ':''}do texto. Atenção: no Brasil a vírgula é decimal e o ponto é milhar ("1.901" = 1901; "90,7" = 90.7).
@@ -2429,7 +2448,7 @@ Object.assign(A,{
     const sets=(ex&&ex.sets&&ex.sets.length)?ex.sets.map(s=>({reps:s.reps??null,kg:s.kg??null,fail:!!s.fail})):Array.from({length:want},()=>({reps:reps?reps.max:null,kg:last?(maxLoad(last.e.sets)||null):null,fail:false}));
     A._es={i,sets,prefilled:!(ex&&ex.sets&&ex.sets.length)};
     openSheet('Séries · '+r.name,`<div class="row" style="gap:6px;flex-wrap:wrap;margin-bottom:8px"><span class="chip">prescrito: ${esc(r.scheme||'—')}</span>${r.note?`<span class="chip ghost">${esc(r.note)}</span>`:''}${last?`<span class="chip ghost">último ${dtShort(last.w.date)}: ${esc(setsSummary(last.e.sets))}</span>`:''}</div>
-      ${A._es.prefilled?'<p class="mini">Linhas pré-preenchidas com o prescrito'+(last?' e a carga do último treino':'')+' — ajuste o que fez de fato.</p>':''}
+      ${A._es.prefilled?'<p class="mini">Pré-preenchido com o prescrito'+(last?' e a última carga':'')+'.</p>':''}
       <div id="esGrid"></div>
       <div class="row" style="gap:8px;margin-top:8px;flex-wrap:wrap"><button class="btn xs ghost" onclick="A.esAdd()">+ série</button>${last?`<button class="btn xs ghost" onclick="A.esCopyLast()">Copiar do último treino</button>`:''}<button class="btn xs ghost" onclick="A.esText()">Colar como texto</button></div>
       <div id="esInd" class="mini" style="margin-top:8px"></div>
@@ -2467,7 +2486,7 @@ function renderRx(){const box=$('#rxList');if(!box)return;const all=rxList();con
   box.innerHTML=list.length?list.map((rx,idx)=>{const st=rxStatus(rx);const [lab,cls]=RX_ST[st];const f=rxFacts(rx);const n=list.length-idx;const meds=f.meds.length;
     return `<div class="wk-card" style="${st==='done'?'opacity:.7':''}"><div class="row between"><div style="min-width:0"><div class="eyebrow">Ciclo ${n}${rx.date?' · receita de '+dtBR(rx.date):''}</div><b>${esc(rx.title||'Receita')}</b><div class="mini">${esc(rx.physician||'médico não informado')}${rx.specialty?' · '+esc(rx.specialty):''}</div></div><span class="chip ${cls}">${lab}</span></div>
     <div class="row"><span class="chip ghost">${rx.start?dtBR(rx.start):'início ?'} → ${rx.end?dtBR(rx.end):'em aberto'}</span>${f.total?`<span class="chip ghost">${Math.min(f.elapsed,f.total)}/${f.total} dias</span>`:''}${meds?`<span class="chip ${f.adh==null?'ghost':f.adh>=85?'ok':f.adh>=60?'warn':'bad'}">adesão ${f.adh!=null?f.adh+' %':'—'}</span>`:'<span class="chip ghost">sem posologia cadastrada</span>'}</div>
-    ${rx.goal?`<div class="note" style="margin-top:6px"><b>Esperado pelo médico:</b> ${esc(rx.goal)}</div>`:'<div class="mini" style="color:var(--warn-text)">Sem objetivo clínico registrado — edite e informe o que o médico espera.</div>'}
+    ${rx.goal?`<div class="note" style="margin-top:6px"><b>Esperado pelo médico:</b> ${esc(rx.goal)}</div>`:'<div class="mini" style="color:var(--warn-text)">Sem objetivo clínico registrado.</div>'}
     <div class="list" style="margin-top:6px">${(rx.items||[]).map(i=>`<div class="item"><div class="t"><b>${esc(i.name)}</b><small>${esc([i.dose,i.schedule,i.duration].filter(Boolean).join(' · '))}${i.purpose?' · '+esc(i.purpose):''}</small></div></div>`).join('')||'<div class="mini">sem itens</div>'}</div>
     ${(rx.monitor||[]).length?`<div class="mini" style="margin-top:6px">Acompanhar: ${rx.monitor.map(esc).join(', ')}</div>`:''}
     <div class="mini" style="margin-top:6px">${esc(rxFactsText(f))}</div>
@@ -2700,7 +2719,7 @@ function wkMergePlan(exs,wk){const pw=protoWorkout(wk);if(!pw)return exs;const o
   pw.exercises.forEach(pe=>{const i=exs.findIndex((e,k)=>!used.has(k)&&(norm(e.protoName||e.name)===norm(pe.name)||norm(e.name)===norm(pe.name)));if(i>=0){used.add(i);out.push(exs[i]);}else out.push({name:pe.name,sets:[],note:null});});
   exs.forEach((e,k)=>{if(!used.has(k))out.push(e);});return out;}
 /* ============================================================ IMAGENS: converte para JPEG (HEIC do iPhone, fotos grandes) */
-async function toJpeg(f,max=2000){if(!f)return f;const okType=/^image\/(jpeg|png|webp|gif)$/i.test(f.type||'');if(okType&&f.size<4e6)return f;
+async function toJpeg(f,max=2000,force=false){if(!f)return f;const okType=/^image\/(jpeg|png|webp|gif)$/i.test(f.type||'');if(okType&&f.size<4e6&&!force)return f;
   try{const url=URL.createObjectURL(f);const img=new Image();await new Promise((res,rej)=>{img.onload=res;img.onerror=()=>rej(new Error('decode'));img.src=url;});
     const w=img.naturalWidth,h=img.naturalHeight;if(!w||!h){URL.revokeObjectURL(url);return f;}const sc=Math.min(1,max/Math.max(w,h));const cv=document.createElement('canvas');cv.width=Math.max(1,Math.round(w*sc));cv.height=Math.max(1,Math.round(h*sc));
     const cx=cv.getContext('2d');cx.fillStyle='#fff';cx.fillRect(0,0,cv.width,cv.height);cx.drawImage(img,0,0,cv.width,cv.height);URL.revokeObjectURL(url);
@@ -2740,18 +2759,19 @@ async function init(){
   $$('#bioSeg button').forEach(b=>b.onclick=()=>{BIOK=b.dataset.k;BIOCMP=[];$$('#bioSeg button').forEach(x=>x.classList.toggle('on',x===b));renderBio();});
   $$('#rangeSeg button').forEach(b=>b.onclick=()=>{RANGE.mode=b.dataset.r;RANGE.from=null;RANGE.to=null;syncPeriodBar();renderAll();if(window.Validator)Validator.schedule();});
   const custom=()=>{let f=$('#rFrom').value||null,t=$('#rTo').value||null;if(!f&&!t)return;if(f&&t&&f>t){[f,t]=[t,f];$('#rFrom').value=f;$('#rTo').value=t;toast('Datas invertidas: troquei a ordem');}RANGE.mode='custom';RANGE.from=f;RANGE.to=t;syncPeriodBar();renderAll();if(window.Validator)Validator.schedule();};$('#rFrom').onchange=custom;$('#rTo').onchange=custom;
-  $('#dPrev').onclick=()=>setDate(addDays(CUR,-7));$('#dNext').onclick=()=>setDate(addDays(CUR,7));$('#dToday').onclick=()=>setDate(todayISO());$('#dLabel').onclick=()=>{const p=$('#dPick');p.value=CUR;try{p.showPicker?p.showPicker():p.click();}catch(e){p.click();}};$('#dPick').onchange=e=>{if(e.target.value)setDate(e.target.value);};
+  $('#dPrev').onclick=()=>setDate(addDays(CUR,-7));$('#dNext').onclick=()=>setDate(addDays(CUR,7));$('#dToday').onclick=()=>setDate(todayISO());$('#dLabel').onclick=()=>{const p=$('#dPick');p.value=CUR;if(!matchMedia('(hover:none)').matches){try{if(p.showPicker){p.showPicker();return;}}catch(e){}}A.pickDay();};$('#dPick').onchange=e=>{if(e.target.value)setDate(e.target.value);};
   $('#dLabel').ondblclick=()=>setDate(todayISO());
   $('#dayWeight').onchange=e=>{const v=numLoose(e.target.value);if(v!=null&&(v<=0||v>400)){toast('Peso inválido (use kg, ex.: 91,3)');e.target.value='';return;}const d=getDay(CUR);d.weight=v;saveDay(CUR,d);renderAll();};
   ['sWk','sTrainMin','sCardioMin','sFast','sActive','sTotal','sSteps','sCommute'].forEach(id=>{const el=$('#'+id);el.onchange=()=>A.saveSession();if(el.tagName==='INPUT')el.oninput=()=>debounceDay('sess',iso=>{if(iso===CUR)A.saveSession();},600);});
   $('#acType').onchange=()=>A.acPreset();$('#acMin').oninput=()=>A.acPreset();
-  initCollapsible();$('#trFiles').onchange=()=>A.trFilesChanged();const drop=$('#trDrop');drop.onclick=()=>$('#trFiles').click();
+  initCollapsible();$('#trFiles').onchange=()=>A.trFilesChanged();const drop=$('#trDrop');
   ['dragover','dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.toggle('over',ev==='dragover');if(ev==='drop'){$('#trFiles').files=e.dataTransfer.files;A.trFilesChanged();}}));
   $('#trWk').onchange=()=>{wkFlush();TR.userPick=true;const prev=TR.editingId&&S.workouts[TR.editingId];TR.parsed=null;TR.dirty=false;TR.parsedKey=null;TR.editingId=null;ensureParsed();renderParsed();if(prev&&wkStatus(prev)==='progress')toast(`O treino ${prev.wk} de ${dtBR(prev.date)} ficou salvo em andamento`);};
   $('#trDate').onchange=()=>{wkFlush();TR.userPick=true;TR.parsed=null;TR.dirty=false;TR.parsedKey=null;TR.editingId=null;ensureParsed();renderParsed();};
   $('#pgEx').onchange=()=>renderProgress();$('#labSel').onchange=()=>renderLabs();
-  $('#protoFile').onchange=()=>A.protoFileChanged();$('#protoDrop').onclick=()=>$('#protoFile').click();
+  $('#protoFile').onchange=()=>A.protoFileChanged();
   $('#fdSearch').oninput=()=>renderFoodSearch();
+  ['cfNome','cfCoach','cfAltura','cfIdade','cfTmbMode','cfTmbFixo','cfExpMode','cfProtKg','cfWater','cfFiber','cfSodium','cfStart','cfStartW'].forEach(id=>{const el=$('#'+id);if(!el)return;const go=()=>{clearTimeout(el._t);el._t=setTimeout(()=>A.saveConfig(true),700);};el.addEventListener('input',go);el.addEventListener('change',go);});
   $('#impFile').onchange=e=>{A.importBackup(e.target.files[0]);e.target.value='';};
   $('#sheet').addEventListener('click',e=>{if(e.target.id==='sheet')closeSheet();});
   document.addEventListener('click',e=>{if(!e.target.closest('.ac-wrap'))$$('.ac').forEach(a=>a.hidden=true);});

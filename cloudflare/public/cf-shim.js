@@ -151,7 +151,7 @@
   }
   const sample = async (input, opts) => { const j = await ask(input, opts, false); return { text: j.text, truncated: j.truncated }; };
   sample.json = async (input, opts) => parseJSON((await ask(input, opts, true)).text);
-  sample.limits = async () => ({ images: true });
+  sample.limits = async () => ({ maxPromptBytes: 262144, images: { maxCount: 20, maxInputBytes: 20 * 1024 * 1024, mediaTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/gif'] } });
 
   /* ---------------- arquivos ---------------- */
   const assets = {
