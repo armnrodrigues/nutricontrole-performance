@@ -505,6 +505,13 @@ input,select,textarea{min-height:40px;padding:8px 11px}
   .tab>.stack>.card:first-child{grid-column:1/-1}
 }
 @media (min-width:900px) and (max-height:520px){#bottomnav{top:auto;bottom:12px}}
+@media (min-width:900px){
+  .tab>.dayhero{grid-column:auto}
+  #tab-treino>#sessCard{order:-3}#tab-treino>#actCard{order:-2}#tab-treino>#trLogCard{order:-1}
+  #tab-hoje>#alerts{order:-5}#tab-hoje>.dayhero{order:-4}#tab-hoje>.dayhero+.card{order:-3}
+  .dayhero .hero-body{grid-template-columns:110px 1fr}
+}
+@media (min-width:501px) and (max-width:899px){#tab-treino>#sessCard{order:-3}#tab-treino>#actCard{order:-2}#tab-treino>#trLogCard{order:-1}}
 
 /* ================= OPÇÕES DE LAYOUT (Ajustes › Aparência › Layout) */
 /* 1 · Equilibrado (padrão): o bloco acima */
