@@ -7,3 +7,5 @@ qa_*.md
 QA_*.md
 pdf2png.js
 .DS_Store
+qa2_*.md
+cloudflare/.dev.vars

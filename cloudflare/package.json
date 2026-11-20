@@ -1,0 +1,12 @@
+{
+  "name": "nutricontrole-cloudflare",
+  "private": true,
+  "scripts": {
+    "build": "python3 build.py",
+    "dev": "python3 build.py && wrangler pages dev --port 8788",
+    "deploy": "python3 build.py && wrangler pages deploy dist --project-name nutricontrole --branch main"
+  },
+  "devDependencies": {
+    "wrangler": "4.158.0"
+  }
+}

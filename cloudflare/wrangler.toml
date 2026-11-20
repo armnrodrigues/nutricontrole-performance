@@ -1,0 +1,20 @@
+name = "nutricontrole"
+pages_build_output_dir = "dist"
+compatibility_date = "2026-06-01"
+
+# Banco com todos os registros (um documento JSON por caminho, como no artefato)
+[[d1_databases]]
+binding = "DB"
+database_name = "nutricontrole"
+database_id = "PREENCHER_APOS_CRIAR"
+
+# Fotos e vídeos dos exercícios (até 20 MB cada)
+[[kv_namespaces]]
+binding = "MEDIA"
+id = "PREENCHER_APOS_CRIAR"
+
+[vars]
+# Equipe do Cloudflare Access, por exemplo "minhaequipe.cloudflareaccess.com"
+ACCESS_TEAM_DOMAIN = ""
+# Application Audience (AUD) do aplicativo criado no Access
+ACCESS_AUD = ""
