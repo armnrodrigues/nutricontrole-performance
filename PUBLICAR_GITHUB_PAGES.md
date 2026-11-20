@@ -1,25 +1,20 @@
-# Publicar no GitHub Pages
+# Publicação no GitHub Pages
 
-O repositório git local já está pronto nesta pasta (branch `main`, 8 arquivos, sem dados de saúde).
+- Endereço público: https://armnrodrigues.github.io/nutricontrole-performance/
+- Repositório: https://github.com/armnrodrigues/nutricontrole-performance (público, branch `main`, Pages em `/ (root)`)
+- Acesso de escrita: deploy key "Claude Mac" (só este repositório), chave privada em `~/.ssh/nutricontrole_deploy`, alias SSH `github-nutricontrole`. Para revogar: Settings → Deploy keys → Delete.
 
-## Caminho A — rápido, sem instalar nada (5 min)
+## Como atualizar
 
-1. Entre em https://github.com/new, nome `nutricontrole-performance`, **Public**, sem README. Crie.
-2. Na página do repositório, "uploading an existing file": arraste estes 8 arquivos desta pasta:
-   `index.html`, `foods.json`, `manifest.webmanifest`, `icon-180.png`, `icon-512.png`, `README.md`, `.gitignore`, `.nojekyll`. Commit.
-3. Settings → Pages → Source "Deploy from a branch" → Branch `main` / `/ (root)` → Save.
-4. Em 1–2 min o endereço aparece: `https://SEU-USUARIO.github.io/nutricontrole-performance/`.
+Cada mudança feita pelo Claude nesta pasta vira commit e `git push`. O GitHub Pages republica sozinho em 1–2 minutos.
+O artefato do Claude (https://claude.ai/artifact/WpSPHsJ2LF3L1vzi5UmKax) é publicado à parte, pelo próprio Claude.
 
-Limitação: a cada versão nova você repete o upload do `index.html`.
+## O que fica fora do repositório
 
-## Caminho B — durável, atualizações automáticas pelo Claude
+`.gitignore` exclui exports do Apple Saúde, protocolos, PDFs, relatórios de QA e o contexto do projeto.
 
-1. Instale o GitHub CLI: https://cli.github.com (pacote .pkg para macOS).
-2. No Terminal: `gh auth login` → GitHub.com → HTTPS → Login with a web browser.
-3. Avise o Claude. Ele cria o repositório público, faz o push, liga o Pages e, daí em diante, cada versão nova vai para o endereço público com um commit.
+## Diferenças da versão pública
 
-## O que muda fora do Claude
-
-- Dados ficam no navegador de cada aparelho (modo local). Backup/restauração em Ajustes.
+- Modo local: dados no navegador de cada aparelho. Backup e restauração em Ajustes.
 - Leitura de PDF/foto por IA não funciona (precisa de backend com chave própria).
-- Instalação na tela inicial do iPhone: Safari → Compartilhar → Adicionar à Tela de Início.
+- No iPhone: Safari → Compartilhar → Adicionar à Tela de Início.

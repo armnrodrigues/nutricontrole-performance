@@ -4,6 +4,7 @@ Plataforma pessoal de treino, nutrição, peso, bioimpedância, exames laborator
 
 ## Como usar
 
+- Versão publicada: https://armnrodrigues.github.io/nutricontrole-performance/
 - Abra `index.html` por qualquer servidor estático (GitHub Pages, Netlify, `python3 -m http.server`).
 - Fora do Claude a plataforma roda em **modo local**: os dados ficam no `localStorage` do navegador. Use Ajustes → Backup para exportar e importar entre aparelhos.
 - Dentro do artefato do Claude ela sincroniza na nuvem e lê PDFs e fotos por IA.
