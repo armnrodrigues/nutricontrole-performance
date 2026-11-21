@@ -885,7 +885,7 @@ html[data-layout="painel"] .dayhero{background:linear-gradient(160deg,var(--surf
     </div>
     <div class="card">
       <div class="card-h"><h3>Dados</h3><span class="mini" id="dataStats"></span></div>
-      <p class="mini" id="appVersion" style="margin-bottom:10px">Versão 39 · 21/11/2026</p><p class="mini" id="lastAiErr" hidden style="margin-bottom:10px"></p>
+      <p class="mini" id="appVersion" style="margin-bottom:10px">Versão 40 · 21/11/2026</p><p class="mini" id="lastAiErr" hidden style="margin-bottom:10px"></p>
       <div class="row">
         <button class="btn sm" onclick="A.exportAll()">Exportar backup (JSON)</button>
         <button class="btn sm" onclick="A.exportCSV()">Exportar diário (CSV)</button>
@@ -2120,7 +2120,7 @@ function mergeLabResults(parts){const r=Object.assign({},parts[0]||{});r.markers
 function busy(id,on,msg){const el=document.getElementById(id);if(!el)return;el.innerHTML=on?`<span class="spin"></span> ${esc(msg||'Analisando…')}`:(msg?esc(msg):'');}
 async function uploadAsset(blob){try{const as=await window.claude?.use?.('assets');if(!as)return null;const r=await as.upload(blob);return r.id;}catch(e){return null;}}
 function dlFallback(name,text){try{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type:/\.json$/i.test(name)?'application/json':'text/csv;charset=utf-8'}));a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},2000);toast('Arquivo salvo: '+name);return;}catch(e){}openSheet('Copiar conteúdo',`<p class="mini">O download não está disponível nesta visualização. Copie o texto abaixo e salve como <code>${esc(name)}</code>.</p><textarea style="min-height:50vh;font-family:ui-monospace,monospace;font-size:12px">${esc(text)}</textarea>`);}
-async function download(name,data){try{const dl=await window.claude?.use?.('downloads');if(!dl){dlFallback(name,typeof data==='string'?data:'');return;}await dl.save({filename:name,data});toast('Arquivo salvo');}catch(e){if(e.code!=='declined')toast('Download: '+(e.message||e.code));}}
+async function download(name,data){try{const dl=await dlNS();if(!dl){dlFallback(name,typeof data==='string'?data:'');return;}await offerFile(name,data);}catch(e){toast('Download: '+(e.message||e.code||e));}}
 
 const A={
   goAlert(tab,sub){showTab(tab);if(tab==='saude'&&sub)showSaude(sub);},
@@ -2517,7 +2517,7 @@ Object.assign(A,{
     try{REP.data=reportData(from,to,REP);REP.html=reportHTML(REP.data,REP);REP.text=reportText(REP.data,REP);}catch(e){console.error(e);toast('Falha ao montar o relatório: '+(e.message||e));return;}
     $('#repBody').innerHTML=REP.html;$('#report').hidden=false;document.body.style.overflow='hidden';$('#report').scrollTop=0;},
   closeReport(){$('#report').hidden=true;document.body.style.overflow='';},
-  printReport(){try{window.print();}catch(e){toast('Impressão indisponível aqui: use "Baixar PDF"');}},
+  async printReport(){const dl=DL_READY||await dlNS();if(!dl){try{window.print();return;}catch(e){}}if(!REP)return;toast('Gerando PDF para imprimir…',4000);try{const blob=await reportPdfBlob();await downloadBlob(`relatorio-executivo_${(REP.num||'').replace('/','-')}_${REP.from}_${REP.to}.pdf`,blob,{title:'Imprimir relatório',btn:'Imprimir ou compartilhar',note:'Na folha que abrir, toque em Imprimir. Também dá para salvar em Arquivos ou enviar.'});}catch(e){console.error(e);toast('PDF: '+(e.message||e),4000);}},
   async downloadReport(){if(!REP)return;const name=`relatorio-executivo_${REP.from}_${REP.to}.html`;const doc=`<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Relatório executivo · ${esc(REP.from)} a ${esc(REP.to)}</title><style>body{margin:0;background:#fff}${REP_CSS}</style></head><body>${REP.html}</body></html>`;await download(name,doc);},
   async copyReportText(){if(!REP)return;try{await navigator.clipboard.writeText(REP.text);toast('Resumo copiado · cole no WhatsApp');}catch(e){openSheet('Resumo para WhatsApp',`<p class="mini">Selecione e copie:</p><textarea style="min-height:40vh">${esc(REP.text)}</textarea>`);}},
   editParsedEx(i){const r=TR.adh.rows[i];const ex=TR.parsed.exercises.find(e=>(e.protoName||e.name)===r.name)||TR.parsed.exercises.find(e=>e.name===r.name);
@@ -2758,8 +2758,22 @@ function reportPDF(d,o){
     footer:(cur,tot)=>({columns:[{text:`Relatório nº ${o.num||'—'} · ${nome} · ${dtBR(d.from)} a ${dtBR(d.to)}`,style:'footer'},{text:`página ${cur} de ${tot}`,style:'footer',alignment:'right'}],margin:[40,18,40,0]}),
     pageBreakBefore:(node,following)=>(node.headlineLevel===1&&(following.length===0||(!!node.startPosition&&node.startPosition.top>660)))||(node.headlineLevel===2&&!!node.startPosition&&node.startPosition.top>540),
     defaultStyle:PDF_DEF,styles:PDF_STYLES};}
-async function downloadBlob(name,blob){try{const dl=await window.claude?.use?.('downloads');if(dl){try{await dl.save({filename:name,data:blob});toast('PDF salvo');return true;}catch(e){if(e&&e.code==='declined')return false;try{await dl.save({filename:name,data:new Uint8Array(await blobBuf(blob))});toast('PDF salvo');return true;}catch(e2){console.warn('downloads',e2);}}}}catch(e){}
-  const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;a.rel='noopener';document.body.appendChild(a);a.click();setTimeout(()=>{a.remove();URL.revokeObjectURL(url);},6000);toast('PDF gerado');return true;}
+let DL_NS;function dlNS(){if(DL_NS===undefined)DL_NS=(async()=>{try{return (await window.claude?.use?.('downloads'))||null;}catch(e){return null;}})();return DL_NS;}
+let DL_READY=null;dlNS().then(d=>{DL_READY=d;});
+const DL_ERR={declined:'',rate_limited:'Já existe uma janela de salvar aberta. Feche-a e toque de novo.',rejected_extension:'Formato de arquivo não aceito aqui.',extension_not_enabled:'Formato de arquivo não liberado nesta visualização.',too_large:'Arquivo grande demais para esta visualização.',bad_request:'O arquivo não pôde ser entregue.',unavailable:'Salvar não está disponível nesta visualização.',not_granted:'Permissão de salvar arquivos negada. Libere em Permissões do artefato.'};
+function dlMsg(e){const c=e&&e.code;if(c==='declined')return '';return (DL_ERR[c]||('Não foi possível salvar'+(c?' ('+c+')':'')))+(e&&e.message&&!DL_ERR[c]?': '+e.message:'');}
+function tapFresh(){const ua=navigator.userActivation;return !!(ua&&ua.isActive);}
+function fileSize(n){return n>=1048576?fmt(n/1048576,1)+' MB':Math.max(1,Math.round(n/1024))+' KB';}
+function blobOf(name,data){if(data instanceof Blob)return data;const t=/\.pdf$/i.test(name)?'application/pdf':/\.json$/i.test(name)?'application/json':/\.csv$/i.test(name)?'text/csv;charset=utf-8':/\.html$/i.test(name)?'text/html;charset=utf-8':'application/octet-stream';return new Blob([data],{type:t});}
+function hostSave(dl,name,blob){return dl.save({filename:name,data:blob}).then(()=>{toast(/\.pdf$/i.test(name)?'PDF entregue: escolha onde salvar ou com quem compartilhar':'Arquivo entregue');return true;});}
+function offerSheet(name,blob,o){o=o||{};const dl=DL_READY;const url=URL.createObjectURL(blob);
+  openSheet(o.title||'Arquivo pronto',`<p class="prose"><b>${esc(name)}</b> <span class="muted">· ${fileSize(blob.size||0)}</span></p>${o.note?`<div class="note" style="margin-top:8px">${esc(o.note)}</div>`:''}<div class="row" style="gap:8px;flex-wrap:wrap;margin-top:12px">${dl?`<button class="btn primary" id="offSave">${o.btn||'Salvar ou compartilhar'}</button>`:''}${dl?'':`<a class="btn primary" id="offOpen" href="${url}" download="${esc(name)}" target="_blank" rel="noopener">Baixar ou abrir</a>`}</div><p class="mini" style="margin-top:10px">${dl?'No iPhone abre a folha de compartilhar: Salvar em Arquivos, Imprimir, Mail, WhatsApp. No Mac o arquivo vai para Downloads.':'No iPhone o arquivo abre no visualizador: toque em compartilhar para salvar em Arquivos, imprimir ou enviar.'}</p><div id="offErr" class="note bad" hidden style="margin-top:8px"></div>`);
+  const b=$('#offSave');if(b)b.onclick=()=>{b.disabled=true;hostSave(dl,name,blob).then(()=>closeSheet(),e=>{b.disabled=false;const m=dlMsg(e);const el=$('#offErr');if(m&&el){el.hidden=false;el.textContent=m;}console.warn('downloads',e);try{aiLog(e);}catch(_){}});};
+  setTimeout(()=>{try{URL.revokeObjectURL(url);}catch(e){}},10*60*1000);}
+async function offerFile(name,data,o){const blob=blobOf(name,data);const dl=DL_READY||await dlNS();
+  if(dl&&tapFresh()&&!(o&&o.title)){try{return await hostSave(dl,name,blob);}catch(e){if(e&&e.code==='declined')return false;console.warn('downloads (toque expirado?)',e);}}
+  offerSheet(name,blob,o);return true;}
+async function downloadBlob(name,blob,o){return offerFile(name,blob,o);}
 async function repImages(d){const out={};for(const x of (d.sessions||[]))for(const e of x.ex)for(const m of e.media){if(m.type==='video'||out[m.id])continue;try{const r=await fetch('/_blob/'+m.id);if(!r.ok)continue;const b=await toJpeg(await r.blob(),360,true);const u=await blobToDataURL(b);if(/^data:image\/(jpeg|png);base64,/.test(u||''))out[m.id]=u;}catch(err){}}return out;}
 async function reportPdfBlob(){const pm=await ensurePdfMake();REP.imgs=await repImages(REP.data);const def=reportPDF(REP.data,REP);return await new Promise((res,rej)=>{try{pm.createPdf(def).getBlob(b=>res(b));}catch(e){rej(e);}});}
 Object.assign(A,{async downloadReportPDF(){if(!REP)return;const b=document.getElementById('repPdfBtn');if(b)b.disabled=true;toast('Gerando PDF…',4000);try{const blob=await reportPdfBlob();await downloadBlob(`relatorio-executivo_${(REP.num||'').replace('/','-')}_${REP.from}_${REP.to}.pdf`,blob);}catch(e){console.error(e);toast('PDF: '+(e.message||e),4000);}finally{if(b)b.disabled=false;}}});
