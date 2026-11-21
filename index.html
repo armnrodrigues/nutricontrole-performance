@@ -885,7 +885,7 @@ html[data-layout="painel"] .dayhero{background:linear-gradient(160deg,var(--surf
     </div>
     <div class="card">
       <div class="card-h"><h3>Dados</h3><span class="mini" id="dataStats"></span></div>
-      <p class="mini" id="appVersion" style="margin-bottom:10px">Versão 37 · 20/11/2026</p><p class="mini" id="lastAiErr" hidden style="margin-bottom:10px"></p>
+      <p class="mini" id="appVersion" style="margin-bottom:10px">Versão 38 · 21/11/2026</p><p class="mini" id="lastAiErr" hidden style="margin-bottom:10px"></p>
       <div class="row">
         <button class="btn sm" onclick="A.exportAll()">Exportar backup (JSON)</button>
         <button class="btn sm" onclick="A.exportCSV()">Exportar diário (CSV)</button>
@@ -1600,7 +1600,7 @@ async function readAnyFile(file,opts={}){
 
 /* ============================================================ IA */
 const AI_COPY={not_granted:'Você não permitiu que esta página use o Claude. Libere em Permissões do artefato.',sampling_disabled:'O Claude não está disponível nesta conta.',rate_limited:'Muitas chamadas seguidas — aguarde um pouco e tente de novo.',images_unavailable:'Esta visualização não aceita imagens; envie como texto.',image_rejected:'Imagem recusada (tipo ou tamanho). Tire a foto de novo, mais perto da tabela, ou envie como captura de tela.',refused:'O Claude não conseguiu responder a este conteúdo.',invalid_json:'A resposta veio fora do formato esperado. Tente novamente ou simplifique.',prompt_too_large:'Conteúdo grande demais; envie menos páginas ou um trecho.',cancelled:'Cancelado.',session_expired:'Sessão expirada — entre novamente no Claude.'};
-function aiErr(e){if(!e)return 'Erro desconhecido';return AI_COPY[e.code]||('Falha na IA: '+(e.message||e.code||e));}
+function aiErr(e){if(!e)return 'Erro desconhecido';if(e.code==='image_decode')return e.message;return AI_COPY[e.code]||('Falha na IA: '+(e.message||e.code||e));}
 async function labelAI(images,typed){const r=await aiJSON(`As fotos mostram a embalagem de um alimento com a TABELA NUTRICIONAL. A tabela pode ter VÁRIAS colunas de valores (ex.: "100 g", "porção de 30 g", "100 mL", "pó", "preparado com leite 200 mL"). Devolva CADA coluna de quantidade em "columns", na ordem da tabela, ignorando a coluna de %VD. Para cada coluna informe a quantidade de referência, a unidade (g para sólidos e pós, mL para líquidos e preparados) e os valores DESSA coluna exatamente como impressos, sem converter para 100. Se a coluna for "porção" sem número no cabeçalho, use a porção indicada no rótulo. Informe também as medidas caseiras citadas. Valores ilegíveis = null. Números com ponto decimal, sem unidades. ${JSON_ONLY}\nFormato: {"name":"nome do produto","brand":"marca|null","columns":[{"label":"cabeçalho da coluna como no rótulo","amount":número,"unit":"g|mL","k":kcal,"p":g,"c":g,"f":g,"fib":g|null,"sod":mg|null}],"units":[{"n":"scoop|fatia|copo|colher|unidade","amount":número,"unit":"g|mL"}],"confidence":"alta|média|baixa"}${typed?'\nNome informado pelo usuário: '+typed:''}`,{images});
   const N=v=>{const x=numLoose(v);return x!=null&&isFinite(x)&&x>=0?x:null;};const keys=['k','p','c','f','fib','sod'];const U=v=>/ml/i.test(String(v||''))?'mL':'g';
   const mk=(label,amt,unit,src)=>{const per={};keys.forEach(k=>{const v=N(src&&src[k]);per[k]=v!=null&&amt>0?Math.round(v*100/amt*10)/10:null;});return {label:String(label||'').trim()||(fmt(amt)+' '+unit),amount:amt,unit,per};};
@@ -2108,7 +2108,7 @@ function renderConfig(){const s=settings();{const le=$('#lastAiErr');try{const x
 /* ============================================================ AÇÕES */
 function parseSetsText(txt){ // "10x85 / 10x90 F / 8x95F" ou "10x85kg, 10x90"
   return String(txt||'').split(/[\/,;\n]+/).map(s=>s.trim()).filter(Boolean).map(s=>{const m=s.match(/(\d+)\s*[x×]\s*([\d.,]+)?\s*(kg)?\s*(f|falha)?/i);if(!m)return null;return {reps:parseInt(m[1]),kg:m[2]?numLoose(m[2]):null,fail:!!m[4]};}).filter(Boolean);}
-function filesToImages(files){return Array.from(files||[]).filter(f=>(f.type||'').startsWith('image/')||/\.(heic|heif|jpe?g|png|webp|gif)$/i.test(f.name||''));}
+function filesToImages(files){return Array.from(files||[]).filter(isImgFile);}
 async function ingestFiles(files,opts){let text='',images=[],pageTexts=[];for(const f of Array.from(files||[])){const r=await readAnyFile(f,opts);if(r.text)text+=(text?'\n\n':'')+`[${f.name}]\n`+r.text;if(r.images)images=images.concat(r.images);if(r.pageTexts)pageTexts=pageTexts.concat(r.pageTexts);else if(r.text)pageTexts.push(r.text);}return {text,images,pageTexts};}
 /* agrupa páginas em blocos de até `max` caracteres, sem partir página */
 function textChunks(pageTexts,max){const out=[];let cur='';const pages=[];(pageTexts||[]).forEach(t=>{if(!t)return;while(t.length>max){let cut=t.lastIndexOf('\n',max);if(cut<max*0.5)cut=t.lastIndexOf(' ',max);if(cut<max*0.5)cut=max;pages.push(t.slice(0,cut));t=t.slice(cut).trim();}pages.push(t);});pages.forEach(t=>{if(!t)return;if(cur&&(cur.length+t.length)>max){out.push(cur);cur='';}cur+=(cur?'\n':'')+t;});if(cur)out.push(cur);return out;}
@@ -2142,7 +2142,7 @@ const A={
   updConv(n){const f=AC[n]&&AC[n].picked;const el=$('#conv'+n);if(!f||!el)return;const q=parseFloat($('#qt'+n).value)||0;const me=$('#me'+n);const g=parseFloat(me.value)||1;const grams=q*g;const bu=f.base==='ml'?'mL':'g';const e=entryFrom(f,grams||0,null);
     el.innerHTML=grams>0?`<b>${fmt(q,q%1?1:0)} ${g===1?bu:esc(me.selectedOptions[0].textContent.split(' (')[0])}${g!==1?' = '+fmt(grams)+' '+bu:''}</b> → <b>${fmt(e.k)} kcal</b> · P ${fmt(e.p)} · C ${fmt(e.c)} · G ${fmt(e.f)}${grams>1500?' <span style="color:var(--bad-text)">· quantidade muito alta, confira</span>':''}`:`${esc(f.n)}: ${fmt(f.k)} kcal · P ${fmt(f.p)} · C ${fmt(f.c)} · G ${fmt(f.f)} por 100 g — <b>informe a quantidade</b>${(f.u||[]).length?' (ou escolha uma medida: '+f.u.map(u=>esc(u.n)).join(', ')+')':''}`;},
   addEntry(n,auto){const inp=$('#ac'+n);if(!inp)return;const name=(inp.value||'').trim();if(!name){if(auto||(AC[n]||{}).justAdded)return;toast('Digite e escolha um alimento');inp.focus();return;}
-    let food=AC[n]&&AC[n].picked;if(!food||norm(food.n)!==norm(name)){const r=searchFoods(name,5);if(!r.length){toast(auto?`"${name}" não foi salvo: alimento não encontrado`:'Alimento não encontrado: escolha na lista, cadastre pelo rótulo ou use "Lançar por foto ou texto"');return;}
+    let food=AC[n]&&AC[n].picked;if(!food||norm(food.n)!==norm(name)){const r=searchFoods(name,5);if(!r.length){toast(auto?`"${name}" não foi salvo: alimento não encontrado`:'Alimento não encontrado: escolha na lista, cadastre pelo rótulo ou use "Registrar refeição por foto ou texto"');return;}
       // sem escolha explícita: só aceita quando o 1º resultado começa pelo que foi digitado; senão reabre a lista para escolher
       const exact=r.find(x=>norm(x.n)===norm(name));if(auto&&!(r.length===1||exact)){toast(`"${name}" não foi salvo: escolha o alimento na lista`,4000);return;}if(exact)food=exact;else if(r.length===1||norm(r[0].n).startsWith(norm(name)))food=r[0];else{if(auto){toast(`"${name}" não foi salvo: escolha o alimento na lista`,4000);return;}A.acInput(n);toast('Escolha o alimento na lista');inp.focus();return;}
       AC[n]=Object.assign(AC[n]||{},{picked:food});}
@@ -2171,12 +2171,12 @@ const A={
       if(r.length&&exSim(r[0].n,it.food)>=.4){if(have.includes(norm(r[0].n))){skipped++;return;} /* já lançado nesta refeição: não duplica */ (d.meals[n]=d.meals[n]||[]).push(entryFrom(r[0],(it.qty||100)*unitG,it.unit&&it.unit!=='g'?`${it.qty} ${it.unit}`:null));}
       else pend.push(`${it.qty||''} ${it.unit||'g'} de ${it.food}`);});
     saveDay(CUR,d);renderMeals.open[n]=true;renderAll();if(pend.length)A.openFoodAI(n,pend.join('; '));else toast(skipped?`Refeição completada conforme o plano (${skipped} já lançado${skipped>1?'s':''})`:'Refeição lançada conforme o plano');},
-  openFoodAI(n,prefill){const defs=mealDefs();openSheet('Lançar por foto ou texto',`
+  openFoodAI(n,prefill){const defs=mealDefs();openSheet('Registrar refeição por foto ou texto',`
     <label class="f" style="margin-top:10px"><span>Refeição</span><select id="faMeal">${defs.map(m=>`<option value="${m.n}" ${m.n===n?'selected':''}>${esc(m.name)}</option>`).join('')}</select></label>
     <label class="f" style="margin-top:10px"><span>Texto</span><textarea id="faText" placeholder="Ex.: 150 g de frango grelhado, 1 concha de arroz integral, salada à vontade, 1 scoop de whey">${esc(prefill||'')}</textarea></label>
     <label class="drop" style="margin-top:10px"><input hidden type="file" id="faFiles" accept="image/*" multiple onchange="A.previewFiles('faFiles','faThumbs')"><span>Tirar foto ou escolher da fototeca</span></label><div class="thumbs" id="faThumbs" style="margin-top:8px"></div>
     <div class="row" style="margin-top:12px"><button class="btn accent ai" id="faGo" onclick="A.analyzeFood()">Analisar</button><span class="mini" id="faStatus"></span></div><div id="faResult" style="margin-top:12px"></div>`);},
-  previewFiles(inputId,thumbsId){const inp=document.getElementById(inputId);const box=document.getElementById(thumbsId);box.innerHTML='';filesToImages(inp.files).forEach(async f=>{const img=document.createElement('img');img.src=await blobToDataURL(f);box.appendChild(img);});if(inp.files.length&&!filesToImages(inp.files).length)box.innerHTML=`<span class="chip">${Array.from(inp.files).map(f=>esc(f.name)).join(', ')}</span>`;},
+  previewFiles(inputId,thumbsId){const inp=document.getElementById(inputId);const box=document.getElementById(thumbsId);box.innerHTML='';filesToImages(inp.files).forEach(async f=>{const img=document.createElement('img');try{img.src=await blobToDataURL(await toJpeg(f,400,true));box.appendChild(img);}catch(e){const c=document.createElement('span');c.className='chip warn';c.textContent=(f.name||'foto')+': não abriu';box.appendChild(c);toast(e.message||'Foto não abriu',7000);}});if(inp.files.length&&!filesToImages(inp.files).length)box.innerHTML=`<span class="chip">${Array.from(inp.files).map(f=>esc(f.name)).join(', ')}</span>`;},
   async analyzeFood(){const text=$('#faText').value.trim();const images=filesToImages($('#faFiles').files);if(!text&&!images.length){toast('Escreva algo ou anexe uma foto');return;}$('#faGo').disabled=true;busy('faStatus',true,'Identificando alimentos…');
     try{const r=await aiJSON(promptFood(text,images.length>0,CUR),{images});const items=(r&&r.items)||[];if(r&&r.meal&&!$('#faMeal').dataset.touched)$('#faMeal').value=String(r.meal);
       if(!$('#faResult'))return;$('#faResult').innerHTML=items.length?`<div class="tbl-wrap"><table><thead><tr><th></th><th>Item</th><th class="num">g</th><th class="num">kcal</th><th class="num">P</th><th class="num">C</th><th class="num">G</th><th>fonte</th></tr></thead><tbody>${items.map((it,i)=>`<tr><td><input type="checkbox" checked data-i="${i}" style="width:18px;min-height:18px"></td><td class="wrap"><input value="${esc(it.name)}" data-f="name" data-i="${i}" style="min-height:32px;padding:4px 8px;min-width:140px"></td><td class="num"><input type="number" value="${esc(it.grams??'')}" data-f="grams" data-i="${i}" style="width:70px;min-height:32px;padding:4px 6px"></td><td class="num"><input type="number" value="${Math.round(it.kcal||0)}" data-f="kcal" data-i="${i}" style="width:70px;min-height:32px;padding:4px 6px"></td><td class="num"><input type="number" step="0.1" value="${esc(it.p??0)}" data-f="p" data-i="${i}" style="width:62px;min-height:32px;padding:4px 6px"></td><td class="num"><input type="number" step="0.1" value="${esc(it.c??0)}" data-f="c" data-i="${i}" style="width:62px;min-height:32px;padding:4px 6px"></td><td class="num"><input type="number" step="0.1" value="${esc(it.f??0)}" data-f="f" data-i="${i}" style="width:62px;min-height:32px;padding:4px 6px"></td><td><span class="pill src-IA">${esc(it.source||'IA')}</span><br><small class="muted">${esc(it.confidence||'')}</small></td></tr>`).join('')}</tbody></table></div><div class="row end" style="margin-top:10px"><button class="btn primary" onclick="A.saveFoodAI()">Adicionar à refeição</button></div>`:'<div class="empty">Nenhum alimento identificado.</div>';
@@ -2227,7 +2227,7 @@ const A={
   async exMediaAdd(ei,input){const files=Array.from(input.files||[]);input.value='';const e=TR.parsed&&TR.parsed.exercises[ei];if(!e||!files.length)return;
     const as=await window.claude?.use?.('assets');if(!as){toast('Foto e vídeo só podem ser anexados pelo artefato no app do Claude',5000);return;}
     const key=TR.parsedKey,exName=e.protoName||e.name;TR.uploading=(TR.uploading||0)+1;try{
-    for(const f of files){const isV=(f.type||'').startsWith('video/')||/\.(mov|mp4|m4v|webm)$/i.test(f.name||'');let blob=isV?f:await toJpeg(f,1600);
+    for(const f of files){const isV=(f.type||'').startsWith('video/')||/\.(mov|mp4|m4v|webm)$/i.test(f.name||'');let blob;try{blob=isV?f:await toJpeg(f,1600,!/^image\/(jpeg|png|webp|gif)$/i.test(f.type||''));}catch(err){toast(err.message||'Foto não abriu',8000);continue;}
       if(blob.size>20*1024*1024){toast(`Arquivo de ${fmt(blob.size/1048576,0)} MB: o limite é 20 MB. Grave mais curto ou em resolução menor (Ajustes do iPhone › Câmera › Gravar vídeo › 720p).`,7000);continue;}
       toast(isV?'Enviando vídeo…':'Enviando foto…',20000);
       try{const r=await as.upload(blob);const item={id:r.id,type:isV?'video':'image',name:f.name||'',at:new Date().toISOString()};
@@ -2770,7 +2770,7 @@ function importSheetOpen(kind){return !$('#sheet').hidden&&!!$('#imResult')&&$('
 function jobBar(){let b=$('#jobBar');if(!b){b=document.createElement('div');b.id='jobBar';b.hidden=true;b.innerHTML='<span class="spin"></span><span id="jobTxt"></span><button class="btn xs primary" id="jobBtn" hidden></button>';document.body.appendChild(b);}return b;}
 function jobShow(txt,btn,fn){const b=jobBar();b.hidden=false;b.classList.toggle('done',!!btn);$('#jobTxt').textContent=txt;const bt=$('#jobBtn');bt.hidden=!btn;bt.textContent=btn||'';bt.onclick=fn||null;}
 function jobHide(){const b=$('#jobBar');if(b)b.hidden=true;}
-const AI_FATAL=['not_granted','sampling_disabled','refused','prompt_too_large','image_rejected','images_unavailable','unavailable','invalid_json'];
+const AI_FATAL=['image_decode','not_granted','sampling_disabled','refused','prompt_too_large','image_rejected','images_unavailable','unavailable','invalid_json'];
 function whenVisible(){return document.hidden?new Promise(r=>{const h=()=>{if(!document.hidden){document.removeEventListener('visibilitychange',h);r();}};document.addEventListener('visibilitychange',h);}):Promise.resolve();}
 async function withRetry(fn,st){let n=0;for(;;){try{return await fn();}catch(e){n++;if(n>3||AI_FATAL.includes(e&&e.code))throw e;if(st)st(`Conexão falhou (${aiErr(e)}). Tentando de novo (${n}/3)…`);await whenVisible();await new Promise(r=>setTimeout(r,1500*n));}}}
 
@@ -2807,11 +2807,24 @@ function wkMergePlan(exs,wk){const pw=protoWorkout(wk);if(!pw)return exs;const o
   pw.exercises.forEach(pe=>{const i=exs.findIndex((e,k)=>!used.has(k)&&(norm(e.protoName||e.name)===norm(pe.name)||norm(e.name)===norm(pe.name)));if(i>=0){used.add(i);out.push(exs[i]);}else out.push({name:pe.name,sets:[],note:null});});
   exs.forEach((e,k)=>{if(!used.has(k))out.push(e);});return out;}
 /* ============================================================ IMAGENS: converte para JPEG (HEIC do iPhone, fotos grandes) */
+/* Decodifica qualquer foto que o aparelho saiba abrir (HEIC/HEIF do iPhone, JPEG, PNG, WebP), já na orientação certa */
+async function decodeImage(f){
+  if(window.createImageBitmap){try{const bm=await createImageBitmap(f,{imageOrientation:'from-image'});if(bm&&bm.width)return {src:bm,w:bm.width,h:bm.height,done:()=>{try{bm.close();}catch(e){}}};}catch(e){}}
+  const url=URL.createObjectURL(f);const img=new Image();img.decoding='async';
+  try{await new Promise((res,rej)=>{img.onload=res;img.onerror=()=>rej(new Error('decode'));img.src=url;});if(img.decode){try{await img.decode();}catch(e){}}
+    if(img.naturalWidth)return {src:img,w:img.naturalWidth,h:img.naturalHeight,done:()=>URL.revokeObjectURL(url)};}catch(e){}
+  URL.revokeObjectURL(url);return null;}
+function isImgFile(f){return /^image\//i.test(f&&f.type||'')||/\.(heic|heif|jpe?g|png|webp|gif|avif|tiff?|dng)$/i.test(f&&f.name||'');}
+/* Converte para JPEG: HEIC do iPhone, foto grande ou tipo não aceito. Se a foto não abrir, avisa em vez de mandar um arquivo que vai falhar. */
 async function toJpeg(f,max=2000,force=false){if(!f)return f;const okType=/^image\/(jpeg|png|webp|gif)$/i.test(f.type||'');if(okType&&f.size<4e6&&!force)return f;
-  try{const url=URL.createObjectURL(f);const img=new Image();await new Promise((res,rej)=>{img.onload=res;img.onerror=()=>rej(new Error('decode'));img.src=url;});
-    const w=img.naturalWidth,h=img.naturalHeight;if(!w||!h){URL.revokeObjectURL(url);return f;}const sc=Math.min(1,max/Math.max(w,h));const cv=document.createElement('canvas');cv.width=Math.max(1,Math.round(w*sc));cv.height=Math.max(1,Math.round(h*sc));
-    const cx=cv.getContext('2d');cx.fillStyle='#fff';cx.fillRect(0,0,cv.width,cv.height);cx.drawImage(img,0,0,cv.width,cv.height);URL.revokeObjectURL(url);
-    const b=await new Promise(r=>cv.toBlob(r,'image/jpeg',.88));return b||f;}catch(e){return f;}}
+  const dec=await decodeImage(f);
+  if(!dec){if(okType)return f;throw {code:'image_decode',message:`Não consegui abrir esta foto (${(f.type||(f.name||'').split('.').pop()||'formato desconhecido').replace('image/','').toUpperCase()}). Tente de novo escolhendo a foto pela opção "Fototeca", ou mude em Ajustes do iPhone › Câmera › Formatos › Mais Compatível.`};}
+  try{for(const lim of [max,1400,1000]){const sc=Math.min(1,lim/Math.max(dec.w,dec.h));const cv=document.createElement('canvas');cv.width=Math.max(1,Math.round(dec.w*sc));cv.height=Math.max(1,Math.round(dec.h*sc));
+      const cx=cv.getContext('2d');cx.fillStyle='#fff';cx.fillRect(0,0,cv.width,cv.height);cx.drawImage(dec.src,0,0,cv.width,cv.height);
+      const out=await new Promise(r=>{try{cv.toBlob(r,'image/jpeg',.88);}catch(e){r(null);}});cv.width=cv.height=0;
+      if(out&&out.size>0)return new File([out],(f.name||'foto').replace(/\.[^.]+$/,'')+'.jpg',{type:'image/jpeg'});}}
+  finally{dec.done();}
+  if(okType)return f;throw {code:'image_decode',message:'A foto é grande demais para converter neste aparelho. Envie uma captura de tela dela.'};}
 
 
 /* ============================================================ TECLADO: tocar fora de um campo recolhe o teclado no iPhone */
