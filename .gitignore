@@ -10,3 +10,5 @@ pdf2png.js
 qa2_*.md
 cloudflare/.dev.vars
 *.mobileconfig
+qa3_*.md
+prototipo_*.pdf
