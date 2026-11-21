@@ -12,3 +12,4 @@ cloudflare/.dev.vars
 *.mobileconfig
 qa3_*.md
 prototipo_*.pdf
+qa/
