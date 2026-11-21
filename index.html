@@ -885,7 +885,7 @@ html[data-layout="painel"] .dayhero{background:linear-gradient(160deg,var(--surf
     </div>
     <div class="card">
       <div class="card-h"><h3>Dados</h3><span class="mini" id="dataStats"></span></div>
-      <p class="mini" id="appVersion" style="margin-bottom:10px">Versão 38 · 21/11/2026</p><p class="mini" id="lastAiErr" hidden style="margin-bottom:10px"></p>
+      <p class="mini" id="appVersion" style="margin-bottom:10px">Versão 39 · 21/11/2026</p><p class="mini" id="lastAiErr" hidden style="margin-bottom:10px"></p>
       <div class="row">
         <button class="btn sm" onclick="A.exportAll()">Exportar backup (JSON)</button>
         <button class="btn sm" onclick="A.exportCSV()">Exportar diário (CSV)</button>
@@ -1126,7 +1126,10 @@ function numLoose(v){if(v==null||v==='')return null;if(typeof v==='number')retur
 function linreg(xs,ys){const n=xs.length;if(n<2)return null;const mx=xs.reduce((a,b)=>a+b,0)/n,my=ys.reduce((a,b)=>a+b,0)/n;let sxy=0,sxx=0;for(let i=0;i<n;i++){sxy+=(xs[i]-mx)*(ys[i]-my);sxx+=(xs[i]-mx)**2;}const b=sxx?sxy/sxx:0;return {a:my-b*mx,b};}
 function cssVar(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim();}
 function loadScript(url){return new Promise((res,rej)=>{if(document.querySelector(`script[src="${url}"]`))return res();const s=document.createElement('script');s.src=url;s.onload=res;s.onerror=()=>rej(new Error('Falha ao carregar '+url));document.head.appendChild(s);});}
-function blobToDataURL(b){return new Promise(r=>{const fr=new FileReader();fr.onload=()=>r(fr.result);fr.readAsDataURL(b);});}
+/* Leitura de arquivos sem FileReader (o app do Claude no iPhone não oferece FileReader dentro da página) */
+async function blobBuf(b){if(b&&b.arrayBuffer)return await b.arrayBuffer();return await new Response(b).arrayBuffer();}
+async function blobText(b){if(b&&b.text)return await b.text();return await new Response(b).text();}
+async function blobToDataURL(b){const u8=new Uint8Array(await blobBuf(b));let s='';for(let i=0;i<u8.length;i+=0x8000)s+=String.fromCharCode.apply(null,u8.subarray(i,i+0x8000));return 'data:'+((b&&b.type)||'application/octet-stream')+';base64,'+btoa(s);}
 
 /* ============================================================ ESTADO */
 const S={days:{},workouts:{},exams:{},labs:{},meds:{},meddoses:{},clinical:{},foods:{},protoHist:{},rx:{},settings:null,protoN:null,protoT:null};
@@ -1575,7 +1578,7 @@ async function readAnyFile(file,opts={}){
   if(type==='application/pdf'||ext==='pdf'){
     await loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js');
     pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-    const pdf=await pdfjsLib.getDocument({data:await file.arrayBuffer()}).promise;let text='';const images=[],pageTexts=[];const maxP=Math.min(pdf.numPages,opts.maxPages||8);
+    const pdf=await pdfjsLib.getDocument({data:await blobBuf(file)}).promise;let text='';const images=[],pageTexts=[];const maxP=Math.min(pdf.numPages,opts.maxPages||8);
     for(let i=1;i<=maxP;i++){const pg=await pdf.getPage(i);const tc=await pg.getTextContent();const t=tc.items.map(x=>x.str).join(' ').replace(/[ \t]+/g,' ').trim();pageTexts.push(t);text+=t+'\n';}
     const doRender=opts.render!==false&&(opts.renderIfTextBelow==null||text.trim().length<opts.renderIfTextBelow);
     if(doRender){const maxI=Math.min(maxP,opts.maxImages||maxP);for(let i=1;i<=maxI;i++){const pg=await pdf.getPage(i);const vp=pg.getViewport({scale:1.6});const cv=document.createElement('canvas');cv.width=vp.width;cv.height=vp.height;await pg.render({canvasContext:cv.getContext('2d'),viewport:vp}).promise;images.push(await new Promise(r=>cv.toBlob(r,'image/jpeg',.85)));}}
@@ -1583,18 +1586,18 @@ async function readAnyFile(file,opts={}){
   }
   if(['xlsx','xls','csv','ods'].includes(ext)){
     await loadScript('https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js');
-    const wb=XLSX.read(await file.arrayBuffer(),{type:'array'});let text='';wb.SheetNames.forEach(sn=>{text+=`### Planilha: ${sn}\n`+XLSX.utils.sheet_to_csv(wb.Sheets[sn])+'\n';});
+    const wb=XLSX.read(await blobBuf(file),{type:'array'});let text='';wb.SheetNames.forEach(sn=>{text+=`### Planilha: ${sn}\n`+XLSX.utils.sheet_to_csv(wb.Sheets[sn])+'\n';});
     return {kind:'sheet',text:text.slice(0,120000)};
   }
   if(ext==='docx'||ext==='pptx'){
     await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js');
-    const z=await JSZip.loadAsync(await file.arrayBuffer());let text='';
+    const z=await JSZip.loadAsync(await blobBuf(file));let text='';
     const files=Object.keys(z.files).filter(f=>/word\/document\.xml|ppt\/slides\/slide\d+\.xml/.test(f)).sort();
     for(const f of files){const x=await z.file(f).async('string');text+=x.replace(/<\/w:p>|<\/a:p>/g,'\n').replace(/<[^>]+>/g,'').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>')+'\n';}
     return {kind:'doc',text:text.replace(/\n{3,}/g,'\n\n').trim()};
   }
   // texto / json / md / html / desconhecido
-  const txt=await file.text();if(/[\x00-\x08]/.test(txt.slice(0,2000)))throw new Error('Formato binário não reconhecido ('+ext+'). Envie como PDF, imagem, Word, Excel ou texto.');
+  const txt=await blobText(file);if(/[\x00-\x08]/.test(txt.slice(0,2000)))throw new Error('Formato binário não reconhecido ('+ext+'). Envie como PDF, imagem, Word, Excel ou texto.');
   return {kind:'text',text:txt.replace(/<[^>]+>/g,' ').slice(0,150000)};
 }
 
@@ -2414,7 +2417,7 @@ const A={
   saveConfig(quiet){const s=settings();s.profile={nome:$('#cfNome').value.trim(),treinador:$('#cfCoach').value.trim(),altura:numLoose($('#cfAltura').value),idade:numLoose($('#cfIdade').value)};s.tmbMode=$('#cfTmbMode').value;s.tmbFixo=numLoose($('#cfTmbFixo').value);s.expMode=$('#cfExpMode').value;s.proteinPerKg=numLoose($('#cfProtKg').value);s.waterGoal=numLoose($('#cfWater').value)||5000;s.fiberGoal=numLoose($('#cfFiber').value)||30;s.sodiumGoal=numLoose($('#cfSodium').value)||2300;s.protocolStart=$('#cfStart').value||null;s.protocolStartWeight=numLoose($('#cfStartW').value);s.theme=$('#cfTheme').value;applyTheme(s.theme);Store.set('settings/main',s);renderAll();if(!quiet)toast('Configurações salvas');},
   exportAll(){const out={app:'NutriControle Performance',version:1,exportedAt:new Date().toISOString(),settings:S.settings,protocol:{nutrition:S.protoN,training:S.protoT},days:S.days,workouts:S.workouts,exams:S.exams,labs:S.labs,meds:S.meds,meddoses:S.meddoses,clinical:S.clinical,foods:S.foods,protocol_history:S.protoHist,prescriptions:S.rx};download(`ncperf_backup_${todayISO()}.json`,JSON.stringify(out,null,1));},
   exportCSV(){const rows=[['data','tipo','kcal','meta_kcal','prot','carb','gord','fibra','sodio','gasto','saldo','peso','agua','treino','musc_min','cardio_min','ativas_apple','passos']];Object.keys(S.days).sort().forEach(d=>{const t=dayTotals(d),e=energy(d),s=sessionOf(d),m=metaFor(d);rows.push([d,m.label,t.k.toFixed(0),m.k,t.p.toFixed(0),t.c.toFixed(0),t.f.toFixed(0),t.fib.toFixed(0),t.sod.toFixed(0),e.expend.toFixed(0),e.net.toFixed(0),S.days[d].weight??'',S.days[d].water??'',s.wk||'',s.trainMin??'',s.cardioMin??'',s.activeKcal??'',s.steps??'']);});download(`ncperf_diario_${todayISO()}.csv`,rows.map(r=>r.join(';')).join('\n'));},
-  async importBackup(file){if(!file)return;let d;try{d=JSON.parse(await file.text());}catch(e){toast('Arquivo inválido');return;}
+  async importBackup(file){if(!file)return;let d;try{d=JSON.parse(await blobText(file));}catch(e){toast('Arquivo inválido');return;}
     if(d.app==='NutriControle Performance'){confirmInline('Restaurar este backup? Os registros do arquivo substituem os de mesma data/id.',async()=>{let c=0;for(const [col,key] of [['days','days'],['workouts','workouts'],['exams','exams'],['labs','labs'],['meds','meds'],['meddoses','meddoses'],['clinical','clinical'],['foods','foods'],['protocol_history','protocol_history'],['prescriptions','prescriptions']]){for(const [id,doc] of Object.entries(d[key]||{})){if(col==='exams'&&doc&&typeof doc==='object')Object.keys(doc).forEach(k=>{if(k!=='date'&&k!=='tipo'&&typeof doc[k]==='string')doc[k]=numLoose(doc[k]);});await Store.set(col+'/'+id,doc);c++;}}if(d.settings)await Store.set('settings/main',d.settings);if(d.protocol?.nutrition)await Store.set('protocol/nutrition',d.protocol.nutrition);if(d.protocol?.training)await Store.set('protocol/training',d.protocol.training);renderAll();toast(`${c} registros restaurados`);});return;}
     if(!d.days){toast('Formato não reconhecido');return;}
     // NutriControle antigo
@@ -2755,7 +2758,7 @@ function reportPDF(d,o){
     footer:(cur,tot)=>({columns:[{text:`Relatório nº ${o.num||'—'} · ${nome} · ${dtBR(d.from)} a ${dtBR(d.to)}`,style:'footer'},{text:`página ${cur} de ${tot}`,style:'footer',alignment:'right'}],margin:[40,18,40,0]}),
     pageBreakBefore:(node,following)=>(node.headlineLevel===1&&(following.length===0||(!!node.startPosition&&node.startPosition.top>660)))||(node.headlineLevel===2&&!!node.startPosition&&node.startPosition.top>540),
     defaultStyle:PDF_DEF,styles:PDF_STYLES};}
-async function downloadBlob(name,blob){try{const dl=await window.claude?.use?.('downloads');if(dl){try{await dl.save({filename:name,data:blob});toast('PDF salvo');return true;}catch(e){if(e&&e.code==='declined')return false;try{await dl.save({filename:name,data:new Uint8Array(await blob.arrayBuffer())});toast('PDF salvo');return true;}catch(e2){console.warn('downloads',e2);}}}}catch(e){}
+async function downloadBlob(name,blob){try{const dl=await window.claude?.use?.('downloads');if(dl){try{await dl.save({filename:name,data:blob});toast('PDF salvo');return true;}catch(e){if(e&&e.code==='declined')return false;try{await dl.save({filename:name,data:new Uint8Array(await blobBuf(blob))});toast('PDF salvo');return true;}catch(e2){console.warn('downloads',e2);}}}}catch(e){}
   const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;a.rel='noopener';document.body.appendChild(a);a.click();setTimeout(()=>{a.remove();URL.revokeObjectURL(url);},6000);toast('PDF gerado');return true;}
 async function repImages(d){const out={};for(const x of (d.sessions||[]))for(const e of x.ex)for(const m of e.media){if(m.type==='video'||out[m.id])continue;try{const r=await fetch('/_blob/'+m.id);if(!r.ok)continue;const b=await toJpeg(await r.blob(),360,true);const u=await blobToDataURL(b);if(/^data:image\/(jpeg|png);base64,/.test(u||''))out[m.id]=u;}catch(err){}}return out;}
 async function reportPdfBlob(){const pm=await ensurePdfMake();REP.imgs=await repImages(REP.data);const def=reportPDF(REP.data,REP);return await new Promise((res,rej)=>{try{pm.createPdf(def).getBlob(b=>res(b));}catch(e){rej(e);}});}
