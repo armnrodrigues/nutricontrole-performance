@@ -42,8 +42,13 @@
   // o que está na fila é a versão mais nova deste aparelho: vale sobre o cache (que pode ter sido descartado)
   Object.entries(OUT).forEach(([p, v]) => { if (v === null) delete S.docs[p]; else S.docs[p] = clone(v); });
   const queued = () => Object.keys(OUT).length;
+  const GONE = new Set(); // caminhos que esta aba acabou de enviar: saem do aparelho
   function persistOut() {
-    const txt = JSON.stringify(OUT);
+    // preserva o que outra aba deixou na fila do aparelho e esta aba não conhece
+    let all = OUT;
+    try { const ls = JSON.parse(localStorage.getItem(OUTBOX_KEY) || '{}'); if (ls && typeof ls === 'object') { all = Object.assign({}, OUT); Object.keys(ls).forEach(k => { if (!(k in OUT) && !GONE.has(k)) all[k] = ls[k]; }); } } catch (e) {}
+    GONE.clear();
+    const txt = JSON.stringify(all);
     try { localStorage.setItem(OUTBOX_KEY, txt); S.quota = false; return; } catch (e) { console.warn('fila de envio não coube no aparelho; descartando o cache local', e); }
     try { S.noCache = true; localStorage.removeItem(CACHE_KEY); localStorage.setItem(OUTBOX_KEY, txt); S.quota = false; }
     catch (e) { S.quota = true; console.warn('fila de envio sem espaço no aparelho', e); }
@@ -83,11 +88,11 @@
         const j = v === null ? await call('DELETE', '/docs?path=' + encodeURIComponent(path))
           : await call('PUT', '/docs?path=' + encodeURIComponent(path), sent, { 'Content-Type': 'application/json' });
         S.ver[path] = j.updated;
-        if (JSON.stringify(OUT[path]) === sent) { delete OUT[path]; persistOut(); }
+        if (JSON.stringify(OUT[path]) === sent) { delete OUT[path]; GONE.add(path); persistOut(); }
       } catch (e) {
         if (e.code !== 'invalid_argument') throw e;
         // o servidor recusou este registro (caminho inválido ou grande demais): sai da fila, mas o usuário é avisado
-        if (JSON.stringify(OUT[path]) === sent) { delete OUT[path]; persistOut(); }
+        if (JSON.stringify(OUT[path]) === sent) { delete OUT[path]; GONE.add(path); persistOut(); }
         console.warn('registro recusado pelo servidor', path, e);
         try { if (typeof toast === 'function') toast('O servidor recusou um registro (' + path + '): ' + (e.message || 'inválido'), 7000); } catch (_) {}
       }
@@ -227,7 +232,7 @@
   }
   const sample = async (input, opts) => { const j = await ask(input, opts, false); return { text: j.text, truncated: j.truncated }; };
   sample.json = async (input, opts) => parseJSON((await ask(input, opts, true)).text);
-  sample.limits = async () => ({ maxPromptBytes: 262144, images: { maxCount: 20, maxInputBytes: 20 * 1024 * 1024, mediaTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/gif'] } });
+  sample.limits = async () => ({ maxPromptBytes: 262144, images: { maxCount: 20, maxInputBytes: 3.5 * 1024 * 1024, mediaTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/gif'] } });
 
   /* ---------------- arquivos ---------------- */
   const assets = {
