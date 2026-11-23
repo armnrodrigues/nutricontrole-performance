@@ -62,14 +62,31 @@
   // vazio (null, 0, '', [], {}) e ausente contam como a mesma coisa: o app cria o documento com esses valores-padrão ao gravar
   const nz = v => (v == null || v === 0 || v === '' || (Array.isArray(v) && !v.length) || (isObj(v) && !Object.keys(v).length)) ? null : v;
   const same = (a, b) => JSON.stringify(nz(a)) === JSON.stringify(nz(b));
-  function merge3(base, mine, theirs, depth) {
+  // lista (itens de uma refeição, atividades, pendências): fica o que o outro aparelho tem, menos o que este aparelho tirou, mais o que este aparelho pôs
+  const jk = v => JSON.stringify(v);
+  // QA 8 (C2-01): conta repetições (dois itens iguais são dois lançamentos); o que os dois aparelhos acrescentaram igual entra uma vez
+  const ak = x => (x && x.src === 'Apple' && x.start) ? 'A|' + x.start + '|' + (x.min || 0) + '|' + (x.kcal || 0) : null; // mesma leitura do Apple
+  function mergeArr(b, m, t) {
+    b = Array.isArray(b) ? b : [];
+    const cnt = a => { const c = new Map(); a.forEach(x => { const k = jk(x); c.set(k, (c.get(k) || 0) + 1); }); return c; };
+    const cb = cnt(b), cm = cnt(m), ct = cnt(t), want = new Map();
+    new Set([...cb.keys(), ...cm.keys(), ...ct.keys()]).forEach(k => { const nb = cb.get(k) || 0, nm = cm.get(k) || 0, nt = ct.get(k) || 0;
+      want.set(k, Math.max(0, nb - Math.max(0, nb - nm) - Math.max(0, nb - nt)) + Math.max(0, nm - nb, nt - nb)); });
+    // mesma atividade do Apple mudada nos dois aparelhos: vale a deste aparelho (como antes do QA 8), sem contar duas vezes
+    const mAdd = new Set(m.filter(x => (cm.get(jk(x)) || 0) > (cb.get(jk(x)) || 0)).map(ak).filter(Boolean));
+    const out = [], take = (x, mine) => { const k = jk(x), w = want.get(k) || 0; if (w <= 0) return; if (!mine && mAdd.has(ak(x)) && !cm.has(k)) return; out.push(x); want.set(k, w - 1); };
+    t.forEach(x => take(x, false)); m.forEach(x => take(x, true));
+    return out;
+  }
+  function merge3(base, mine, theirs, depth, lists) {
     if (!isObj(mine) || !isObj(theirs)) return mine;
     base = isObj(base) ? base : {}; const out = {};
     new Set(Object.keys(mine).concat(Object.keys(theirs))).forEach(k => {
       const m = mine[k], t = theirs[k], b = base[k];
       if (same(m, b)) { if (k in theirs) out[k] = t; }                                   // este aparelho não mexeu: vale o servidor
       else if (same(t, b)) { if (k in mine) out[k] = m; }                                 // só este aparelho mexeu
-      else if (depth > 0 && isObj(m) && isObj(t)) out[k] = merge3(b, m, t, depth - 1);    // os dois mexeram: desce um nível
+      else if (depth > 0 && isObj(m) && isObj(t)) out[k] = merge3(b, m, t, depth - 1, lists);    // os dois mexeram: desce um nível
+      else if (lists && (Array.isArray(m) || m === undefined) && (Array.isArray(t) || t === undefined) && (Array.isArray(m) || Array.isArray(t))) { const r = mergeArr(b, m || [], t || []); if (r.length || k in mine) out[k] = r; } // lista: junta item a item
       else if (k in mine) out[k] = m;                                                     // mesmo campo nos dois: vale o deste aparelho (como antes)
     });
     return out;
@@ -113,7 +130,7 @@
       if (OUT[d.path] !== undefined) {                // edição local ainda não enviada: junta com o que o servidor tem de novo
         S.ver[d.path] = d.updated;                    // versão do servidor que este aparelho leu: vai como "base" no envio (C2-02)
         if (OUT[d.path] !== null && d.data != null && d.path in BASE && !same(d.data, BASE[d.path])) {
-          const m = merge3(BASE[d.path], OUT[d.path], d.data, 2);
+          const m = merge3(BASE[d.path], OUT[d.path], d.data, 2, /^days\//.test(d.path));
           if (!(d.path in VIEW)) VIEW[d.path] = clone(OUT[d.path]);
           OUT[d.path] = m; S.docs[d.path] = clone(m); BASE[d.path] = clone(d.data); persistOut(); saveBase(); changed = true; MERGED.add(d.path);
         }
@@ -232,7 +249,7 @@
       async set(data) {
         BUSY[path] = (BUSY[path] || 0) + 1;
         try {
-          if (path in VIEW) { const raw = clone(data); if (S.docs[path] !== undefined) data = merge3(VIEW[path], data, S.docs[path], 2); VIEW[path] = raw; MERGED.add(path); }
+          if (path in VIEW) { const raw = clone(data); if (S.docs[path] !== undefined) data = merge3(VIEW[path], data, S.docs[path], 2, /^days\//.test(path)); VIEW[path] = raw; MERGED.add(path); }
           if (OUT[path] === undefined) { BASE[path] = S.docs[path] === undefined ? null : clone(S.docs[path]); saveBase(); }
           S.docs[path] = clone(data);
           OUT[path] = clone(data); persistOut(); saveCache();
@@ -308,7 +325,10 @@
   const assets = {
     async upload(blob) {
       if (blob.size > 20 * 1024 * 1024) throw err('too_large', 'O limite é 20 MB por arquivo');
-      return call('POST', '/assets', blob, { 'Content-Type': blob.type || 'application/octet-stream' });
+      // QA 8 (C2-06): arquivo sem tipo (app Arquivos, AirDrop) ganha o tipo pela extensão; senão o /api/assets recusa
+      const nm = String(blob.name || '').toLowerCase();
+      const ty = blob.type || (/\.mov$/.test(nm) ? 'video/quicktime' : /\.(mp4|m4v)$/.test(nm) ? 'video/mp4' : /\.webm$/.test(nm) ? 'video/webm' : /\.(jpe?g)$/.test(nm) ? 'image/jpeg' : /\.png$/.test(nm) ? 'image/png' : /\.(heic|heif)$/.test(nm) ? 'image/heic' : 'application/octet-stream');
+      return call('POST', '/assets', blob, { 'Content-Type': ty });
     },
     async delete(id) { await call('DELETE', '/assets?id=' + encodeURIComponent(id)); },
     async list() { return { assets: [], usage: {} }; }

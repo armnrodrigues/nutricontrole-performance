@@ -3,7 +3,7 @@
 // Os arquivos são servidos em /_blob/<id>, o mesmo endereço usado no artefato.
 
 const MAX = 20 * 1024 * 1024;
-const OK_TYPE = /^(image|video)\//;
+const OK_TYPE = /^(image\/(jpeg|png|webp|gif|heic|heif)|video\/[a-z0-9.+-]+)$/i; // QA 8 (C-11, C2-07): mesma lista do link (share.js) e da mídia ([id].js); SVG fica de fora
 
 export async function onRequestPost({ request, env }) {
   const type = request.headers.get('Content-Type') || 'application/octet-stream';

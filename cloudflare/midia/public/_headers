@@ -1,0 +1,7 @@
+# QA 8 (P-04): mesmos cabeçalhos do link em qualquer endereço do site de mídia
+/*
+  X-Robots-Tag: noindex, nofollow
+  Referrer-Policy: no-referrer
+  X-Content-Type-Options: nosniff
+  Content-Security-Policy: default-src 'none'; style-src 'unsafe-inline'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'
+  Cache-Control: no-store

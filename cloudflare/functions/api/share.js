@@ -21,7 +21,7 @@ export async function onRequestPost({ request, env }) {
     if (!meta.value) continue;
     try { await meta.value.cancel(); } catch (e) {}
     const type = meta.metadata?.type || '';
-    if (!/^(image|video)\//.test(type)) continue;
+    if (!/^(image\/(jpeg|png|webp|gif|heic|heif)|video\/[a-z0-9.+-]+)$/i.test(type)) continue; // QA 8 (C-11/P-06): sem SVG nem outro tipo que rode código
     seen.add(id); items.push({ id, type, label: clean(it.label, 120) });
     if (items.length >= 200) break;
   }

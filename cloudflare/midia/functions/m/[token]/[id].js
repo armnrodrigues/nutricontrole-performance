@@ -11,7 +11,9 @@ export async function onRequestGet({ params, env, request }) {
   if (!value) return new Response('Não encontrado', { status: 404, headers: SEC });
   const type = metadata?.type || it.type || 'application/octet-stream';
   const size = value.byteLength;
-  const base = { ...SEC, 'Content-Type': type, 'Accept-Ranges': 'bytes', 'Cache-Control': 'private, no-store' };
+  // QA 8 (C-11/P-06): só foto e vídeo; nada que rode script na origem pública
+  if (!/^(image\/(jpeg|png|webp|gif|heic|heif)|video\/[a-z0-9.+-]+)$/i.test(type)) return new Response('Não encontrado', { status: 404, headers: SEC });
+  const base = { ...SEC, 'Content-Type': type, 'Accept-Ranges': 'bytes', 'Cache-Control': 'private, no-store', 'Content-Security-Policy': "default-src 'none'; img-src 'self'; media-src 'self'; sandbox" };
   const m = /^bytes=(\d*)-(\d*)$/.exec(request.headers.get('Range') || '');
   if (m && (m[1] !== '' || m[2] !== '')) {
     let start, end;
@@ -22,3 +24,6 @@ export async function onRequestGet({ params, env, request }) {
   }
   return new Response(value, { headers: { ...base, 'Content-Length': String(size) } });
 }
+
+// QA 8 (P-05): HEAD responde como o GET (410 para link vencido), em vez de cair na página estática
+export const onRequestHead = onRequestGet;

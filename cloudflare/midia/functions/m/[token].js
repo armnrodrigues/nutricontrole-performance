@@ -28,3 +28,6 @@ figcaption{font-size:14px;margin-top:6px}
 </style></head><body><main><h1>${esc(rec.title)}</h1><p class="sub">${per}${rec.items.length} ${rec.items.length === 1 ? 'arquivo' : 'arquivos'} · disponível até ${br(rec.exp)} (horário de Brasília)</p><div class="grid">${items}</div></main></body></html>`;
   return new Response(html, { headers: { ...SEC, 'Content-Type': 'text/html; charset=utf-8', 'Content-Security-Policy': "default-src 'none'; img-src 'self'; media-src 'self'; style-src 'unsafe-inline'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'" } });
 }
+
+// QA 8 (P-05): HEAD responde como o GET
+export const onRequestHead = onRequestGet;
