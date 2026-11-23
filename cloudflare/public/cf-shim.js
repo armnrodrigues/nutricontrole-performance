@@ -42,6 +42,38 @@
   // o que está na fila é a versão mais nova deste aparelho: vale sobre o cache (que pode ter sido descartado)
   Object.entries(OUT).forEach(([p, v]) => { if (v === null) delete S.docs[p]; else S.docs[p] = clone(v); });
   const queued = () => Object.keys(OUT).length;
+  /* QA 7 (P-01, P-02, C-04): base de cada edição na fila = o documento como este aparelho o tinha ANTES de mexer. Com ela, o que outro
+     aparelho gravou no mesmo documento é juntado campo a campo (o que este aparelho não mexeu fica com o valor do servidor), em vez de
+     ser apagado. Até dois níveis abaixo do documento (ex.: muscleConfirm por exercício, session por campo, meals por refeição).
+     Listas (itens de uma refeição, atividades) contam como um valor só. Campo mexido nos dois lados: vale o deste aparelho, como antes. */
+  const BASE_KEY = 'ncperf_cf_base';
+  let BASE = {};
+  try { const b = JSON.parse(localStorage.getItem(BASE_KEY) || '{}'); if (b && typeof b === 'object') BASE = b; } catch (e) {}
+  Object.keys(BASE).forEach(p => { if (!(p in OUT)) delete BASE[p]; });
+  const saveBase = () => {
+    try {
+      // preserva a base que outra aba guardou para um registro que ainda está na fila do aparelho
+      let all = BASE;
+      try { const lb = JSON.parse(localStorage.getItem(BASE_KEY) || '{}'), lo = JSON.parse(localStorage.getItem(OUTBOX_KEY) || '{}'); if (lb && typeof lb === 'object') { all = Object.assign({}, BASE); Object.keys(lb).forEach(k => { if (!(k in BASE) && !(k in OUT) && lo && k in lo) all[k] = lb[k]; }); } } catch (e) {}
+      localStorage.setItem(BASE_KEY, JSON.stringify(all));
+    } catch (e) {}
+  };
+  const isObj = v => !!v && typeof v === 'object' && !Array.isArray(v);
+  // vazio (null, 0, '', [], {}) e ausente contam como a mesma coisa: o app cria o documento com esses valores-padrão ao gravar
+  const nz = v => (v == null || v === 0 || v === '' || (Array.isArray(v) && !v.length) || (isObj(v) && !Object.keys(v).length)) ? null : v;
+  const same = (a, b) => JSON.stringify(nz(a)) === JSON.stringify(nz(b));
+  function merge3(base, mine, theirs, depth) {
+    if (!isObj(mine) || !isObj(theirs)) return mine;
+    base = isObj(base) ? base : {}; const out = {};
+    new Set(Object.keys(mine).concat(Object.keys(theirs))).forEach(k => {
+      const m = mine[k], t = theirs[k], b = base[k];
+      if (same(m, b)) { if (k in theirs) out[k] = t; }                                   // este aparelho não mexeu: vale o servidor
+      else if (same(t, b)) { if (k in mine) out[k] = m; }                                 // só este aparelho mexeu
+      else if (depth > 0 && isObj(m) && isObj(t)) out[k] = merge3(b, m, t, depth - 1);    // os dois mexeram: desce um nível
+      else if (k in mine) out[k] = m;                                                     // mesmo campo nos dois: vale o deste aparelho (como antes)
+    });
+    return out;
+  }
   const GONE = new Set(); // caminhos que esta aba acabou de enviar: saem do aparelho
   function persistOut() {
     // preserva o que outra aba deixou na fila do aparelho e esta aba não conhece
@@ -62,15 +94,31 @@
     }, 800);
   }
 
-  function emit() { S.listeners.forEach(fn => { try { fn(); } catch (e) { console.warn(e); } }); }
+  function emit() {
+    S.listeners.forEach(fn => { try { fn(); } catch (e) { console.warn(e); } });
+    Object.keys(VIEW).forEach(p => { if (!BUSY[p]) delete VIEW[p]; }); // sem gravação em curso, o app aceitou a versão juntada
+  }
 
+  const MERGED = new Set();
+  /* QA 7, 2ª passada (C2-01): o app ignora o que chega do banco enquanto tem gravação em curso no mesmo documento. Se nesse meio-tempo
+     houve junção, a gravação seguinte do app ainda vem SEM os campos do outro aparelho e os apagaria. VIEW guarda o documento como o app o
+     conhecia; a gravação seguinte é rebaseada sobre o documento juntado (só o que o app mudou desde VIEW entra por cima). */
+  const VIEW = {}, BUSY = {};
   async function pull() {
     const j = await call('GET', '/docs?since=' + S.since);
     if (!j || !Array.isArray(j.docs)) throw err('bad_response', 'Resposta inesperada do servidor');
     let changed = false;
     for (const d of j.docs) {
       if ((S.ver[d.path] || 0) > d.updated) continue; // já temos versão mais nova (gravada daqui)
-      if (OUT[d.path] !== undefined) continue;        // edição local ainda não enviada vence
+      if (OUT[d.path] !== undefined) {                // edição local ainda não enviada: junta com o que o servidor tem de novo
+        S.ver[d.path] = d.updated;                    // versão do servidor que este aparelho leu: vai como "base" no envio (C2-02)
+        if (OUT[d.path] !== null && d.data != null && d.path in BASE && !same(d.data, BASE[d.path])) {
+          const m = merge3(BASE[d.path], OUT[d.path], d.data, 2);
+          if (!(d.path in VIEW)) VIEW[d.path] = clone(OUT[d.path]);
+          OUT[d.path] = m; S.docs[d.path] = clone(m); BASE[d.path] = clone(d.data); persistOut(); saveBase(); changed = true; MERGED.add(d.path);
+        }
+        continue;
+      }
       S.ver[d.path] = d.updated;
       if (d.data == null) delete S.docs[d.path]; else S.docs[d.path] = d.data;
       changed = true;
@@ -80,24 +128,32 @@
     return changed;
   }
 
+  /* QA 7, 2ª passada (C2-02): o envio leva a versão do servidor que este aparelho leu ("base"). Se outro aparelho gravou entre a leitura
+     e o envio, o servidor recusa (409 "conflict") sem gravar; o aparelho lê de novo, junta e reenvia. Depois de duas recusas seguidas do
+     mesmo registro o envio vai sem "base" (como antes), para a fila nunca ficar presa. */
+  const CONFL = {};
   async function flushOutbox() {
+    let conflict = false;
     for (const path of Object.keys(OUT)) {
       const v = OUT[path]; if (v === undefined) continue;
       const sent = JSON.stringify(v);
       try {
         const j = v === null ? await call('DELETE', '/docs?path=' + encodeURIComponent(path))
-          : await call('PUT', '/docs?path=' + encodeURIComponent(path), sent, { 'Content-Type': 'application/json' });
-        S.ver[path] = j.updated;
-        if (JSON.stringify(OUT[path]) === sent) { delete OUT[path]; GONE.add(path); persistOut(); }
+          : await call('PUT', '/docs?path=' + encodeURIComponent(path) + ((CONFL[path] || 0) < 2 ? '&base=' + (S.ver[path] || 0) : ''), sent, { 'Content-Type': 'application/json' });
+        S.ver[path] = j.updated; delete CONFL[path];
+        if (JSON.stringify(OUT[path]) === sent) { delete OUT[path]; delete BASE[path]; GONE.add(path); persistOut(); saveBase(); }
+        else if (OUT[path] !== undefined && v !== null) { BASE[path] = JSON.parse(sent); saveBase(); } // editado de novo durante o envio: a base passa a ser o que o servidor acabou de aceitar
       } catch (e) {
+        if (e.code === 'conflict') { CONFL[path] = (CONFL[path] || 0) + 1; conflict = true; continue; }
         if (e.code !== 'invalid_argument') throw e;
         // o servidor recusou este registro (caminho inválido ou grande demais): sai da fila, mas o usuário é avisado
-        if (JSON.stringify(OUT[path]) === sent) { delete OUT[path]; GONE.add(path); persistOut(); }
+        if (JSON.stringify(OUT[path]) === sent) { delete OUT[path]; delete BASE[path]; GONE.add(path); persistOut(); saveBase(); }
         console.warn('registro recusado pelo servidor', path, e);
         try { if (typeof toast === 'function') toast('O servidor recusou um registro (' + path + '): ' + (e.message || 'inválido'), 7000); } catch (_) {}
       }
     }
     saveCache();
+    return conflict;
   }
 
   let syncing = null;
@@ -105,10 +161,10 @@
     if (syncing) return syncing;
     syncing = (async () => {
       let pulled = false, changed = false, bad = null;
-      // só envia depois de já ter lido o servidor com sucesso nesta sessão
-      if (S.synced) { try { await flushOutbox(); } catch (e) { bad = e; } }
+      // QA 7 (P-02): sempre LÊ o servidor antes de enviar. O que outro aparelho gravou entra na junção e não é apagado pelo envio;
+      // se a leitura falhar, nada é enviado nesta volta (a fila continua guardada no aparelho).
       try { changed = await pull(); pulled = true; } catch (e) { bad = e; console.warn('sync', e); }
-      if (pulled && !S.synced) { S.synced = true; bad = null; try { await flushOutbox(); } catch (e) { bad = e; } }
+      if (pulled) { S.synced = true; try { for (let i = 0; i < 3 && await flushOutbox(); i++) { if (await pull()) changed = true; } } catch (e) { bad = e; } }
       S.srvErr = bad ? (bad.code || 'erro') : '';
       if (pulled) { const was = S.stale; S.stale = false; if (changed || !S.ready || was) { S.ready = true; emit(); } }
       else if (!S.ready && Object.keys(S.docs).length) { S.ready = true; S.stale = true; emit(); } // servidor fora: abre a cópia do aparelho, avisando
@@ -145,6 +201,7 @@
     } catch (e) {}
   }
   const NCS = { problem: () => !!message(), paint, localMsg: '', state: () => ({ ready: S.ready, synced: S.synced, stale: S.stale, authErr: S.authErr, srvErr: S.srvErr, quota: S.quota, queued: queued(), docs: Object.keys(S.docs).length, hadCache: HAD_CACHE }) };
+  Object.defineProperty(NCS, 'aiTimeout', { get: () => AI_TIMEOUT, set: v => { AI_TIMEOUT = Math.max(50, Number(v) || 180000); } });
   window.ncSync = NCS;
   window.addEventListener('DOMContentLoaded', () => paint());
 
@@ -173,15 +230,21 @@
   function docRef(path) {
     return {
       async set(data) {
-        S.docs[path] = clone(data);
-        OUT[path] = clone(data); persistOut(); saveCache();
-        // Sem internet (ou antes da primeira leitura do servidor) a gravação fica na fila do aparelho e sai sozinha depois.
-        await sync();
-        if (OUT[path] !== undefined && !S.srvErr && !S.authErr) await sync(); // a sincronização em curso já tinha passado da etapa de envio
+        BUSY[path] = (BUSY[path] || 0) + 1;
+        try {
+          if (path in VIEW) { const raw = clone(data); if (S.docs[path] !== undefined) data = merge3(VIEW[path], data, S.docs[path], 2); VIEW[path] = raw; MERGED.add(path); }
+          if (OUT[path] === undefined) { BASE[path] = S.docs[path] === undefined ? null : clone(S.docs[path]); saveBase(); }
+          S.docs[path] = clone(data);
+          OUT[path] = clone(data); persistOut(); saveCache();
+          // Sem internet (ou antes da primeira leitura do servidor) a gravação fica na fila do aparelho e sai sozinha depois.
+          await sync();
+          if (OUT[path] !== undefined && !S.srvErr && !S.authErr) await sync(); // a sincronização em curso já tinha passado da etapa de envio
+        } finally { BUSY[path]--; }
+        if (MERGED.delete(path)) setTimeout(emit, 0); // o documento foi juntado com o do servidor: o app recebe a versão juntada assim que esta gravação termina
         paint();
       },
       async delete() {
-        delete S.docs[path];
+        delete S.docs[path]; delete BASE[path]; delete VIEW[path]; saveBase();
         OUT[path] = null; persistOut(); saveCache();
         await sync();
         if (OUT[path] !== undefined && !S.srvErr && !S.authErr) await sync();
@@ -208,17 +271,24 @@
     for (let i = 0; i < buf.length; i += 0x8000) s += String.fromCharCode.apply(null, buf.subarray(i, i + 0x8000));
     return btoa(s);
   };
+  let AI_TIMEOUT = 180000; // 3 min por pedido à IA (um lote de até 4 páginas); o laboratório encurta por ncSync.aiTimeout
   async function ask(input, opts, json) {
     opts = opts || {};
     const messages = typeof input === 'string' ? [{ role: 'user', content: input }] : input;
     const images = await Promise.all((opts.images || []).map(async b => ({ type: b.type || 'image/jpeg', data: await toB64(b) })));
-    let r;
+    let r, j, late = false;
+    // QA 7 (P-06): limite de tempo, como nas rotas do banco. Pedido preso (ou resposta que para no meio) conta como "sem conexão" e o app tenta de novo.
+    const ac = new AbortController(); const tm = setTimeout(() => { late = true; ac.abort(); }, AI_TIMEOUT);
+    if (opts.signal) { if (opts.signal.aborted) ac.abort(); else opts.signal.addEventListener('abort', () => ac.abort(), { once: true }); }
     try {
-      r = await fetch(API + '/ai', { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin', redirect: 'manual', signal: opts.signal,
-        body: JSON.stringify({ messages, images, tier: opts.modelTier || 'default', json }) });
-    } catch (e) { if (e.name === 'AbortError') throw err('aborted', 'Cancelado'); throw err('offline', 'Sem conexão com o servidor'); }
-    if (r.type === 'opaqueredirect' || r.status === 401 || (r.status >= 300 && r.status < 400)) { S.authErr = true; paint(); throw err('session_expired', SESSION_MSG); }
-    const j = await r.json().catch(() => null);
+      try {
+        r = await fetch(API + '/ai', { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin', redirect: 'manual', signal: ac.signal,
+          body: JSON.stringify({ messages, images, tier: opts.modelTier || 'default', json }) });
+      } catch (e) { if (e.name === 'AbortError' && !late) throw err('aborted', 'Cancelado'); throw err('offline', 'Sem conexão com o servidor'); }
+      if (r.type === 'opaqueredirect' || r.status === 401 || (r.status >= 300 && r.status < 400)) { S.authErr = true; paint(); throw err('session_expired', SESSION_MSG); }
+      j = await r.json().catch(() => null);
+      if (!j && late) throw err('offline', 'Sem conexão com o servidor');
+    } finally { clearTimeout(tm); }
     if (!r.ok || !j) throw err((j && j.code) || 'ai_error', (j && j.message) || ('Erro ' + r.status));
     if (opts.onText) try { opts.onText({ text: j.text, delta: j.text }); } catch (e) {}
     return j;

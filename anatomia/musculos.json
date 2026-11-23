@@ -1,0 +1,2901 @@
+{
+ "versao": "2026-11-22",
+ "descricao": "Mapa exercício → músculos do botão \"Grupo muscular\". Busca: normalizar o nome (ver \"normalizacao\"), procurar em exercicios[].chave; se não achar, trocar pela chave em aliases e procurar de novo; se ainda não achar, usar a IA com anatomia/regras-ia.md e marcar como \"sugerido pela IA\".",
+ "normalizacao": "minúsculas; sem acento; parênteses de método (cluster, progressivo, pré-fadiga, drop, rest pause, bi-set, carga maior, amplitude) são removidos e os demais perdem só os parênteses; tudo que não for letra, número, \"|\" ou \"+\" vira espaço; espaços repetidos viram um.",
+ "papeis": {
+  "principal": "limita a série (agonista); pintado cheio",
+  "secundarios": "ajudam de fato; pintado mais claro",
+  "estabilizadores": "seguram a posição; só contorno"
+ },
+ "musculos": {
+  "peitoral_clavicular": {
+   "nome": "Peitoral superior (porção clavicular)",
+   "vista": "frente"
+  },
+  "peitoral_esternal": {
+   "nome": "Peitoral médio (porção esternal)",
+   "vista": "frente"
+  },
+  "peitoral_abdominal": {
+   "nome": "Peitoral inferior (porção abdominal)",
+   "vista": "frente"
+  },
+  "serratil": {
+   "nome": "Serrátil anterior",
+   "vista": "frente"
+  },
+  "deltoide_anterior": {
+   "nome": "Deltoide anterior (frontal)",
+   "vista": "frente"
+  },
+  "deltoide_lateral": {
+   "nome": "Deltoide lateral (médio)",
+   "vista": "frente e costas"
+  },
+  "deltoide_posterior": {
+   "nome": "Deltoide posterior",
+   "vista": "costas"
+  },
+  "trapezio_superior": {
+   "nome": "Trapézio superior",
+   "vista": "frente e costas"
+  },
+  "trapezio_medio": {
+   "nome": "Trapézio médio",
+   "vista": "costas"
+  },
+  "trapezio_inferior": {
+   "nome": "Trapézio inferior",
+   "vista": "costas"
+  },
+  "romboides": {
+   "nome": "Romboides",
+   "vista": "costas"
+  },
+  "latissimo": {
+   "nome": "Latíssimo do dorso (dorsal)",
+   "vista": "frente e costas"
+  },
+  "redondo_maior": {
+   "nome": "Redondo maior",
+   "vista": "costas"
+  },
+  "infraespinal_redondo_menor": {
+   "nome": "Infraespinal e redondo menor (manguito)",
+   "vista": "costas"
+  },
+  "eretores_espinha": {
+   "nome": "Eretores da espinha (lombar)",
+   "vista": "costas"
+  },
+  "biceps": {
+   "nome": "Bíceps braquial",
+   "vista": "frente"
+  },
+  "braquial": {
+   "nome": "Braquial",
+   "vista": "frente"
+  },
+  "braquiorradial": {
+   "nome": "Braquiorradial",
+   "vista": "frente"
+  },
+  "triceps_longa": {
+   "nome": "Tríceps, cabeça longa",
+   "vista": "costas"
+  },
+  "triceps_lateral_medial": {
+   "nome": "Tríceps, cabeças lateral e medial",
+   "vista": "costas"
+  },
+  "flexores_antebraco": {
+   "nome": "Flexores do antebraço (pegada)",
+   "vista": "frente e costas"
+  },
+  "extensores_antebraco": {
+   "nome": "Extensores do antebraço",
+   "vista": "costas"
+  },
+  "reto_abdominal_superior": {
+   "nome": "Reto abdominal, parte superior",
+   "vista": "frente"
+  },
+  "reto_abdominal_inferior": {
+   "nome": "Reto abdominal, parte inferior",
+   "vista": "frente"
+  },
+  "obliquos": {
+   "nome": "Oblíquos",
+   "vista": "frente e costas"
+  },
+  "transverso": {
+   "nome": "Transverso do abdômen (profundo)",
+   "vista": "frente"
+  },
+  "gluteo_maximo": {
+   "nome": "Glúteo máximo",
+   "vista": "costas"
+  },
+  "gluteo_medio": {
+   "nome": "Glúteo médio",
+   "vista": "costas"
+  },
+  "adutores": {
+   "nome": "Adutores da coxa",
+   "vista": "frente"
+  },
+  "quadriceps_reto_femoral": {
+   "nome": "Reto femoral (quadríceps)",
+   "vista": "frente"
+  },
+  "quadriceps_vastos": {
+   "nome": "Vastos (quadríceps)",
+   "vista": "frente"
+  },
+  "isquiotibiais": {
+   "nome": "Isquiotibiais (posterior de coxa)",
+   "vista": "costas"
+  },
+  "gastrocnemio": {
+   "nome": "Gastrocnêmio (panturrilha)",
+   "vista": "frente e costas"
+  },
+  "soleo": {
+   "nome": "Sóleo (panturrilha)",
+   "vista": "frente e costas"
+  },
+  "tibial_anterior": {
+   "nome": "Tibial anterior",
+   "vista": "frente"
+  },
+  "flexores_quadril": {
+   "nome": "Flexores do quadril (iliopsoas)",
+   "vista": "frente"
+  }
+ },
+ "exercicios": [
+  {
+   "nome": "Abdominal Infra Banco Declinado",
+   "chave": "abdominal infra banco declinado",
+   "grupo": "Abdômen",
+   "principal": [
+    "reto_abdominal_inferior"
+   ],
+   "secundarios": [
+    "flexores_quadril",
+    "reto_abdominal_superior",
+    "obliquos"
+   ],
+   "estabilizadores": [
+    "transverso"
+   ],
+   "foco": "Parte de baixo do abdômen, entre o umbigo e o púbis, apertando quando o quadril sai do banco.",
+   "execucao": [
+    "Enrole a pelve: tire o quadril do banco no fim da subida, em vez de só levantar as pernas.",
+    "Joelhos levemente dobrados e descida lenta, sem deixar a lombar arquear.",
+    "Solte o ar ao subir e mantenha as costelas baixas."
+   ],
+   "erro_comum": "Balançar as pernas com impulso: quem trabalha passa a ser o flexor do quadril, não o abdômen.",
+   "confianca": "alta",
+   "protocolo_vigente": false
+  },
+  {
+   "nome": "Abdominal Infra Paralela",
+   "chave": "abdominal infra paralela",
+   "grupo": "Abdômen",
+   "principal": [
+    "reto_abdominal_inferior"
+   ],
+   "secundarios": [
+    "flexores_quadril",
+    "reto_abdominal_superior",
+    "obliquos"
+   ],
+   "estabilizadores": [
+    "transverso",
+    "latissimo",
+    "serratil"
+   ],
+   "foco": "Parte de baixo do abdômen; a contração aparece quando a pelve gira e os joelhos passam da linha do quadril.",
+   "execucao": [
+    "Suba os joelhos além dos 90° e enrole a pelve para cima no final.",
+    "Desça devagar até as pernas quase estendidas, sem balançar o tronco.",
+    "Ombros firmes para baixo, sem afundar entre os braços."
+   ],
+   "erro_comum": "Subir só até a coxa ficar paralela ao chão: até ali quase tudo é flexor do quadril.",
+   "confianca": "alta",
+   "protocolo_vigente": true
+  },
+  {
+   "nome": "Abdominal Remador",
+   "chave": "abdominal remador",
+   "grupo": "Abdômen",
+   "principal": [
+    "reto_abdominal_superior",
+    "reto_abdominal_inferior"
+   ],
+   "secundarios": [
+    "flexores_quadril",
+    "obliquos"
+   ],
+   "estabilizadores": [
+    "transverso"
+   ],
+   "foco": "Abdômen inteiro, do esterno ao púbis, apertando quando tronco e joelhos se encontram.",
+   "execucao": [
+    "Aproxime peito e joelhos ao mesmo tempo, arredondando a coluna.",
+    "Na volta, estenda tronco e pernas sem encostar tudo no chão, mantendo a tensão.",
+    "Ritmo controlado; solte o ar no encontro."
+   ],
+   "erro_comum": "Puxar com as pernas e manter a coluna reta: a carga vai para o flexor do quadril e para a lombar.",
+   "confianca": "media",
+   "duvida": "Entendido como o abdominal remador no solo ou no banco (tronco e joelhos se encontram). Se for feito em um aparelho específico, confirmar.",
+   "protocolo_vigente": true
+  },
+  {
+   "nome": "Abdominal Supra",
+   "chave": "abdominal supra",
+   "grupo": "Abdômen",
+   "principal": [
+    "reto_abdominal_superior"
+   ],
+   "secundarios": [
+    "reto_abdominal_inferior",
+    "obliquos"
+   ],
+   "estabilizadores": [
+    "transverso"
+   ],
+   "foco": "Parte de cima do abdômen, logo abaixo das costelas, encurtando a distância entre costela e quadril.",
+   "execucao": [
+    "Enrole a coluna: leve as costelas em direção ao quadril, sem subir o tronco inteiro.",
+    "Queixo afastado do peito e mãos só apoiando a cabeça.",
+    "Segure um instante em cima e desça sem relaxar no chão."
+   ],
+   "erro_comum": "Puxar a cabeça com as mãos e subir de coluna reta: o abdômen deixa de encurtar e o pescoço sofre.",
+   "confianca": "alta",
+   "protocolo_vigente": false
+  },
+  {
+   "nome": "Abdominal Supra Banco Declinado",
+   "chave": "abdominal supra banco declinado",
+   "grupo": "Abdômen",
+   "principal": [
+    "reto_abdominal_superior"
+   ],
+   "secundarios": [
+    "reto_abdominal_inferior",
+    "obliquos",
+    "flexores_quadril"
+   ],
+   "estabilizadores": [
+    "transverso"
+   ],
+   "foco": "Parte de cima do abdômen, com o reto inteiro trabalhando por causa da inclinação.",
+   "execucao": [
+    "Suba enrolando a coluna, vértebra por vértebra, até pouco antes de ficar sentado.",
+    "Desça devagar e pare antes de deitar por completo.",
+    "Solte o ar na subida, costelas para baixo."
+   ],
+   "erro_comum": "Subir com as costas retas até ficar sentado: vira exercício de flexor do quadril e sobrecarrega a lombar.",
+   "confianca": "alta",
+   "protocolo_vigente": true
+  },
+  {
+   "nome": "Abdominal Supra Máquina",
+   "chave": "abdominal supra maquina",
+   "grupo": "Abdômen",
+   "principal": [
+    "reto_abdominal_superior"
+   ],
+   "secundarios": [
+    "reto_abdominal_inferior",
+    "obliquos"
+   ],
+   "estabilizadores": [
+    "transverso"
+   ],
+   "foco": "Parte de cima do abdômen, dobrando o tronco contra a carga.",
+   "execucao": [
+    "Dobre a coluna, levando o esterno em direção ao púbis; os braços só seguram.",
+    "Quadril parado no banco durante todo o movimento.",
+    "Volte devagar até sentir o abdômen alongar, sem soltar a carga."
+   ],
+   "erro_comum": "Empurrar com os braços ou dobrar só o quadril: a carga sobe e o abdômen não encurta.",
+   "confianca": "alta",
+   "protocolo_vigente": true
+  },
+  {
+   "nome": "Abdominal Supra Solo",
+   "chave": "abdominal supra solo",
+   "grupo": "Abdômen",
+   "principal": [
+    "reto_abdominal_superior"
+   ],
+   "secundarios": [
+    "reto_abdominal_inferior",
+    "obliquos"
+   ],
+   "estabilizadores": [
+    "transverso"
+   ],
+   "foco": "Parte de cima do abdômen, logo abaixo das costelas, encurtando a distância entre costela e quadril.",
+   "execucao": [
+    "Enrole a coluna: leve as costelas em direção ao quadril, sem subir o tronco inteiro.",
+    "Queixo afastado do peito e mãos só apoiando a cabeça.",
+    "Segure um instante em cima e desça sem relaxar no chão."
+   ],
+   "erro_comum": "Puxar a cabeça com as mãos e subir de coluna reta: o abdômen deixa de encurtar e o pescoço sofre.",
+   "confianca": "alta",
+   "protocolo_vigente": true
+  },
+  {
+   "nome": "Afundo com Halteres",
+   "chave": "afundo com halteres",
+   "grupo": "Glúteos",
+   "principal": [
+    "gluteo_maximo",
+    "quadriceps_vastos"
+   ],
+   "secundarios": [
+    "quadriceps_reto_femoral",
+    "adutores",
+    "isquiotibiais"
+   ],
+   "estabilizadores": [
+    "gluteo_medio",
+    "eretores_espinha",
+    "transverso",
+    "flexores_antebraco"
+   ],
+   "foco": "Glúteo e coxa da perna da frente; no fundo o glúteo alonga e na subida a força sai do calcanhar da frente.",
+   "execucao": [
+    "Passo longo e tronco levemente inclinado à frente dão mais glúteo; passo curto e tronco reto dão mais quadríceps.",
+    "Desça até o joelho de trás quase tocar o chão.",
+    "Empurre o chão com o pé inteiro da frente, joelho alinhado com o pé."
+   ],
+   "erro_comum": "Empurrar com a perna de trás ou encurtar a descida: a perna da frente deixa de fazer o trabalho.",
+   "confianca": "alta",
+   "protocolo_vigente": false
+  },
+  {
+   "nome": "Agachamento Barra Guiada",
+   "chave": "agachamento barra guiada",
+   "grupo": "Quadríceps",
+   "principal": [
+    "quadriceps_vastos",
+    "gluteo_maximo"
+   ],
+   "secundarios": [
+    "quadriceps_reto_femoral",
+    "adutores",
+    "isquiotibiais"
+   ],
+   "estabilizadores": [
+    "eretores_espinha",
+    "transverso",
+    "gluteo_medio"
+   ],
+   "foco": "Frente da coxa na subida e glúteo no fundo do agachamento.",
+   "execucao": [
+    "Pés um pouco à frente da barra permitem descer com o tronco mais ereto.",
+    "Desça pelo menos até a coxa ficar paralela ao chão.",
+    "Joelhos acompanham a direção dos pés; pés mais à frente aumentam o glúteo."
+   ],
+   "erro_comum": "Descer pouco e travar os joelhos em cima: o quadríceps trabalha só no trecho mais fácil.",
+   "confianca": "alta",
+   "protocolo_vigente": false
+  },
+  {
+   "nome": "Agachamento Búlgaro Máquina",
+   "chave": "agachamento bulgaro maquina",
+   "grupo": "Quadríceps",
+   "principal": [
+    "quadriceps_vastos",
+    "gluteo_maximo"
+   ],
+   "secundarios": [
+    "quadriceps_reto_femoral",
+    "adutores",
+    "isquiotibiais"
+   ],
+   "estabilizadores": [
+    "gluteo_medio",
+    "eretores_espinha",
+    "obliquos"
+   ],
+   "foco": "Coxa e glúteo da perna da frente; o glúteo alonga forte no fundo.",
+   "execucao": [
+    "Tronco mais ereto e pé mais perto concentram no quadríceps; tronco inclinado e pé mais longe, no glúteo.",
+    "O pé de trás só equilibra; o peso fica na perna da frente.",
+    "Desça até a coxa da frente passar da paralela, joelho na linha do pé."
+   ],
+   "erro_comum": "Dividir a força com a perna de trás, o que tira a carga da perna que deveria trabalhar.",
+   "confianca": "media",
+   "duvida": "O nome não diz qual máquina (barra guiada ou aparelho próprio). Os músculos são os mesmos; a ênfase muda com a distância do pé e a inclinação do tronco.",
+   "protocolo_vigente": true
+  },
+  {
+   "nome": "Agachamento Frontal Máquina",
+   "chave": "agachamento frontal maquina",
+   "grupo": "Quadríceps",
+   "principal": [
+    "quadriceps_vastos"
+   ],
+   "secundarios": [
+    "quadriceps_reto_femoral",
+    "gluteo_maximo",
+    "adutores"
+   ],
+   "estabilizadores": [
+    "eretores_espinha",
+    "transverso",
+    "reto_abdominal_superior"
+   ],
+   "foco": "Frente da coxa, principalmente logo acima do joelho, com o tronco ereto.",
+   "execucao": [
+    "Tronco ereto e joelhos avançando à frente dos pés: isso põe a carga no quadríceps.",
+    "Desça o máximo que conseguir sem tirar os calcanhares do apoio.",
+    "Suba sem travar os joelhos no fim."
+   ],
+   "erro_comum": "Jogar o quadril para trás e inclinar o tronco, o que passa a carga para glúteo e lombar.",
+   "confianca": "media",
+   "duvida": "Entendido como agachamento com a carga à frente (barra guiada ou máquina articulada). Confirmar a máquina.",
+   "protocolo_vigente": true
+  },
+  {
+   "nome": "Agachamento Hack",
+   "chave": "agachamento hack",
+   "grupo": "Quadríceps",
+   "principal": [
+    "quadriceps_vastos"
+   ],
+   "secundarios": [
+    "quadriceps_reto_femoral",
+    "gluteo_maximo",
+    "adutores"
+   ],
+   "estabilizadores": [
+    "eretores_espinha",
+    "transverso"
+   ],
+   "foco": "Frente da coxa inteira, com mais tensão no fundo do movimento, perto do joelho.",
+   "execucao": [
+    "Pés mais baixos e mais juntos na plataforma aumentam o quadríceps; pés mais altos aumentam o glúteo.",
+    "Desça até o fundo com as costas e o quadril colados no encosto.",
+    "Suba empurrando com o pé inteiro, sem travar os joelhos."
+   ],
+   "erro_comum": "Encurtar a descida para pôr mais carga: tira justamente o trecho em que o quadríceps mais trabalha.",
+   "confianca": "alta",
+   "protocolo_vigente": true
+  },
+  {
+   "nome": "Agachamento Máquina (amplitude alta)",
+   "chave": "agachamento maquina",
+   "grupo": "Quadríceps",
+   "principal": [
+    "quadriceps_vastos",
+    "gluteo_maximo"
+   ],
+   "secundarios": [
+    "quadriceps_reto_femoral",
+    "adutores",
+    "isquiotibiais"
+   ],
+   "estabilizadores": [
+    "eretores_espinha",
+    "transverso"
+   ],
+   "foco": "Frente da coxa e glúteo, com alongamento forte no fundo.",
+   "execucao": [
+    "Use a amplitude completa: desça até onde a coluna continua neutra.",
+    "Joelhos na direção dos pés durante todo o percurso.",
+    "Subida contínua, sem travar os joelhos em cima."
+   ],
+   "erro_comum": "Trocar amplitude por carga: meia descida reduz o trabalho de quadríceps e de glúteo.",
+   "confianca": "media",
+   "duvida": "O nome não diz qual máquina de agachamento. Mapeado como agachamento guiado de amplitude completa.",
+   "protocolo_vigente": false
+  },
+  {
+   "nome": "Agachamento Sumô Máquina",
+   "chave": "agachamento sumo maquina",
+   "grupo": "Glúteos",
+   "principal": [
+    "gluteo_maximo",
+    "adutores"
+   ],
+   "secundarios": [
+    "quadriceps_vastos",
+    "quadriceps_reto_femoral",
+    "isquiotibiais"
+   ],
+   "estabilizadores": [
+    "eretores_espinha",
+    "gluteo_medio",
+    "transverso"
+   ],
+   "foco": "Parte interna da coxa e glúteo; os adutores alongam no fundo.",
+   "execucao": [
+    "Pés bem afastados e apontados para fora; joelhos abrindo na direção dos pés.",
+    "Desça com o tronco o mais ereto possível, até a coxa ficar paralela ao chão.",
+    "Na subida, empurre o chão para os lados e contraia o glúteo no final."
+   ],
+   "erro_comum": "Deixar os joelhos caírem para dentro: perde adutor e glúteo e força o joelho.",
+   "confianca": "media",
+   "duvida": "O nome não diz qual máquina. A base aberta aumenta adutores e glúteo, mas o quadríceps continua trabalhando forte.",
+   "protocolo_vigente": true
+  },
+  {
+   "nome": "Barra Fixa",
+   "chave": "barra fixa",
+   "grupo": "Costas",
+   "principal": [
+    "latissimo"
+   ],
+   "secundarios": [
+    "redondo_maior",
+    "biceps",
+    "braquial",
+    "braquiorradial",
+    "trapezio_inferior",
+    "romboides",
+    "deltoide_posterior"
+   ],
+   "estabilizadores": [
+    "flexores_antebraco",
+    "reto_abdominal_superior",
+    "transverso",
+    "infraespinal_redondo_menor"
+   ],
+   "foco": "Lateral das costas, abaixo da axila, puxando os cotovelos para baixo e para trás.",
+   "execucao": [
+    "Comece baixando as escápulas e pense em levar os cotovelos ao quadril.",
+    "Suba até o queixo passar a barra, com o peito aberto.",
+    "Desça até estender os braços, sem soltar os ombros."
+   ],
+   "erro_comum": "Puxar só com os braços e fazer meia amplitude, sem alongar o dorsal embaixo.",
+   "confianca": "alta",
+   "duvida": "A pegada não está no nome: pronada e aberta dá mais dorsal e redondo maior; supinada aumenta o bíceps.",
+   "protocolo_vigente": true
+  },
+  {
+   "nome": "Cadeira Abdutora",
+   "chave": "cadeira abdutora",
+   "grupo": "Glúteos",
+   "principal": [
+    "gluteo_medio"
+   ],
+   "secundarios": [
+    "gluteo_maximo"
+   ],
+   "estabilizadores": [
+    "obliquos",
+    "transverso"
+   ],
+   "foco": "Lateral do quadril, acima e atrás do osso lateral da coxa.",
+   "execucao": [
+    "Tronco inclinado à frente aumenta o glúteo máximo; tronco encostado concentra no glúteo médio.",
+    "Abra até o limite e segure um instante.",
+    "Volte devagar, sem deixar os pesos baterem."
+   ],
+   "erro_comum": "Abrir com impulso e voltar solto: o glúteo médio só trabalha em um trecho curto.",
+   "confianca": "alta",
+   "protocolo_vigente": false
+  },
+  {
+   "nome": "Cadeira Extensora Bilateral",
+   "chave": "cadeira extensora bilateral",
+   "grupo": "Quadríceps",
+   "principal": [
+    "quadriceps_vastos",
+    "quadriceps_reto_femoral"
+   ],
+   "secundarios": [],
+   "estabilizadores": [
+    "flexores_quadril",
+    "tibial_anterior"
+   ],
+   "foco": "Frente da coxa inteira, com pico de contração com o joelho estendido.",
+   "execucao": [
+    "Eixo da máquina alinhado com o joelho e quadril colado no banco.",
+    "Estenda tudo e segure um instante em cima.",
+    "Desça devagar até o joelho passar de 90°; encosto mais reclinado alonga mais o reto femoral."
+   ],
+   "erro_comum": "Chutar a carga e tirar o quadril do banco, usando o impulso em vez do quadríceps.",
+   "confianca": "alta",
+   "protocolo_vigente": true
+  },
+  {
+   "nome": "Cadeira Extensora Unilateral",
+   "chave": "cadeira extensora unilateral",
+   "grupo": "Quadríceps",
+   "principal": [
+    "quadriceps_vastos",
+    "quadriceps_reto_femoral"
+   ],
+   "secundarios": [],
+   "estabilizadores": [
+    "flexores_quadril",
+    "obliquos",
+    "tibial_anterior"
+   ],
+   "foco": "Frente da coxa da perna que trabalha, com pico de contração com o joelho estendido.",
+   "execucao": [
+    "Eixo da máquina alinhado com o joelho; quadril colado no banco, sem girar o tronco.",
+    "Estenda tudo e segure um instante em cima.",
+    "Mesmo número de repetições e mesma amplitude nas duas pernas."
+   ],
+   "erro_comum": "Girar o quadril para ajudar a perna que trabalha, tirando a carga do quadríceps.",
+   "confianca": "alta",
+   "protocolo_vigente": true
+  },
+  {
+   "nome": "Cross Over Polia Alta",
+   "chave": "cross over polia alta",
+   "grupo": "Peito",
+   "principal": [
+    "peitoral_esternal",
+    "peitoral_abdominal"
+   ],
+   "secundarios": [
+    "deltoide_anterior",
+    "peitoral_clavicular"
+   ],
+   "estabilizadores": [
+    "serratil",
+    "biceps",
+    "reto_abdominal_superior"
+   ],
+   "foco": "Parte de baixo e meio do peitoral, apertando quando as mãos se encontram à frente do quadril.",
+   "execucao": [
+    "Puxe de cima para baixo: o trajeto segue as fibras de baixo do peitoral.",
+    "Cotovelos levemente dobrados e fixos; quem se move é o ombro.",
+    "Cruze ou encoste as mãos e segure um instante."
+   ],
+   "erro_comum": "Dobrar e estender os cotovelos, empurrando com o tríceps em vez de fechar com o peitoral.",
+   "confianca": "alta",
+   "protocolo_vigente": false
+  },
+  {
+   "nome": "Cross Over Polia Média",
+   "chave": "cross over polia media",
+   "grupo": "Peito",
+   "principal": [
+    "peitoral_esternal"
+   ],
+   "secundarios": [
+    "peitoral_clavicular",
+    "peitoral_abdominal",
+    "deltoide_anterior"
+   ],
+   "estabilizadores": [
+    "serratil",
+    "biceps",
+    "reto_abdominal_superior"
+   ],
+   "foco": "Meio do peitoral, do esterno até a axila, apertando no centro do peito.",
+   "execucao": [
+    "Polias na altura dos ombros e mãos se encontrando à frente do peito.",
+    "Cotovelos levemente dobrados e fixos.",
+    "Abra até sentir o peitoral alongar, sem deixar o ombro ir à frente."
+   ],
+   "erro_comum": "Deixar os ombros rodarem para frente: o deltoide anterior assume o movimento.",
+   "confianca": "alta",
+   "protocolo_vigente": false
+  },
+  {
+   "nome": "Crucifixo Articulado Máquina",
+   "chave": "crucifixo articulado maquina",
+   "grupo": "Peito",
+   "principal": [
+    "peitoral_esternal"
+   ],
+   "secundarios": [
+    "peitoral_clavicular",
+    "deltoide_anterior"
+   ],
+   "estabilizadores": [
+    "serratil",
+    "biceps"
+   ],
+   "foco": "Meio do peitoral, alongando na abertura e apertando no centro ao fechar.",
+   "execucao": [
+    "Escápulas juntas e encostadas no banco durante todo o movimento.",
+    "Abra só até onde o ombro continua encaixado; não force além disso.",
+    "Volte lento e feche pensando em aproximar os cotovelos, não as mãos."
+   ],
+   "erro_comum": "Abrir além do limite do ombro, ou soltar as costas do encosto para fechar a carga.",
+   "confianca": "alta",
+   "protocolo_vigente": true
+  },
+  {
+   "nome": "Crucifixo Halteres Inclinado",
+   "chave": "crucifixo halteres inclinado",
+   "grupo": "Peito",
+   "principal": [
+    "peitoral_clavicular"
+   ],
+   "secundarios": [
+    "peitoral_esternal",
+    "deltoide_anterior"
+   ],
+   "estabilizadores": [
+    "biceps",
+    "serratil",
+    "infraespinal_redondo_menor"
+   ],
+   "foco": "Parte de cima do peitoral, logo abaixo da clavícula.",
+   "execucao": [
+    "Banco entre 30° e 45°; acima disso o deltoide anterior assume.",
+    "Cotovelos levemente dobrados e fixos; desça em arco até alongar o peito.",
+    "Suba em arco e pare antes de os halteres se encostarem."
+   ],
+   "erro_comum": "Dobrar os cotovelos na descida e empurrar na subida: vira supino e perde o alongamento.",
+   "confianca": "alta",
+   "protocolo_vigente": false
+  },
+  {
+   "nome": "Crucifixo Inverso Máquina",
+   "chave": "crucifixo inverso maquina",
+   "grupo": "Ombros",
+   "principal": [
+    "deltoide_posterior"
+   ],
+   "secundarios": [
+    "trapezio_medio",
+    "romboides",
+    "infraespinal_redondo_menor"
+   ],
+   "estabilizadores": [
+    "trapezio_inferior",
+    "triceps_longa"
+   ],
+   "foco": "Parte de trás do ombro; se juntar as escápulas, também o meio das costas.",
+   "execucao": [
+    "Para isolar o deltoide posterior, abra os braços sem juntar as escápulas.",
+    "Cotovelos levemente dobrados e fixos, na altura dos ombros.",
+    "Segure um instante com os braços abertos e volte devagar."
+   ],
+   "erro_comum": "Encolher os ombros e puxar com o trapézio, ou dobrar os cotovelos e transformar em remada.",
+   "confianca": "alta",
+   "duvida": "O treinador classifica como Costas. O músculo que limita a série é o deltoide posterior (ombro); trapézio médio e romboides entram quando as escápulas se juntam.",
+   "protocolo_vigente": false
+  },
+  {
+   "nome": "Crucifixo Máquina",
+   "chave": "crucifixo maquina",
+   "grupo": "Peito",
+   "principal": [
+    "peitoral_esternal"
+   ],
+   "secundarios": [
+    "peitoral_clavicular",
+    "deltoide_anterior"
+   ],
+   "estabilizadores": [
+    "serratil",
+    "biceps"
+   ],
+   "foco": "Meio do peitoral, com pico de contração quando os braços se fecham à frente.",
+   "execucao": [
+    "Banco ajustado para as mãos ficarem na altura do meio do peito.",
+    "Escápulas juntas no encosto e peito alto.",
+    "Feche até o fim, segure a isometria e volte devagar."
+   ],
+   "erro_comum": "Projetar os ombros para frente ao fechar: o peitoral perde a contração para o deltoide anterior.",
+   "confianca": "alta",
+   "protocolo_vigente": false
+  },
+  {
+   "nome": "Desenvolvimento Halteres",
+   "chave": "desenvolvimento halteres",
+   "grupo": "Ombros",
+   "principal": [
+    "deltoide_anterior"
+   ],
+   "secundarios": [
+    "deltoide_lateral",
+    "triceps_lateral_medial",
+    "triceps_longa",
+    "peitoral_clavicular",
+    "trapezio_superior",
+    "serratil"
+   ],
+   "estabilizadores": [
+    "infraespinal_redondo_menor",
+    "trapezio_inferior",
+    "transverso"
+   ],
+   "foco": "Parte da frente e de cima do ombro; o tríceps termina o movimento.",
+   "execucao": [
+    "Antebraços na vertical, cotovelos um pouco à frente da linha do corpo.",
+    "Desça até as mãos chegarem perto da altura das orelhas.",
+    "Suba sem encolher os ombros e sem travar os cotovelos."
+   ],
+   "erro_comum": "Arquear a lombar e inclinar o tronco para trás: vira supino inclinado e o peitoral assume.",
+   "confianca": "alta",
+   "protocolo_vigente": true
+  },
+  {
+   "nome": "Desenvolvimento Militar",
+   "chave": "desenvolvimento militar",
+   "grupo": "Ombros",
+   "principal": [
+    "deltoide_anterior"
+   ],
+   "secundarios": [
+    "deltoide_lateral",
+    "triceps_lateral_medial",
+    "triceps_longa",
+    "peitoral_clavicular",
+    "trapezio_superior",
+    "serratil"
+   ],
+   "estabilizadores": [
+    "eretores_espinha",
+    "reto_abdominal_superior",
+    "transverso",
+    "gluteo_maximo"
+   ],
+   "foco": "Parte da frente e de cima do ombro, com abdômen e glúteo firmes segurando o tronco.",
+   "execucao": [
+    "Barra saindo da parte de cima do peito e subindo rente ao rosto.",
+    "Pegada pouco mais aberta que os ombros, antebraços na vertical.",
+    "Abdômen e glúteo contraídos, costelas fechadas."
+   ],
+   "erro_comum": "Inclinar o tronco para trás e arquear a lombar para vencer a carga.",
+   "confianca": "media",
+   "duvida": "O nome não diz se é em pé ou sentado, nem se é barra livre ou guiada. Em pé, o tronco trabalha muito mais como estabilizador.",
+   "protocolo_vigente": true
+  },
+  {
+   "nome": "Desenvolvimento Máquina",
+   "chave": "desenvolvimento maquina",
+   "grupo": "Ombros",
+   "principal": [
+    "deltoide_anterior"
+   ],
+   "secundarios": [
+    "deltoide_lateral",
+    "triceps_lateral_medial",
+    "triceps_longa",
+    "peitoral_clavicular",
+    "trapezio_superior",
+    "serratil"
+   ],
+   "estabilizadores": [
+    "infraespinal_redondo_menor",
+    "trapezio_inferior"
+   ],
+   "foco": "Parte da frente e de cima do ombro; o tríceps termina o movimento.",
+   "execucao": [
+    "Banco ajustado para as mãos saírem perto da altura das orelhas.",
+    "Costas e cabeça no encosto; antebraços na vertical.",
+    "Suba sem encolher os ombros e sem travar os cotovelos."
+   ],
+   "erro_comum": "Tirar as costas do encosto e arquear a lombar para empurrar.",
+   "confianca": "alta",
+   "protocolo_vigente": false
+  },
+  {
+   "nome": "Desenvolvimento Máquina (cluster)",
+   "chave": "desenvolvimento maquina",
+   "grupo": "Ombros",
+   "principal": [
+    "deltoide_anterior"
+   ],
+   "secundarios": [
+    "deltoide_lateral",
+    "triceps_lateral_medial",
+    "triceps_longa",
+    "peitoral_clavicular",
+    "trapezio_superior",
+    "serratil"
+   ],
+   "estabilizadores": [
+    "infraespinal_redondo_menor",
+    "trapezio_inferior"
+   ],
+   "foco": "Parte da frente e de cima do ombro; o tríceps termina o movimento.",
+   "execucao": [
+    "Banco ajustado para as mãos saírem perto da altura das orelhas.",
+    "Costas e cabeça no encosto; antebraços na vertical.",
+    "Suba sem encolher os ombros e sem travar os cotovelos."
+   ],
+   "erro_comum": "Tirar as costas do encosto e arquear a lombar para empurrar.",
+   "confianca": "alta",
+   "protocolo_vigente": false
+  },
+  {
+   "nome": "Desenvolvimento Máquina (progressivo)",
+   "chave": "desenvolvimento maquina",
+   "grupo": "Ombros",
+   "principal": [
+    "deltoide_anterior"
+   ],
+   "secundarios": [
+    "deltoide_lateral",
+    "triceps_lateral_medial",
+    "triceps_longa",
+    "peitoral_clavicular",
+    "trapezio_superior",
+    "serratil"
+   ],
+   "estabilizadores": [
+    "infraespinal_redondo_menor",
+    "trapezio_inferior"
+   ],
+   "foco": "Parte da frente e de cima do ombro; o tríceps termina o movimento.",
+   "execucao": [
+    "Banco ajustado para as mãos saírem perto da altura das orelhas.",
+    "Costas e cabeça no encosto; antebraços na vertical.",
+    "Suba sem encolher os ombros e sem travar os cotovelos."
+   ],
+   "erro_comum": "Tirar as costas do encosto e arquear a lombar para empurrar.",
+   "confianca": "alta",
+   "protocolo_vigente": false
+  },
+  {
+   "nome": "Desenvolvimento Máquina (pré-fadiga deltoide frontal)",
+   "chave": "desenvolvimento maquina",
+   "grupo": "Ombros",
+   "principal": [
+    "deltoide_anterior"
+   ],
+   "secundarios": [
+    "deltoide_lateral",
+    "triceps_lateral_medial",
+    "triceps_longa",
+    "peitoral_clavicular",
+    "trapezio_superior",
+    "serratil"
+   ],
+   "estabilizadores": [
+    "infraespinal_redondo_menor",
+    "trapezio_inferior"
+   ],
+   "foco": "Parte da frente e de cima do ombro; o tríceps termina o movimento.",
+   "execucao": [
+    "Banco ajustado para as mãos saírem perto da altura das orelhas.",
+    "Costas e cabeça no encosto; antebraços na vertical.",
+    "Suba sem encolher os ombros e sem travar os cotovelos."
+   ],
+   "erro_comum": "Tirar as costas do encosto e arquear a lombar para empurrar.",
+   "confianca": "alta",
+   "protocolo_vigente": false
+  },
+  {
+   "nome": "Desenvolvimento Máquina Pegada Neutra",
+   "chave": "desenvolvimento maquina pegada neutra",
+   "grupo": "Ombros",
+   "principal": [
+    "deltoide_anterior"
+   ],
+   "secundarios": [
+    "peitoral_clavicular",
+    "triceps_lateral_medial",
+    "triceps_longa",
+    "deltoide_lateral",
+    "trapezio_superior",
+    "serratil"
+   ],
+   "estabilizadores": [
+    "infraespinal_redondo_menor",
+    "trapezio_inferior"
+   ],
+   "foco": "Parte da frente do ombro, com ajuda da parte de cima do peitoral.",
+   "execucao": [
+    "Com a pegada neutra os cotovelos vão à frente: mais deltoide anterior e menos lateral.",
+    "Costas e cabeça no encosto; desça até as mãos chegarem à altura do queixo.",
+    "Suba sem encolher os ombros e sem travar os cotovelos."
+   ],
+   "erro_comum": "Arquear a lombar e tirar as costas do encosto: vira supino inclinado.",
+   "confianca": "alta",
+   "protocolo_vigente": true
+  },
+  {
+   "nome": "Elevação Frontal Barra W",
+   "chave": "elevacao frontal barra w",
+   "grupo": "Ombros",
+   "principal": [
+    "deltoide_anterior"
+   ],
+   "secundarios": [
+    "peitoral_clavicular",
+    "deltoide_lateral",
+    "serratil",
+    "trapezio_superior"
+   ],
+   "estabilizadores": [
+    "eretores_espinha",
+    "reto_abdominal_superior",
+    "transverso",
+    "extensores_antebraco"
+   ],
+   "foco": "Parte da frente do ombro, do início ao fim da subida.",
+   "execucao": [
+    "Suba até a altura dos ombros ou pouco acima; passar muito disso é trabalho de trapézio.",
+    "Cotovelos levemente dobrados e fixos; tronco parado.",
+    "Desça devagar, sem deixar o peso cair."
+   ],
+   "erro_comum": "Balançar o tronco para trás para subir a barra, usando a lombar em vez do ombro.",
+   "confianca": "alta",
+   "protocolo_vigente": false
+  },
+  {
+   "nome": "Elevação Frontal Halter Peg. Neutra",
+   "chave": "elevacao frontal halter peg neutra",
+   "grupo": "Ombros",
+   "principal": [
+    "deltoide_anterior"
+   ],
+   "secundarios": [
+    "peitoral_clavicular",
+    "deltoide_lateral",
+    "serratil",
+    "trapezio_superior"
+   ],
+   "estabilizadores": [
+    "eretores_espinha",
+    "reto_abdominal_superior",
+    "transverso",
+    "braquiorradial"
+   ],
+   "foco": "Parte da frente do ombro; a pegada neutra traz um pouco mais de peitoral superior.",
+   "execucao": [
+    "Polegares para cima e subida até a altura dos ombros.",
+    "Cotovelos levemente dobrados e fixos; tronco parado.",
+    "Desça devagar, sem deixar o halter cair."
+   ],
+   "erro_comum": "Usar impulso do tronco e subir acima da cabeça, o que passa o trabalho para o trapézio.",
+   "confianca": "alta",
+   "protocolo_vigente": false
+  },
+  {
+   "nome": "Elevação Frontal Halter Sentado Banco Reto",
+   "chave": "elevacao frontal halter sentado banco reto",
+   "grupo": "Ombros",
+   "principal": [
+    "deltoide_anterior"
+   ],
+   "secundarios": [
+    "peitoral_clavicular",
+    "deltoide_lateral",
+    "serratil",
+    "trapezio_superior"
+   ],
+   "estabilizadores": [
+    "reto_abdominal_superior",
+    "transverso",
+    "eretores_espinha"
+   ],
+   "foco": "Parte da frente do ombro; sentado, sem ajuda das pernas nem do tronco.",
+   "execucao": [
+    "Sentado ereto, abdômen firme, sem encostar e sem balançar.",
+    "Suba até a altura dos ombros com os cotovelos levemente dobrados.",
+    "Desça devagar até os halteres chegarem ao lado das coxas."
+   ],
+   "erro_comum": "Inclinar o tronco para trás a cada repetição para ganhar impulso.",
+   "confianca": "alta",
+   "duvida": "A pegada (pronada ou neutra) não está no nome; o músculo principal é o mesmo.",
+   "protocolo_vigente": false
+  },
+  {
+   "nome": "Elevação Frontal Máquina | Halter",
+   "chave": "elevacao frontal maquina | halter",
+   "grupo": "Ombros",
+   "principal": [
+    "deltoide_anterior"
+   ],
+   "secundarios": [
+    "peitoral_clavicular",
+    "deltoide_lateral",
+    "serratil",
+    "trapezio_superior"
+   ],
+   "estabilizadores": [
+    "reto_abdominal_superior",
+    "transverso",
+    "eretores_espinha"
+   ],
+   "foco": "Parte da frente do ombro, do início ao fim da subida.",
+   "execucao": [
+    "Suba até a altura dos ombros ou pouco acima; passar muito disso é trabalho de trapézio.",
+    "Cotovelos levemente dobrados e fixos; tronco parado.",
+    "Desça devagar, sem deixar o peso cair."
+   ],
+   "erro_comum": "Dar impulso com o tronco e encolher os ombros no topo.",
+   "confianca": "alta",
+   "protocolo_vigente": true
+  },
+  {
+   "nome": "Elevação Lateral",
+   "chave": "elevacao lateral",
+   "grupo": "Ombros",
+   "principal": [
+    "deltoide_lateral"
+   ],
+   "secundarios": [
+    "deltoide_anterior",
+    "trapezio_superior",
+    "serratil"
+   ],
+   "estabilizadores": [
+    "infraespinal_redondo_menor",
+    "extensores_antebraco",
+    "eretores_espinha"
+   ],
+   "foco": "Lateral do ombro, no meio do músculo, com o pico perto da altura do ombro.",
+   "execucao": [
+    "Suba com os cotovelos, não com as mãos, levemente à frente da linha do corpo.",
+    "Pare na altura dos ombros e segure um instante.",
+    "Ombros baixos, longe das orelhas, durante todo o movimento."
+   ],
+   "erro_comum": "Encolher os ombros e subir com impulso: o trapézio superior toma o lugar do deltoide lateral.",
+   "confianca": "alta",
+   "protocolo_vigente": false
+  },
+  {
+   "nome": "Elevação Lateral Halteres Sentado Banco Reto",
+   "chave": "elevacao lateral halteres sentado banco reto",
+   "grupo": "Ombros",
+   "principal": [
+    "deltoide_lateral"
+   ],
+   "secundarios": [
+    "deltoide_anterior",
+    "trapezio_superior",
+    "serratil"
+   ],
+   "estabilizadores": [
+    "infraespinal_redondo_menor",
+    "extensores_antebraco",
+    "reto_abdominal_superior"
+   ],
+   "foco": "Lateral do ombro; sentado, sem impulso das pernas.",
+   "execucao": [
+    "Tronco ereto e parado; suba com os cotovelos até a altura dos ombros.",
+    "Segure a isometria em cima.",
+    "Desça devagar, sem encostar os halteres no banco."
+   ],
+   "erro_comum": "Encolher os ombros e subir com impulso: o trapézio superior toma o lugar do deltoide lateral.",
+   "confianca": "alta",
+   "protocolo_vigente": false
+  },
+  {
+   "nome": "Elevação Lateral Máquina",
+   "chave": "elevacao lateral maquina",
+   "grupo": "Ombros",
+   "principal": [
+    "deltoide_lateral"
+   ],
+   "secundarios": [
+    "deltoide_anterior",
+    "trapezio_superior",
+    "serratil"
+   ],
+   "estabilizadores": [
+    "infraespinal_redondo_menor"
+   ],
+   "foco": "Lateral do ombro, com tensão constante do início ao fim.",
+   "execucao": [
+    "Eixo da máquina alinhado com o ombro; a força sai do cotovelo contra o apoio.",
+    "Suba até os braços ficarem na altura dos ombros.",
+    "Ombros baixos; volte sem deixar a carga encostar."
+   ],
+   "erro_comum": "Encolher os ombros e subir com impulso: o trapézio superior toma o lugar do deltoide lateral.",
+   "confianca": "alta",
+   "protocolo_vigente": true
+  },
+  {
+   "nome": "Elevação Lateral Máquina Unilateral",
+   "chave": "elevacao lateral maquina unilateral",
+   "grupo": "Ombros",
+   "principal": [
+    "deltoide_lateral"
+   ],
+   "secundarios": [
+    "deltoide_anterior",
+    "trapezio_superior",
+    "serratil"
+   ],
+   "estabilizadores": [
+    "infraespinal_redondo_menor",
+    "obliquos"
+   ],
+   "foco": "Lateral do ombro do lado que trabalha, com tensão constante.",
+   "execucao": [
+    "Eixo da máquina alinhado com o ombro; empurre com o cotovelo.",
+    "Suba até a altura do ombro, sem inclinar o tronco para o outro lado.",
+    "Volte devagar, sem deixar a carga encostar."
+   ],
+   "erro_comum": "Encolher os ombros e subir com impulso: o trapézio superior toma o lugar do deltoide lateral.",
+   "confianca": "alta",
+   "protocolo_vigente": false
+  },
+  {
+   "nome": "Elevação Lateral Máquina em Pé Unilateral",
+   "chave": "elevacao lateral maquina em pe unilateral",
+   "grupo": "Ombros",
+   "principal": [
+    "deltoide_lateral"
+   ],
+   "secundarios": [
+    "deltoide_anterior",
+    "trapezio_superior",
+    "serratil"
+   ],
+   "estabilizadores": [
+    "infraespinal_redondo_menor",
+    "obliquos",
+    "eretores_espinha"
+   ],
+   "foco": "Lateral do ombro do lado que trabalha.",
+   "execucao": [
+    "Em pé, tronco firme; suba o cotovelo até a altura do ombro.",
+    "Não incline o tronco para o lado oposto para ajudar.",
+    "Volte devagar, mantendo o ombro baixo."
+   ],
+   "erro_comum": "Encolher os ombros e subir com impulso: o trapézio superior toma o lugar do deltoide lateral.",
+   "confianca": "media",
+   "duvida": "O nome não diz a máquina (articulada ou polia). Na polia, a tensão é maior no início do movimento.",
+   "protocolo_vigente": true
+  },
+  {
+   "nome": "Elevação Lateral Sentado",
+   "chave": "elevacao lateral sentado",
+   "grupo": "Ombros",
+   "principal": [
+    "deltoide_lateral"
+   ],
+   "secundarios": [
+    "deltoide_anterior",
+    "trapezio_superior",
+    "serratil"
+   ],
+   "estabilizadores": [
+    "infraespinal_redondo_menor",
+    "extensores_antebraco",
+    "reto_abdominal_superior"
+   ],
+   "foco": "Lateral do ombro; sentado, sem impulso das pernas.",
+   "execucao": [
+    "Tronco ereto e parado; suba com os cotovelos até a altura dos ombros.",
+    "Cotovelos levemente dobrados e fixos.",
+    "Desça devagar, sem relaxar embaixo."
+   ],
+   "erro_comum": "Encolher os ombros e subir com impulso: o trapézio superior toma o lugar do deltoide lateral.",
+   "confianca": "alta",
+   "protocolo_vigente": false
+  },
+  {
+   "nome": "Elevação Lateral em Pé",
+   "chave": "elevacao lateral em pe",
+   "grupo": "Ombros",
+   "principal": [
+    "deltoide_lateral"
+   ],
+   "secundarios": [
+    "deltoide_anterior",
+    "trapezio_superior",
+    "serratil"
+   ],
+   "estabilizadores": [
+    "infraespinal_redondo_menor",
+    "extensores_antebraco",
+    "eretores_espinha",
+    "transverso"
+   ],
+   "foco": "Lateral do ombro, no meio do músculo.",
+   "execucao": [
+    "Com carga pesada, mantenha o tronco parado e uma leve inclinação à frente.",
+    "Suba com os cotovelos até a altura dos ombros.",
+    "Controle a descida; não deixe o halter cair."
+   ],
+   "erro_comum": "Encolher os ombros e subir com impulso: o trapézio superior toma o lugar do deltoide lateral.",
+   "confianca": "alta",
+   "protocolo_vigente": true
+  },
+  {
+   "nome": "Elevação Pélvica Máquina",
+   "chave": "elevacao pelvica maquina",
+   "grupo": "Glúteos",
+   "principal": [
+    "gluteo_maximo"
+   ],
+   "secundarios": [
+    "isquiotibiais",
+    "adutores",
+    "quadriceps_vastos"
+   ],
+   "estabilizadores": [
+    "eretores_espinha",
+    "gluteo_medio",
+    "reto_abdominal_superior",
+    "transverso"
+   ],
+   "foco": "Glúteo, com pico de contração em cima, com o quadril totalmente estendido.",
+   "execucao": [
+    "Pés afastados do quadril o bastante para a canela ficar vertical em cima.",
+    "Queixo para baixo e costelas fechadas; suba girando a pelve, sem arquear a lombar.",
+    "Segure um instante em cima apertando o glúteo."
+   ],
+   "erro_comum": "Arquear a lombar para subir mais: quem estende é a coluna, não o quadril.",
+   "confianca": "alta",
+   "protocolo_vigente": true
+  },
+  {
+   "nome": "Flexão em Pé Máquina",
+   "chave": "flexao em pe maquina",
+   "grupo": "Posterior de coxa",
+   "principal": [
+    "isquiotibiais"
+   ],
+   "secundarios": [
+    "gastrocnemio"
+   ],
+   "estabilizadores": [
+    "gluteo_maximo",
+    "eretores_espinha",
+    "transverso"
+   ],
+   "foco": "Parte de trás da coxa, do glúteo até atrás do joelho, da perna que flexiona.",
+   "execucao": [
+    "Quadril encostado no apoio, sem empinar o glúteo ao flexionar.",
+    "Leve o calcanhar ao glúteo e segure um instante.",
+    "Desça devagar até quase estender o joelho."
+   ],
+   "erro_comum": "Arquear a lombar e levantar o quadril do apoio para ajudar a carga.",
+   "confianca": "media",
+   "duvida": "Entendido como a flexora em pé (uma perna por vez), por estar no grupo Posterior. Confirmar.",
+   "protocolo_vigente": true
+  },
+  {
+   "nome": "Fly | Peck Deck",
+   "chave": "fly | peck deck",
+   "grupo": "Peito",
+   "principal": [
+    "peitoral_esternal"
+   ],
+   "secundarios": [
+    "peitoral_clavicular",
+    "deltoide_anterior"
+   ],
+   "estabilizadores": [
+    "serratil",
+    "biceps"
+   ],
+   "foco": "Meio do peitoral, com pico de contração quando os braços se fecham à frente.",
+   "execucao": [
+    "Banco ajustado para as mãos ficarem na altura do meio do peito.",
+    "Escápulas juntas no encosto e peito alto.",
+    "Feche até o fim, segure a isometria e volte devagar."
+   ],
+   "erro_comum": "Projetar os ombros para frente ao fechar: o peitoral perde a contração para o deltoide anterior.",
+   "confianca": "alta",
+   "protocolo_vigente": true
+  },
+  {
+   "nome": "High Pull Articulado Unilateral",
+   "chave": "high pull articulado unilateral",
+   "grupo": "Costas",
+   "principal": [
+    "latissimo"
+   ],
+   "secundarios": [
+    "redondo_maior",
+    "trapezio_inferior",
+    "romboides",
+    "deltoide_posterior",
+    "biceps",
+    "braquial",
+    "braquiorradial"
+   ],
+   "estabilizadores": [
+    "obliquos",
+    "eretores_espinha",
+    "flexores_antebraco"
+   ],
+   "foco": "Lateral das costas do lado que puxa, do alto da axila até a cintura.",
+   "execucao": [
+    "Deixe o braço subir e a escápula alongar em cima antes de puxar.",
+    "Puxe o cotovelo para baixo e para trás, em direção ao quadril.",
+    "Tronco parado, peito no apoio, sem girar."
+   ],
+   "erro_comum": "Girar o tronco para o lado que puxa, trocando o dorsal pelo impulso.",
+   "confianca": "media",
+   "duvida": "Entendido como a remada alta articulada, puxando de cima para baixo, um braço por vez, por estar no grupo Costas. Confirmar a máquina.",
+   "protocolo_vigente": true
+  },
+  {
+   "nome": "Iso Peitoral",
+   "chave": "iso peitoral",
+   "grupo": "Peito",
+   "principal": [
+    "peitoral_esternal"
+   ],
+   "secundarios": [
+    "peitoral_clavicular",
+    "deltoide_anterior",
+    "triceps_lateral_medial",
+    "triceps_longa"
+   ],
+   "estabilizadores": [
+    "serratil",
+    "infraespinal_redondo_menor"
+   ],
+   "foco": "Meio do peitoral, empurrando e fechando levemente os braços no final.",
+   "execucao": [
+    "Escápulas juntas e para baixo, coladas no encosto.",
+    "Cotovelos a cerca de 45° a 60° do tronco, punhos alinhados com os cotovelos.",
+    "Desça até alongar o peito e suba sem travar os cotovelos."
+   ],
+   "erro_comum": "Tirar os ombros do encosto no final do movimento, passando a carga para o deltoide anterior.",
+   "confianca": "media",
+   "duvida": "\"Iso\" foi entendido como máquina articulada de braços independentes para supino. O nome não diz o ângulo: se a máquina for inclinada, o principal passa a ser o peitoral superior; se for declinada, o inferior.",
+   "protocolo_vigente": false
+  },
+  {
+   "nome": "Iso Peitoral Máquina",
+   "chave": "iso peitoral maquina",
+   "grupo": "Peito",
+   "principal": [
+    "peitoral_esternal"
+   ],
+   "secundarios": [
+    "peitoral_clavicular",
+    "deltoide_anterior",
+    "triceps_lateral_medial",
+    "triceps_longa"
+   ],
+   "estabilizadores": [
+    "serratil",
+    "infraespinal_redondo_menor"
+   ],
+   "foco": "Meio do peitoral, empurrando e fechando levemente os braços no final.",
+   "execucao": [
+    "Escápulas juntas e para baixo, coladas no encosto.",
+    "Cotovelos a cerca de 45° a 60° do tronco, punhos alinhados com os cotovelos.",
+    "Desça até alongar o peito e suba sem travar os cotovelos."
+   ],
+   "erro_comum": "Tirar os ombros do encosto no final do movimento, passando a carga para o deltoide anterior.",
+   "confianca": "media",
+   "duvida": "\"Iso\" foi entendido como máquina articulada de braços independentes para supino. O nome não diz o ângulo: se a máquina for inclinada, o principal passa a ser o peitoral superior; se for declinada, o inferior.",
+   "protocolo_vigente": true
+  },
+  {
+   "nome": "Leg Horizontal",
+   "chave": "leg horizontal",
+   "grupo": "Quadríceps",
+   "principal": [
+    "quadriceps_vastos",
+    "gluteo_maximo"
+   ],
+   "secundarios": [
+    "quadriceps_reto_femoral",
+    "isquiotibiais",
+    "adutores"
+   ],
+   "estabilizadores": [
+    "gastrocnemio",
+    "soleo",
+    "transverso"
+   ],
+   "foco": "Frente da coxa; com os pés mais altos entram mais glúteo e posterior.",
+   "execucao": [
+    "Pés mais altos na plataforma aumentam glúteo e posterior; pés mais baixos, quadríceps.",
+    "Desça até os joelhos chegarem perto do peito, sem tirar o quadril do banco.",
+    "Empurre com o pé inteiro e não trave os joelhos."
+   ],
+   "erro_comum": "Descer pouco, ou descer tanto que o quadril sai do banco e a lombar arredonda.",
+   "confianca": "alta",
+   "protocolo_vigente": true
+  },
+  {
+   "nome": "Leg Press",
+   "chave": "leg press",
+   "grupo": "Quadríceps",
+   "principal": [
+    "quadriceps_vastos"
+   ],
+   "secundarios": [
+    "gluteo_maximo",
+    "quadriceps_reto_femoral",
+    "adutores",
+    "isquiotibiais"
+   ],
+   "estabilizadores": [
+    "gastrocnemio",
+    "soleo",
+    "transverso"
+   ],
+   "foco": "Frente da coxa na subida; glúteo no fundo do movimento.",
+   "execucao": [
+    "Pés no meio da plataforma, na largura do quadril; mais baixos dão mais quadríceps, mais altos dão mais glúteo.",
+    "Desça até onde o quadril continua apoiado no banco.",
+    "Empurre com o pé inteiro e não trave os joelhos."
+   ],
+   "erro_comum": "Meia amplitude com carga alta e mãos empurrando os joelhos.",
+   "confianca": "media",
+   "duvida": "O nome não diz o ângulo da máquina (45° ou horizontal). Os músculos são os mesmos.",
+   "protocolo_vigente": false
+  },
+  {
+   "nome": "Leg Press 45°",
+   "chave": "leg press 45",
+   "grupo": "Quadríceps",
+   "principal": [
+    "quadriceps_vastos",
+    "gluteo_maximo"
+   ],
+   "secundarios": [
+    "quadriceps_reto_femoral",
+    "adutores",
+    "isquiotibiais"
+   ],
+   "estabilizadores": [
+    "gastrocnemio",
+    "soleo",
+    "transverso"
+   ],
+   "foco": "Frente da coxa na subida e glúteo no fundo, com os joelhos perto do peito.",
+   "execucao": [
+    "Pés mais baixos e juntos aumentam o quadríceps; mais altos e afastados aumentam glúteo e adutores.",
+    "Desça até onde o quadril continua colado no banco.",
+    "Empurre com o pé inteiro e pare antes de travar os joelhos."
+   ],
+   "erro_comum": "Descer pouco para aguentar mais carga, ou deixar o quadril sair do banco no fundo.",
+   "confianca": "alta",
+   "protocolo_vigente": true
+  },
+  {
+   "nome": "Levantamento Terra Máquina",
+   "chave": "levantamento terra maquina",
+   "grupo": "Lombar",
+   "principal": [
+    "eretores_espinha",
+    "gluteo_maximo"
+   ],
+   "secundarios": [
+    "isquiotibiais",
+    "quadriceps_vastos",
+    "trapezio_superior",
+    "trapezio_medio",
+    "latissimo",
+    "adutores"
+   ],
+   "estabilizadores": [
+    "flexores_antebraco",
+    "transverso",
+    "reto_abdominal_superior",
+    "romboides"
+   ],
+   "foco": "Lombar e glúteo; a coluna fica firme e reta enquanto o quadril estende.",
+   "execucao": [
+    "Coluna neutra do início ao fim; o movimento é do quadril.",
+    "Carga perto do corpo, com o dorsal contraído (ombros para baixo).",
+    "Termine em pé apertando o glúteo, sem jogar o tronco para trás."
+   ],
+   "erro_comum": "Arredondar a lombar na saída: a carga passa do músculo para a coluna.",
+   "confianca": "media",
+   "duvida": "O nome não diz qual máquina. O treinador colocou no treino de Costas: a intenção é a cadeia posterior, com lombar, trapézio e dorsal em isometria.",
+   "protocolo_vigente": true
+  },
+  {
+   "nome": "Meio Terra Barra Guiada",
+   "chave": "meio terra barra guiada",
+   "grupo": "Lombar",
+   "principal": [
+    "eretores_espinha",
+    "gluteo_maximo"
+   ],
+   "secundarios": [
+    "isquiotibiais",
+    "trapezio_superior",
+    "trapezio_medio",
+    "latissimo"
+   ],
+   "estabilizadores": [
+    "flexores_antebraco",
+    "transverso",
+    "reto_abdominal_superior",
+    "romboides"
+   ],
+   "foco": "Lombar, ao lado da coluna, e glúteo no final da subida.",
+   "execucao": [
+    "Saída com a barra na altura do joelho; coluna neutra e peito aberto.",
+    "Estenda o quadril levando-o à frente, com a barra perto das coxas.",
+    "Desça empurrando o quadril para trás, sem arredondar as costas."
+   ],
+   "erro_comum": "Puxar com a coluna arredondada ou terminar jogando o tronco para trás.",
+   "confianca": "alta",
+   "protocolo_vigente": false
+  },
+  {
+   "nome": "Mergulho Máquina ou Banco",
+   "chave": "mergulho maquina ou banco",
+   "grupo": "Tríceps",
+   "principal": [
+    "triceps_lateral_medial",
+    "triceps_longa"
+   ],
+   "secundarios": [
+    "peitoral_abdominal",
+    "peitoral_esternal",
+    "deltoide_anterior"
+   ],
+   "estabilizadores": [
+    "trapezio_inferior",
+    "serratil"
+   ],
+   "foco": "Parte de trás do braço, apertando quando o cotovelo estende por completo.",
+   "execucao": [
+    "Tronco ereto e cotovelos apontando para trás, rentes ao corpo.",
+    "Desça até o cotovelo chegar perto de 90°, sem forçar o ombro.",
+    "Estenda tudo e segure um instante."
+   ],
+   "erro_comum": "Descer demais com os ombros caindo à frente: sobrecarrega o ombro e tira a carga do tríceps.",
+   "confianca": "alta",
+   "duvida": "São duas alternativas (máquina ou banco). No banco, o ombro fica mais estendido; limitar a descida.",
+   "protocolo_vigente": false
+  },
+  {
+   "nome": "Mesa Flexora",
+   "chave": "mesa flexora",
+   "grupo": "Posterior de coxa",
+   "principal": [
+    "isquiotibiais"
+   ],
+   "secundarios": [
+    "gastrocnemio"
+   ],
+   "estabilizadores": [
+    "gluteo_maximo",
+    "eretores_espinha"
+   ],
+   "foco": "Parte de trás da coxa, do glúteo até atrás do joelho.",
+   "execucao": [
+    "Quadril colado no banco; o eixo da máquina alinhado com o joelho.",
+    "Leve o apoio até perto do glúteo e segure um instante.",
+    "Desça em 2 a 3 segundos até quase estender o joelho."
+   ],
+   "erro_comum": "Levantar o quadril do banco para ajudar: encurta a amplitude e passa esforço para a lombar.",
+   "confianca": "alta",
+   "protocolo_vigente": true
+  },
+  {
+   "nome": "Mesa Flexora + Agachamento Halteres",
+   "chave": "mesa flexora + agachamento halteres",
+   "grupo": "Posterior de coxa",
+   "principal": [
+    "isquiotibiais",
+    "quadriceps_vastos"
+   ],
+   "secundarios": [
+    "gastrocnemio",
+    "gluteo_maximo",
+    "quadriceps_reto_femoral",
+    "adutores"
+   ],
+   "estabilizadores": [
+    "eretores_espinha",
+    "transverso",
+    "flexores_antebraco"
+   ],
+   "foco": "Mesa flexora: parte de trás da coxa. Agachamento com halteres: frente da coxa e glúteo.",
+   "execucao": [
+    "Na mesa, quadril colado no banco e descida lenta.",
+    "No agachamento, halteres ao lado do corpo, tronco ereto e descida até a paralela.",
+    "Passe de um para o outro sem descanso, mantendo a amplitude dos dois."
+   ],
+   "erro_comum": "Encurtar o agachamento por causa do cansaço da mesa flexora.",
+   "confianca": "alta",
+   "protocolo_vigente": false
+  },
+  {
+   "nome": "Panturrilha Sentado",
+   "chave": "panturrilha sentado",
+   "grupo": "Panturrilha",
+   "principal": [
+    "soleo"
+   ],
+   "secundarios": [
+    "gastrocnemio"
+   ],
+   "estabilizadores": [],
+   "foco": "Parte de baixo e mais funda da panturrilha, perto do tendão de Aquiles.",
+   "execucao": [
+    "Com o joelho dobrado o gastrocnêmio fica frouxo: quem trabalha é o sóleo.",
+    "Desça o calcanhar até o alongamento máximo e pare um instante embaixo.",
+    "Suba até a ponta dos pés e segure um instante."
+   ],
+   "erro_comum": "Quicar no fundo, usando o tendão como mola em vez do músculo.",
+   "confianca": "alta",
+   "protocolo_vigente": true
+  },
+  {
+   "nome": "Panturrilha em Pé",
+   "chave": "panturrilha em pe",
+   "grupo": "Panturrilha",
+   "principal": [
+    "gastrocnemio"
+   ],
+   "secundarios": [
+    "soleo"
+   ],
+   "estabilizadores": [
+    "tibial_anterior"
+   ],
+   "foco": "Os dois gomos de cima da panturrilha, com pico de contração na ponta dos pés.",
+   "execucao": [
+    "Joelhos estendidos, sem travar: é o que põe a carga no gastrocnêmio.",
+    "Desça o calcanhar abaixo da plataforma e pare um instante.",
+    "Suba o mais alto possível, apoiando no dedão."
+   ],
+   "erro_comum": "Dobrar os joelhos para ajudar e fazer repetições curtas e quicadas.",
+   "confianca": "alta",
+   "protocolo_vigente": true
+  },
+  {
+   "nome": "Panturrilha em Pé Máquina",
+   "chave": "panturrilha em pe maquina",
+   "grupo": "Panturrilha",
+   "principal": [
+    "gastrocnemio"
+   ],
+   "secundarios": [
+    "soleo"
+   ],
+   "estabilizadores": [
+    "tibial_anterior"
+   ],
+   "foco": "Os dois gomos de cima da panturrilha, com pico de contração na ponta dos pés.",
+   "execucao": [
+    "Joelhos estendidos, sem travar: é o que põe a carga no gastrocnêmio.",
+    "Desça o calcanhar abaixo da plataforma e pare um instante.",
+    "Suba o mais alto possível, apoiando no dedão."
+   ],
+   "erro_comum": "Dobrar os joelhos para ajudar e fazer repetições curtas e quicadas.",
+   "confianca": "alta",
+   "protocolo_vigente": false
+  },
+  {
+   "nome": "Panturrilha no Leg Press",
+   "chave": "panturrilha no leg press",
+   "grupo": "Panturrilha",
+   "principal": [
+    "gastrocnemio"
+   ],
+   "secundarios": [
+    "soleo"
+   ],
+   "estabilizadores": [
+    "quadriceps_vastos"
+   ],
+   "foco": "Gomos de cima da panturrilha, com alongamento forte no fundo.",
+   "execucao": [
+    "Só a ponta dos pés na borda da plataforma, joelhos estendidos sem travar.",
+    "Deixe a plataforma descer até alongar a panturrilha por completo.",
+    "Empurre até a ponta dos pés e segure um instante."
+   ],
+   "erro_comum": "Dobrar os joelhos para empurrar a carga: vira leg press e a panturrilha para de trabalhar.",
+   "confianca": "alta",
+   "protocolo_vigente": false
+  },
+  {
+   "nome": "Paralela Máquina",
+   "chave": "paralela maquina",
+   "grupo": "Tríceps",
+   "principal": [
+    "triceps_lateral_medial",
+    "triceps_longa"
+   ],
+   "secundarios": [
+    "peitoral_abdominal",
+    "peitoral_esternal",
+    "deltoide_anterior"
+   ],
+   "estabilizadores": [
+    "trapezio_inferior",
+    "serratil"
+   ],
+   "foco": "Parte de trás do braço; com o tronco inclinado à frente entra o peitoral inferior.",
+   "execucao": [
+    "Tronco ereto e cotovelos junto ao corpo para concentrar no tríceps.",
+    "Desça até o cotovelo chegar perto de 90°.",
+    "Empurre até estender e segure um instante."
+   ],
+   "erro_comum": "Abrir os cotovelos e inclinar o tronco: passa a carga para o peitoral e para o ombro.",
+   "confianca": "alta",
+   "protocolo_vigente": true
+  },
+  {
+   "nome": "Paralela Peso Corporal",
+   "chave": "paralela peso corporal",
+   "grupo": "Tríceps",
+   "principal": [
+    "triceps_lateral_medial",
+    "triceps_longa"
+   ],
+   "secundarios": [
+    "peitoral_abdominal",
+    "peitoral_esternal",
+    "deltoide_anterior"
+   ],
+   "estabilizadores": [
+    "trapezio_inferior",
+    "serratil",
+    "reto_abdominal_superior",
+    "romboides"
+   ],
+   "foco": "Parte de trás do braço; com o tronco inclinado à frente entra o peitoral inferior.",
+   "execucao": [
+    "Tronco o mais vertical possível e cotovelos para trás: mais tríceps.",
+    "Desça até o braço ficar paralelo ao chão, ombros baixos.",
+    "Suba até estender os cotovelos, sem balançar as pernas."
+   ],
+   "erro_comum": "Descer com os ombros encolhidos e caídos à frente, ou fazer meia repetição.",
+   "confianca": "alta",
+   "protocolo_vigente": true
+  },
+  {
+   "nome": "PullDown Máquina",
+   "chave": "pulldown maquina",
+   "grupo": "Costas",
+   "principal": [
+    "latissimo"
+   ],
+   "secundarios": [
+    "redondo_maior",
+    "biceps",
+    "braquial",
+    "braquiorradial",
+    "trapezio_inferior",
+    "romboides",
+    "deltoide_posterior"
+   ],
+   "estabilizadores": [
+    "flexores_antebraco",
+    "reto_abdominal_superior",
+    "infraespinal_redondo_menor"
+   ],
+   "foco": "Lateral das costas, abaixo da axila, com os cotovelos descendo em direção ao quadril.",
+   "execucao": [
+    "Comece baixando os ombros; depois puxe com os cotovelos, não com as mãos.",
+    "Peito alto e leve inclinação do tronco para trás, sem balançar.",
+    "Volte até os braços estenderem e o dorsal alongar."
+   ],
+   "erro_comum": "Jogar o tronco para trás e puxar com os braços: o bíceps cansa antes do dorsal.",
+   "confianca": "media",
+   "duvida": "Entendido como a puxada alta em máquina. Se for o pulldown de braços estendidos na polia, o bíceps sai e entram a cabeça longa do tríceps e o peitoral inferior.",
+   "protocolo_vigente": true
+  },
+  {
+   "nome": "Pulldown Máquina",
+   "chave": "pulldown maquina",
+   "grupo": "Costas",
+   "principal": [
+    "latissimo"
+   ],
+   "secundarios": [
+    "redondo_maior",
+    "biceps",
+    "braquial",
+    "braquiorradial",
+    "trapezio_inferior",
+    "romboides",
+    "deltoide_posterior"
+   ],
+   "estabilizadores": [
+    "flexores_antebraco",
+    "reto_abdominal_superior",
+    "infraespinal_redondo_menor"
+   ],
+   "foco": "Lateral das costas, abaixo da axila, com os cotovelos descendo em direção ao quadril.",
+   "execucao": [
+    "Comece baixando os ombros; depois puxe com os cotovelos, não com as mãos.",
+    "Peito alto e leve inclinação do tronco para trás, sem balançar.",
+    "Volte até os braços estenderem e o dorsal alongar."
+   ],
+   "erro_comum": "Jogar o tronco para trás e puxar com os braços: o bíceps cansa antes do dorsal.",
+   "confianca": "media",
+   "duvida": "Entendido como a puxada alta em máquina. Se for o pulldown de braços estendidos na polia, o bíceps sai e entram a cabeça longa do tríceps e o peitoral inferior.",
+   "protocolo_vigente": false
+  },
+  {
+   "nome": "Puxador Alto (Pegada Neutra)",
+   "chave": "puxador alto pegada neutra",
+   "grupo": "Costas",
+   "principal": [
+    "latissimo"
+   ],
+   "secundarios": [
+    "redondo_maior",
+    "braquial",
+    "braquiorradial",
+    "biceps",
+    "trapezio_inferior",
+    "romboides",
+    "deltoide_posterior"
+   ],
+   "estabilizadores": [
+    "flexores_antebraco",
+    "reto_abdominal_superior",
+    "infraespinal_redondo_menor"
+   ],
+   "foco": "Lateral e parte de baixo do dorsal, com os cotovelos fechando junto ao tronco.",
+   "execucao": [
+    "A pegada neutra deixa os cotovelos descerem à frente do corpo: mais amplitude para o dorsal.",
+    "Puxe até a barra chegar à parte de cima do peito, com o peito alto.",
+    "Volte devagar até alongar por completo."
+   ],
+   "erro_comum": "Balançar o tronco para vencer a carga e encurtar a volta.",
+   "confianca": "alta",
+   "protocolo_vigente": false
+  },
+  {
+   "nome": "Remada Articulada Pegada Neutra",
+   "chave": "remada articulada pegada neutra",
+   "grupo": "Costas",
+   "principal": [
+    "latissimo"
+   ],
+   "secundarios": [
+    "romboides",
+    "trapezio_medio",
+    "trapezio_inferior",
+    "redondo_maior",
+    "deltoide_posterior",
+    "biceps",
+    "braquial",
+    "braquiorradial"
+   ],
+   "estabilizadores": [
+    "eretores_espinha",
+    "flexores_antebraco"
+   ],
+   "foco": "Lateral das costas e meio das costas, entre as escápulas, no fim da puxada.",
+   "execucao": [
+    "Cotovelos rentes ao tronco, puxando em direção ao quadril: mais dorsal.",
+    "Peito firme no apoio; junte as escápulas no final e segure um instante.",
+    "Na volta, deixe as escápulas abrirem e o dorsal alongar."
+   ],
+   "erro_comum": "Tirar o peito do apoio e puxar com o tronco e com os braços.",
+   "confianca": "alta",
+   "protocolo_vigente": true
+  },
+  {
+   "nome": "Remada Baixa Articulada",
+   "chave": "remada baixa articulada",
+   "grupo": "Costas",
+   "principal": [
+    "latissimo"
+   ],
+   "secundarios": [
+    "romboides",
+    "trapezio_medio",
+    "trapezio_inferior",
+    "redondo_maior",
+    "deltoide_posterior",
+    "biceps",
+    "braquial",
+    "braquiorradial"
+   ],
+   "estabilizadores": [
+    "eretores_espinha",
+    "flexores_antebraco"
+   ],
+   "foco": "Lateral das costas e meio das costas, entre as escápulas, no fim da puxada.",
+   "execucao": [
+    "Cotovelos rentes ao tronco, puxando em direção ao quadril: mais dorsal.",
+    "Peito firme no apoio; junte as escápulas no final e segure um instante.",
+    "Na volta, deixe as escápulas abrirem e o dorsal alongar."
+   ],
+   "erro_comum": "Tirar o peito do apoio e puxar com o tronco e com os braços.",
+   "confianca": "media",
+   "duvida": "A pegada não está no nome. Cotovelos junto ao tronco dão mais dorsal; cotovelos abertos dão mais trapézio médio, romboides e deltoide posterior.",
+   "protocolo_vigente": false
+  },
+  {
+   "nome": "Remada Baixa Pegada Neutra",
+   "chave": "remada baixa pegada neutra",
+   "grupo": "Costas",
+   "principal": [
+    "latissimo"
+   ],
+   "secundarios": [
+    "romboides",
+    "trapezio_medio",
+    "trapezio_inferior",
+    "redondo_maior",
+    "deltoide_posterior",
+    "biceps",
+    "braquial",
+    "braquiorradial"
+   ],
+   "estabilizadores": [
+    "eretores_espinha",
+    "flexores_antebraco",
+    "isquiotibiais"
+   ],
+   "foco": "Lateral das costas e entre as escápulas, com os cotovelos passando rente ao tronco.",
+   "execucao": [
+    "Tronco quase vertical e parado; quem se move são as escápulas e os braços.",
+    "Puxe em direção ao umbigo, com os cotovelos junto ao corpo.",
+    "Na volta, deixe os ombros irem à frente para alongar, sem arredondar a lombar."
+   ],
+   "erro_comum": "Balançar o tronco para frente e para trás, transformando a remada em exercício de lombar.",
+   "confianca": "alta",
+   "protocolo_vigente": false
+  },
+  {
+   "nome": "Remada Baixa Triângulo",
+   "chave": "remada baixa triangulo",
+   "grupo": "Costas",
+   "principal": [
+    "latissimo"
+   ],
+   "secundarios": [
+    "romboides",
+    "trapezio_medio",
+    "trapezio_inferior",
+    "redondo_maior",
+    "deltoide_posterior",
+    "biceps",
+    "braquial",
+    "braquiorradial"
+   ],
+   "estabilizadores": [
+    "eretores_espinha",
+    "flexores_antebraco",
+    "isquiotibiais"
+   ],
+   "foco": "Lateral das costas (dorsal) e, no fim da puxada, o meio das costas entre as escápulas.",
+   "execucao": [
+    "Na volta, deixe as escápulas abrirem e alongue o dorsal, sem arredondar a lombar.",
+    "Puxe o triângulo em direção ao umbigo, com os cotovelos rentes ao tronco.",
+    "Peito alto no final; junte as escápulas e segure um instante."
+   ],
+   "erro_comum": "Balançar o tronco e puxar com os braços: o bíceps cansa antes das costas.",
+   "confianca": "alta",
+   "protocolo_vigente": false
+  },
+  {
+   "nome": "Remada Cavalo Máquina",
+   "chave": "remada cavalo maquina",
+   "grupo": "Costas",
+   "principal": [
+    "latissimo",
+    "romboides"
+   ],
+   "secundarios": [
+    "trapezio_medio",
+    "trapezio_inferior",
+    "redondo_maior",
+    "deltoide_posterior",
+    "biceps",
+    "braquial",
+    "braquiorradial"
+   ],
+   "estabilizadores": [
+    "eretores_espinha",
+    "flexores_antebraco",
+    "isquiotibiais",
+    "gluteo_maximo"
+   ],
+   "foco": "Meio das costas, entre as escápulas, e lateral do dorsal.",
+   "execucao": [
+    "Tronco fixo, coluna neutra e peito aberto.",
+    "Pegada fechada e cotovelos junto ao corpo dão mais dorsal; pegada aberta dá mais trapézio médio e romboides.",
+    "Junte as escápulas em cima e desça até alongar."
+   ],
+   "erro_comum": "Levantar o tronco a cada repetição para ajudar a subir a carga.",
+   "confianca": "media",
+   "duvida": "O nome não diz se a máquina tem apoio de peito nem a pegada. Sem apoio, lombar e posterior trabalham bem mais em isometria.",
+   "protocolo_vigente": true
+  },
+  {
+   "nome": "Remada Curvada Livre Pegada Pronada",
+   "chave": "remada curvada livre pegada pronada",
+   "grupo": "Costas",
+   "principal": [
+    "latissimo",
+    "trapezio_medio"
+   ],
+   "secundarios": [
+    "romboides",
+    "deltoide_posterior",
+    "redondo_maior",
+    "trapezio_inferior",
+    "biceps",
+    "braquial",
+    "braquiorradial"
+   ],
+   "estabilizadores": [
+    "eretores_espinha",
+    "isquiotibiais",
+    "gluteo_maximo",
+    "flexores_antebraco",
+    "transverso"
+   ],
+   "foco": "Meio das costas e dorsal; a lombar e o posterior de coxa seguram o tronco parado.",
+   "execucao": [
+    "Tronco inclinado entre 45° e quase paralelo ao chão, coluna neutra.",
+    "Puxe a barra em direção ao umbigo, com os cotovelos a cerca de 45° do tronco.",
+    "Junte as escápulas em cima e desça sob controle."
+   ],
+   "erro_comum": "Levantar o tronco para dar impulso: encurta a amplitude e sobrecarrega a lombar.",
+   "confianca": "alta",
+   "protocolo_vigente": true
+  },
+  {
+   "nome": "Remada Curvada Pegada Aberta",
+   "chave": "remada curvada pegada aberta",
+   "grupo": "Costas",
+   "principal": [
+    "trapezio_medio",
+    "romboides"
+   ],
+   "secundarios": [
+    "deltoide_posterior",
+    "latissimo",
+    "redondo_maior",
+    "infraespinal_redondo_menor",
+    "trapezio_inferior",
+    "biceps",
+    "braquial",
+    "braquiorradial"
+   ],
+   "estabilizadores": [
+    "eretores_espinha",
+    "isquiotibiais",
+    "gluteo_maximo",
+    "flexores_antebraco"
+   ],
+   "foco": "Parte de cima e meio das costas, entre as escápulas, e parte de trás do ombro.",
+   "execucao": [
+    "Pegada aberta e cotovelos abertos: puxe a barra em direção à parte de baixo do peito.",
+    "Segure a isometria com as escápulas juntas.",
+    "Tronco inclinado e parado, coluna neutra."
+   ],
+   "erro_comum": "Encolher os ombros em direção às orelhas: o trapézio superior toma o lugar do meio das costas.",
+   "confianca": "alta",
+   "protocolo_vigente": false
+  },
+  {
+   "nome": "Rosca Concentrada Halter",
+   "chave": "rosca concentrada halter",
+   "grupo": "Bíceps",
+   "principal": [
+    "biceps"
+   ],
+   "secundarios": [
+    "braquial",
+    "braquiorradial"
+   ],
+   "estabilizadores": [
+    "flexores_antebraco"
+   ],
+   "foco": "Bíceps, com pico de contração em cima; o braço fica parado contra a coxa.",
+   "execucao": [
+    "Cotovelo apoiado na parte interna da coxa e braço na vertical.",
+    "Suba girando o dedo mínimo para cima (supinação) e segure um instante.",
+    "Desça devagar até quase estender o cotovelo."
+   ],
+   "erro_comum": "Tirar o cotovelo do apoio e puxar com o ombro.",
+   "confianca": "alta",
+   "protocolo_vigente": false
+  },
+  {
+   "nome": "Rosca Concentrada Halteres",
+   "chave": "rosca concentrada halteres",
+   "grupo": "Bíceps",
+   "principal": [
+    "biceps"
+   ],
+   "secundarios": [
+    "braquial",
+    "braquiorradial"
+   ],
+   "estabilizadores": [
+    "flexores_antebraco"
+   ],
+   "foco": "Bíceps, com pico de contração em cima; o braço fica parado contra a coxa.",
+   "execucao": [
+    "Cotovelo apoiado na parte interna da coxa e braço na vertical.",
+    "Suba girando o dedo mínimo para cima (supinação) e segure um instante.",
+    "Desça devagar até quase estender o cotovelo."
+   ],
+   "erro_comum": "Tirar o cotovelo do apoio e puxar com o ombro.",
+   "confianca": "alta",
+   "protocolo_vigente": false
+  },
+  {
+   "nome": "Rosca Cruz Máquina",
+   "chave": "rosca cruz maquina",
+   "grupo": "Bíceps",
+   "principal": [
+    "biceps"
+   ],
+   "secundarios": [
+    "braquial",
+    "braquiorradial"
+   ],
+   "estabilizadores": [
+    "flexores_antebraco",
+    "deltoide_anterior"
+   ],
+   "foco": "Bíceps, com o pico de contração quando o cotovelo fecha por completo.",
+   "execucao": [
+    "Braço parado; só o cotovelo se move.",
+    "Palma da mão virada para cima durante toda a subida.",
+    "Volte devagar até quase estender o cotovelo."
+   ],
+   "erro_comum": "Mexer o ombro para ajudar a carga, tirando a tensão do bíceps.",
+   "confianca": "baixa",
+   "duvida": "Não foi possível identificar a máquina pelo nome: pode ser a rosca no cross over (polias altas, braços abertos em cruz) ou uma máquina de rosca. O principal é o bíceps nos dois casos; a posição do ombro e a ênfase mudam.",
+   "protocolo_vigente": true
+  },
+  {
+   "nome": "Rosca Direta Banco 70°",
+   "chave": "rosca direta banco 70",
+   "grupo": "Bíceps",
+   "principal": [
+    "biceps"
+   ],
+   "secundarios": [
+    "braquial",
+    "braquiorradial"
+   ],
+   "estabilizadores": [
+    "flexores_antebraco",
+    "deltoide_anterior"
+   ],
+   "foco": "Bíceps inteiro; o banco quase vertical alonga um pouco a cabeça longa, parte de fora do braço.",
+   "execucao": [
+    "Costas no encosto e cotovelos apontando para o chão, sem ir à frente.",
+    "Suba com as palmas para cima e segure um instante em cima.",
+    "Desça até estender, sentindo o alongamento."
+   ],
+   "erro_comum": "Levar os cotovelos à frente e balançar o tronco: o deltoide anterior e o impulso fazem a subida.",
+   "confianca": "media",
+   "duvida": "Entendido como rosca com halteres sentado em banco a 70°. A 70° o alongamento da cabeça longa é menor que a 45°.",
+   "protocolo_vigente": false
+  },
+  {
+   "nome": "Rosca Direta Barra W",
+   "chave": "rosca direta barra w",
+   "grupo": "Bíceps",
+   "principal": [
+    "biceps"
+   ],
+   "secundarios": [
+    "braquial",
+    "braquiorradial"
+   ],
+   "estabilizadores": [
+    "flexores_antebraco",
+    "deltoide_anterior",
+    "eretores_espinha"
+   ],
+   "foco": "Bíceps, do cotovelo até perto do ombro; a barra W divide um pouco da carga com braquial e braquiorradial.",
+   "execucao": [
+    "Cotovelos fixos ao lado do tronco.",
+    "Suba até antes de os antebraços ficarem na vertical, para não perder a tensão.",
+    "Desça devagar até quase estender os cotovelos."
+   ],
+   "erro_comum": "Levar os cotovelos à frente e balançar o tronco: o deltoide anterior e o impulso fazem a subida.",
+   "confianca": "alta",
+   "protocolo_vigente": true
+  },
+  {
+   "nome": "Rosca Direta Barra W ou Halteres",
+   "chave": "rosca direta barra w ou halteres",
+   "grupo": "Bíceps",
+   "principal": [
+    "biceps"
+   ],
+   "secundarios": [
+    "braquial",
+    "braquiorradial"
+   ],
+   "estabilizadores": [
+    "flexores_antebraco",
+    "deltoide_anterior",
+    "eretores_espinha"
+   ],
+   "foco": "Bíceps, do cotovelo até perto do ombro.",
+   "execucao": [
+    "Cotovelos fixos ao lado do tronco.",
+    "Com halteres, gire a palma para cima durante a subida: a supinação aumenta o bíceps.",
+    "Desça devagar até quase estender os cotovelos."
+   ],
+   "erro_comum": "Levar os cotovelos à frente e balançar o tronco: o deltoide anterior e o impulso fazem a subida.",
+   "confianca": "alta",
+   "protocolo_vigente": false
+  },
+  {
+   "nome": "Rosca Direta Sentado Banco 45°",
+   "chave": "rosca direta sentado banco 45",
+   "grupo": "Bíceps",
+   "principal": [
+    "biceps"
+   ],
+   "secundarios": [
+    "braquial",
+    "braquiorradial"
+   ],
+   "estabilizadores": [
+    "flexores_antebraco",
+    "deltoide_anterior"
+   ],
+   "foco": "Bíceps, principalmente a cabeça longa (parte de fora), com alongamento forte embaixo.",
+   "execucao": [
+    "Braços pendurados atrás da linha do tronco: é isso que alonga a cabeça longa.",
+    "Cotovelos apontando para o chão; não deixe irem à frente na subida.",
+    "Palmas para cima; segure em cima e desça até estender."
+   ],
+   "erro_comum": "Levar os cotovelos à frente na subida: perde o alongamento e o ombro assume.",
+   "confianca": "alta",
+   "protocolo_vigente": false
+  },
+  {
+   "nome": "Rosca Scott Máquina",
+   "chave": "rosca scott maquina",
+   "grupo": "Bíceps",
+   "principal": [
+    "biceps"
+   ],
+   "secundarios": [
+    "braquial",
+    "braquiorradial"
+   ],
+   "estabilizadores": [
+    "flexores_antebraco"
+   ],
+   "foco": "Bíceps, com mais tensão na metade de baixo do movimento; o braquial trabalha junto.",
+   "execucao": [
+    "Axilas encaixadas no apoio e braços inteiros colados nele.",
+    "Desça até quase estender, sem tirar os cotovelos do apoio.",
+    "Suba sem levantar os ombros e segure um instante."
+   ],
+   "erro_comum": "Levantar o quadril e tirar os cotovelos do apoio para vencer a parte de baixo.",
+   "confianca": "alta",
+   "protocolo_vigente": true
+  },
+  {
+   "nome": "Serrote Halter",
+   "chave": "serrote halter",
+   "grupo": "Costas",
+   "principal": [
+    "latissimo"
+   ],
+   "secundarios": [
+    "redondo_maior",
+    "romboides",
+    "trapezio_medio",
+    "deltoide_posterior",
+    "biceps",
+    "braquial",
+    "braquiorradial"
+   ],
+   "estabilizadores": [
+    "obliquos",
+    "eretores_espinha",
+    "flexores_antebraco"
+   ],
+   "foco": "Lateral das costas do lado que puxa, da axila até a cintura.",
+   "execucao": [
+    "Puxe o cotovelo para trás em direção ao quadril, em arco, não para cima.",
+    "Embaixo, deixe o halter alongar o dorsal e a escápula abrir.",
+    "Tronco paralelo ao chão e parado, sem girar."
+   ],
+   "erro_comum": "Girar o tronco e puxar o halter para o peito: trabalha o braço e pouco o dorsal.",
+   "confianca": "alta",
+   "protocolo_vigente": true
+  },
+  {
+   "nome": "Stiff Halteres ou Máquina",
+   "chave": "stiff halteres ou maquina",
+   "grupo": "Posterior de coxa",
+   "principal": [
+    "isquiotibiais",
+    "gluteo_maximo"
+   ],
+   "secundarios": [
+    "eretores_espinha",
+    "adutores"
+   ],
+   "estabilizadores": [
+    "latissimo",
+    "trapezio_medio",
+    "flexores_antebraco",
+    "transverso"
+   ],
+   "foco": "Parte de trás da coxa, alongando na descida, e glúteo na subida.",
+   "execucao": [
+    "Joelhos levemente dobrados e fixos; o quadril vai para trás.",
+    "Coluna neutra e carga rente às pernas.",
+    "Desça até onde o posterior alonga sem a lombar arredondar; suba levando o quadril à frente."
+   ],
+   "erro_comum": "Dobrar os joelhos como em um agachamento ou arredondar a lombar para descer mais.",
+   "confianca": "alta",
+   "protocolo_vigente": false
+  },
+  {
+   "nome": "Stiff Máquina",
+   "chave": "stiff maquina",
+   "grupo": "Posterior de coxa",
+   "principal": [
+    "isquiotibiais",
+    "gluteo_maximo"
+   ],
+   "secundarios": [
+    "eretores_espinha",
+    "adutores"
+   ],
+   "estabilizadores": [
+    "latissimo",
+    "trapezio_medio",
+    "flexores_antebraco",
+    "transverso"
+   ],
+   "foco": "Parte de trás da coxa, alongando na descida, e glúteo na subida.",
+   "execucao": [
+    "Joelhos levemente dobrados e fixos; empurre o quadril para trás.",
+    "Coluna neutra do início ao fim.",
+    "Desça até o alongamento do posterior e suba contraindo o glúteo."
+   ],
+   "erro_comum": "Arredondar a lombar para ganhar amplitude: o alongamento sai do posterior e vai para a coluna.",
+   "confianca": "media",
+   "duvida": "O nome não diz qual máquina (barra guiada, articulada ou outra). Os músculos são os mesmos.",
+   "protocolo_vigente": true
+  },
+  {
+   "nome": "Supino Inclinado Máquina",
+   "chave": "supino inclinado maquina",
+   "grupo": "Peito",
+   "principal": [
+    "peitoral_clavicular"
+   ],
+   "secundarios": [
+    "peitoral_esternal",
+    "deltoide_anterior",
+    "triceps_lateral_medial",
+    "triceps_longa"
+   ],
+   "estabilizadores": [
+    "serratil",
+    "infraespinal_redondo_menor"
+   ],
+   "foco": "Parte de cima do peitoral, logo abaixo da clavícula, apertando no final da subida.",
+   "execucao": [
+    "Escápulas juntas e para baixo, coladas no encosto, com o peito alto.",
+    "Cotovelos a cerca de 45° a 60° do tronco; empurre para cima e para dentro.",
+    "Desça até alongar o peito, sem deixar os ombros irem à frente."
+   ],
+   "erro_comum": "Tirar os ombros do encosto para terminar a repetição: o deltoide anterior rouba a carga do peitoral.",
+   "confianca": "alta",
+   "protocolo_vigente": true
+  },
+  {
+   "nome": "Supino Inclinado Máquina (carga maior)",
+   "chave": "supino inclinado maquina",
+   "grupo": "Peito",
+   "principal": [
+    "peitoral_clavicular"
+   ],
+   "secundarios": [
+    "peitoral_esternal",
+    "deltoide_anterior",
+    "triceps_lateral_medial",
+    "triceps_longa"
+   ],
+   "estabilizadores": [
+    "serratil",
+    "infraespinal_redondo_menor"
+   ],
+   "foco": "Parte de cima do peitoral, logo abaixo da clavícula, apertando no final da subida.",
+   "execucao": [
+    "Escápulas juntas e para baixo, coladas no encosto, com o peito alto.",
+    "Cotovelos a cerca de 45° a 60° do tronco; empurre para cima e para dentro.",
+    "Desça até alongar o peito, sem deixar os ombros irem à frente."
+   ],
+   "erro_comum": "Tirar os ombros do encosto para terminar a repetição: o deltoide anterior rouba a carga do peitoral.",
+   "confianca": "alta",
+   "protocolo_vigente": false
+  },
+  {
+   "nome": "Supino Máquina",
+   "chave": "supino maquina",
+   "grupo": "Peito",
+   "principal": [
+    "peitoral_esternal"
+   ],
+   "secundarios": [
+    "peitoral_clavicular",
+    "deltoide_anterior",
+    "triceps_lateral_medial",
+    "triceps_longa"
+   ],
+   "estabilizadores": [
+    "serratil",
+    "infraespinal_redondo_menor"
+   ],
+   "foco": "Meio do peitoral, do esterno até a axila.",
+   "execucao": [
+    "Banco ajustado para as mãos ficarem na linha do meio do peito.",
+    "Escápulas juntas no encosto; cotovelos a cerca de 45° a 60° do tronco.",
+    "Desça até alongar e suba sem travar os cotovelos."
+   ],
+   "erro_comum": "Sentar baixo demais e empurrar com as mãos acima da linha do ombro, carregando o deltoide.",
+   "confianca": "media",
+   "duvida": "O nome não diz o ângulo. Mapeado como supino reto em máquina.",
+   "protocolo_vigente": false
+  },
+  {
+   "nome": "Supino Reto Halteres",
+   "chave": "supino reto halteres",
+   "grupo": "Peito",
+   "principal": [
+    "peitoral_esternal"
+   ],
+   "secundarios": [
+    "peitoral_clavicular",
+    "deltoide_anterior",
+    "triceps_lateral_medial",
+    "triceps_longa"
+   ],
+   "estabilizadores": [
+    "serratil",
+    "infraespinal_redondo_menor",
+    "biceps"
+   ],
+   "foco": "Meio do peitoral, alongando embaixo e apertando no centro em cima.",
+   "execucao": [
+    "Escápulas juntas e para baixo, peito alto, pés firmes no chão.",
+    "Desça os halteres até a linha do peito, com os cotovelos a cerca de 45° a 60° do tronco.",
+    "Suba aproximando os halteres, sem bater um no outro."
+   ],
+   "erro_comum": "Abrir os cotovelos a 90° e descer pouco: carrega o ombro e encurta o trabalho do peitoral.",
+   "confianca": "alta",
+   "protocolo_vigente": false
+  },
+  {
+   "nome": "Supino Reto Máquina",
+   "chave": "supino reto maquina",
+   "grupo": "Peito",
+   "principal": [
+    "peitoral_esternal"
+   ],
+   "secundarios": [
+    "peitoral_clavicular",
+    "deltoide_anterior",
+    "triceps_lateral_medial",
+    "triceps_longa"
+   ],
+   "estabilizadores": [
+    "serratil",
+    "infraespinal_redondo_menor"
+   ],
+   "foco": "Meio do peitoral, do esterno até a axila, apertando no final da subida.",
+   "execucao": [
+    "Mãos na linha do meio do peito; escápulas juntas e coladas no encosto.",
+    "Cotovelos a cerca de 45° a 60° do tronco.",
+    "Desça até alongar e suba sem travar os cotovelos."
+   ],
+   "erro_comum": "Soltar as escápulas e empurrar com os ombros à frente.",
+   "confianca": "alta",
+   "protocolo_vigente": true
+  },
+  {
+   "nome": "Tríceps Coice Polia",
+   "chave": "triceps coice polia",
+   "grupo": "Tríceps",
+   "principal": [
+    "triceps_longa",
+    "triceps_lateral_medial"
+   ],
+   "secundarios": [],
+   "estabilizadores": [
+    "deltoide_posterior",
+    "latissimo",
+    "eretores_espinha"
+   ],
+   "foco": "Parte de trás do braço inteira, com contração máxima com o cotovelo estendido atrás do tronco.",
+   "execucao": [
+    "Braço paralelo ao chão ou acima da linha do tronco e parado: isso encurta a cabeça longa.",
+    "Só o cotovelo se move; estenda tudo e segure um instante.",
+    "Volte até 90°, sem deixar o braço cair."
+   ],
+   "erro_comum": "Deixar o braço descer e balançar o ombro: o movimento vira remada e o tríceps perde a contração.",
+   "confianca": "alta",
+   "protocolo_vigente": false
+  },
+  {
+   "nome": "Tríceps Corda",
+   "chave": "triceps corda",
+   "grupo": "Tríceps",
+   "principal": [
+    "triceps_lateral_medial"
+   ],
+   "secundarios": [
+    "triceps_longa"
+   ],
+   "estabilizadores": [
+    "flexores_antebraco",
+    "reto_abdominal_superior",
+    "latissimo"
+   ],
+   "foco": "Lateral e parte de baixo da parte de trás do braço, apertando com o cotovelo estendido.",
+   "execucao": [
+    "Cotovelos colados ao tronco e parados.",
+    "No final, afaste as pontas da corda e estenda por completo.",
+    "Suba só até os antebraços passarem um pouco da horizontal."
+   ],
+   "erro_comum": "Deixar os cotovelos abrirem e irem à frente, empurrando com o peso do corpo.",
+   "confianca": "alta",
+   "protocolo_vigente": false
+  },
+  {
+   "nome": "Tríceps Corda Dead Stop",
+   "chave": "triceps corda dead stop",
+   "grupo": "Tríceps",
+   "principal": [
+    "triceps_lateral_medial"
+   ],
+   "secundarios": [
+    "triceps_longa"
+   ],
+   "estabilizadores": [
+    "flexores_antebraco",
+    "reto_abdominal_superior",
+    "latissimo"
+   ],
+   "foco": "Lateral e parte de baixo da parte de trás do braço; cada repetição sai da parada, sem embalo.",
+   "execucao": [
+    "Pare a corda no peito, abaixo do queixo, por um instante antes de cada repetição.",
+    "Cotovelos colados ao tronco; estenda tudo e afaste as pontas da corda.",
+    "Tronco parado, sem jogar o peso do corpo."
+   ],
+   "erro_comum": "Não parar de verdade em cima e usar o embalo da volta.",
+   "confianca": "alta",
+   "protocolo_vigente": false
+  },
+  {
+   "nome": "Tríceps Francês Máquina",
+   "chave": "triceps frances maquina",
+   "grupo": "Tríceps",
+   "principal": [
+    "triceps_longa"
+   ],
+   "secundarios": [
+    "triceps_lateral_medial"
+   ],
+   "estabilizadores": [
+    "reto_abdominal_superior",
+    "transverso"
+   ],
+   "foco": "Cabeça longa do tríceps, a parte de dentro e de trás do braço, com alongamento forte no fundo.",
+   "execucao": [
+    "Braços acima da cabeça e cotovelos apontando para frente, sem abrir.",
+    "Desça até o alongamento máximo atrás da cabeça.",
+    "Estenda tudo sem mover os ombros."
+   ],
+   "erro_comum": "Abrir os cotovelos e encurtar a descida: perde o alongamento da cabeça longa.",
+   "confianca": "media",
+   "duvida": "O nome não diz qual máquina. Mapeado como extensão de cotovelo com os braços acima da cabeça.",
+   "protocolo_vigente": true
+  },
+  {
+   "nome": "Tríceps Francês Polia Baixa",
+   "chave": "triceps frances polia baixa",
+   "grupo": "Tríceps",
+   "principal": [
+    "triceps_longa"
+   ],
+   "secundarios": [
+    "triceps_lateral_medial"
+   ],
+   "estabilizadores": [
+    "reto_abdominal_superior",
+    "transverso",
+    "eretores_espinha"
+   ],
+   "foco": "Cabeça longa do tríceps, com alongamento forte quando as mãos descem atrás da cabeça.",
+   "execucao": [
+    "De costas para a polia, braços acima da cabeça e cotovelos fechados.",
+    "Desça até o alongamento máximo.",
+    "Estenda tudo acima da cabeça, sem arquear a lombar."
+   ],
+   "erro_comum": "Mover os ombros para frente e para trás em vez de dobrar e estender só os cotovelos.",
+   "confianca": "alta",
+   "protocolo_vigente": false
+  },
+  {
+   "nome": "Tríceps Pulley",
+   "chave": "triceps pulley",
+   "grupo": "Tríceps",
+   "principal": [
+    "triceps_lateral_medial"
+   ],
+   "secundarios": [
+    "triceps_longa"
+   ],
+   "estabilizadores": [
+    "flexores_antebraco",
+    "reto_abdominal_superior",
+    "latissimo"
+   ],
+   "foco": "Lateral e parte de baixo da parte de trás do braço, apertando com o cotovelo estendido.",
+   "execucao": [
+    "Cotovelos colados ao tronco e parados.",
+    "Estenda por completo e segure um instante.",
+    "Suba só até os antebraços passarem um pouco da horizontal."
+   ],
+   "erro_comum": "Inclinar o tronco sobre a barra e empurrar com o peso do corpo.",
+   "confianca": "alta",
+   "protocolo_vigente": false
+  },
+  {
+   "nome": "Tríceps Pulley Polia Alta",
+   "chave": "triceps pulley polia alta",
+   "grupo": "Tríceps",
+   "principal": [
+    "triceps_lateral_medial"
+   ],
+   "secundarios": [
+    "triceps_longa"
+   ],
+   "estabilizadores": [
+    "flexores_antebraco",
+    "reto_abdominal_superior",
+    "latissimo"
+   ],
+   "foco": "Lateral e parte de baixo da parte de trás do braço, apertando com o cotovelo estendido.",
+   "execucao": [
+    "Cotovelos colados ao tronco e parados.",
+    "Estenda por completo e segure um instante.",
+    "Suba só até os antebraços passarem um pouco da horizontal."
+   ],
+   "erro_comum": "Inclinar o tronco sobre a barra e empurrar com o peso do corpo.",
+   "confianca": "alta",
+   "protocolo_vigente": false
+  },
+  {
+   "nome": "Tríceps Testa Máquina",
+   "chave": "triceps testa maquina",
+   "grupo": "Tríceps",
+   "principal": [
+    "triceps_longa",
+    "triceps_lateral_medial"
+   ],
+   "secundarios": [],
+   "estabilizadores": [
+    "deltoide_anterior",
+    "flexores_antebraco"
+   ],
+   "foco": "Parte de trás do braço inteira, com alongamento da cabeça longa quando a mão chega perto da testa.",
+   "execucao": [
+    "Braços parados; só os cotovelos dobram e estendem.",
+    "Cotovelos fechados, apontando para frente.",
+    "Desça até o alongamento e estenda por completo."
+   ],
+   "erro_comum": "Abrir os cotovelos ou mover os ombros: o peitoral e o dorsal passam a ajudar.",
+   "confianca": "media",
+   "duvida": "O nome não diz qual máquina. Mapeado como extensão de cotovelo com o braço à frente do tronco, perto de 90°.",
+   "protocolo_vigente": true
+  }
+ ],
+ "aliases": {
+  "abdominal infra": "abdominal infra paralela",
+  "abdominal infra na paralela": "abdominal infra paralela",
+  "abdominal maquina": "abdominal supra maquina",
+  "abdominal supra no solo": "abdominal supra solo",
+  "abdutora": "cadeira abdutora",
+  "afundo": "afundo com halteres",
+  "afundo halteres": "afundo com halteres",
+  "agachamento bulgaro": "agachamento bulgaro maquina",
+  "agachamento hack maquina": "agachamento hack",
+  "agachamento no smith": "agachamento barra guiada",
+  "agachamento smith": "agachamento barra guiada",
+  "barra fixa graviton": "barra fixa",
+  "bulgaro maquina": "agachamento bulgaro maquina",
+  "cadeira extensora": "cadeira extensora bilateral",
+  "coice polia": "triceps coice polia",
+  "cross over": "cross over polia media",
+  "crossover": "cross over polia media",
+  "crossover polia alta": "cross over polia alta",
+  "crossover polia media": "cross over polia media",
+  "crucifixo inclinado": "crucifixo halteres inclinado",
+  "crucifixo inclinado halteres": "crucifixo halteres inclinado",
+  "crucifixo inverso": "crucifixo inverso maquina",
+  "crucifixo invertido maquina": "crucifixo inverso maquina",
+  "crucifixo peck deck": "fly | peck deck",
+  "desenvolvimento barra": "desenvolvimento militar",
+  "desenvolvimento com halteres": "desenvolvimento halteres",
+  "desenvolvimento maquina neutra": "desenvolvimento maquina pegada neutra",
+  "elevacao frontal": "elevacao frontal maquina | halter",
+  "elevacao frontal halter": "elevacao frontal maquina | halter",
+  "elevacao frontal halter pegada neutra": "elevacao frontal halter peg neutra",
+  "elevacao frontal halteres": "elevacao frontal maquina | halter",
+  "elevacao frontal halteres pegada neutra": "elevacao frontal halter peg neutra",
+  "elevacao frontal maquina": "elevacao frontal maquina | halter",
+  "elevacao lateral halteres": "elevacao lateral",
+  "elevacao lateral halteres em pe": "elevacao lateral em pe",
+  "elevacao lateral halteres sentado": "elevacao lateral sentado",
+  "elevacao lateral unilateral maquina": "elevacao lateral maquina unilateral",
+  "elevacao pelvica": "elevacao pelvica maquina",
+  "extensora": "cadeira extensora bilateral",
+  "extensora unilateral": "cadeira extensora unilateral",
+  "flexora deitada": "mesa flexora",
+  "flexora em pe": "flexao em pe maquina",
+  "flexora em pe maquina": "flexao em pe maquina",
+  "flexora vertical": "flexao em pe maquina",
+  "fly": "fly | peck deck",
+  "fly maquina": "fly | peck deck",
+  "fly peck deck": "fly | peck deck",
+  "gemeos em pe": "panturrilha em pe",
+  "gemeos sentado": "panturrilha sentado",
+  "graviton": "barra fixa",
+  "hack": "agachamento hack",
+  "hack machine": "agachamento hack",
+  "hip thrust": "elevacao pelvica maquina",
+  "hip thrust maquina": "elevacao pelvica maquina",
+  "isopeitoral": "iso peitoral",
+  "isopeitoral maquina": "iso peitoral",
+  "leg 45": "leg press 45",
+  "leg press horizontal": "leg horizontal",
+  "meio terra": "meio terra barra guiada",
+  "meio terra smith": "meio terra barra guiada",
+  "mergulho banco": "mergulho maquina ou banco",
+  "mergulho maquina": "mergulho maquina ou banco",
+  "mergulho no banco": "mergulho maquina ou banco",
+  "panturrilha leg press": "panturrilha no leg press",
+  "panturrilha sentado maquina": "panturrilha sentado",
+  "paralela": "paralela peso corporal",
+  "paralelas": "paralela peso corporal",
+  "passada com halteres": "afundo com halteres",
+  "peck deck": "fly | peck deck",
+  "peck deck inverso": "crucifixo inverso maquina",
+  "pull down": "pulldown maquina",
+  "pull down maquina": "pulldown maquina",
+  "pulldown": "pulldown maquina",
+  "puxada alta pegada neutra": "puxador alto pegada neutra",
+  "puxador alto neutro": "puxador alto pegada neutra",
+  "puxador alto triangulo": "puxador alto pegada neutra",
+  "remada baixa com triangulo": "remada baixa triangulo",
+  "remada cavalinho": "remada cavalo maquina",
+  "remada cavalinho maquina": "remada cavalo maquina",
+  "remada cavalo": "remada cavalo maquina",
+  "remada curvada": "remada curvada livre pegada pronada",
+  "remada curvada pronada": "remada curvada livre pegada pronada",
+  "remada sentada triangulo": "remada baixa triangulo",
+  "remada serrote": "serrote halter",
+  "remada unilateral halter": "serrote halter",
+  "rosca banco 45": "rosca direta sentado banco 45",
+  "rosca banco 70": "rosca direta banco 70",
+  "rosca concentrada": "rosca concentrada halter",
+  "rosca direta": "rosca direta barra w",
+  "rosca direta halteres": "rosca direta barra w ou halteres",
+  "rosca inclinada 45": "rosca direta sentado banco 45",
+  "rosca scott": "rosca scott maquina",
+  "serrote": "serrote halter",
+  "stiff": "stiff halteres ou maquina",
+  "stiff halteres": "stiff halteres ou maquina",
+  "supino halteres": "supino reto halteres",
+  "supino reto com halteres": "supino reto halteres",
+  "terra maquina": "levantamento terra maquina",
+  "triceps banco": "mergulho maquina ou banco",
+  "triceps coice": "triceps coice polia",
+  "triceps corda polia alta": "triceps corda",
+  "triceps frances": "triceps frances polia baixa",
+  "triceps polia": "triceps pulley",
+  "triceps pulley barra": "triceps pulley",
+  "triceps pulley corda": "triceps corda",
+  "triceps testa": "triceps testa maquina",
+  "voador": "fly | peck deck",
+  "voador inverso": "crucifixo inverso maquina"
+ }
+}
