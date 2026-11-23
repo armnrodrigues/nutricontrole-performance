@@ -18,3 +18,5 @@ id = "34bc7d26b7c141fb9b1b41d5ad9b01d1"
 ACCESS_TEAM_DOMAIN = "round-union-441e.cloudflareaccess.com"
 # Application Audience (AUD) do aplicativo criado no Access
 ACCESS_AUD = "1579828d7228748446c46b4c4f8624f9ed26d3f32ce2b5ec94b6c208d589d8cc"
+# Endereço público que mostra só as fotos e vídeos de um relatório (link de 2 dias)
+SHARE_HOST = "nutricontrole-midia.pages.dev"

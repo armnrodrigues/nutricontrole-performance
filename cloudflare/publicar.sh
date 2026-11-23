@@ -27,5 +27,8 @@ echo "Depósito pronto."
 
 W pages project list 2>/dev/null | grep -q nutricontrole || W pages project create nutricontrole --production-branch main
 npm run deploy
+# Site público só das fotos e vídeos dos relatórios (links de 2 dias)
+W pages project list 2>/dev/null | grep -q nutricontrole-midia || W pages project create nutricontrole-midia --production-branch main
+( cd midia && npx wrangler pages deploy public --project-name nutricontrole-midia --branch main )
 echo
-echo "Publicado em https://nutricontrole.pages.dev"
+echo "Publicado em https://nutricontrole.pages.dev e https://nutricontrole-midia.pages.dev"
