@@ -30,14 +30,16 @@
   --good-bg:rgba(22,163,74,.10); --warn-bg:rgba(217,119,6,.12); --bad-bg:rgba(220,38,38,.09);
   --veu:rgba(0,0,0,.45); --sombra:0 8px 24px rgba(0,0,0,.16);
   /* séries dos gráficos (nunca usadas em botão ou texto) */
-  --prot:#2563eb; --carb:#f59e0b; --fat:#10b981; --kcal:#111114; --water:#0ea5e9; --grid:#e9e9ee; --axis:#cfcfd6;
+  --prot:#2563eb; --carb:#f59e0b; --fat:#10b981; --water:#0ea5e9; --grid:#e9e9ee; --axis:#cfcfd6;
+  /* designer 24/11/2026: --prot/--carb/--fat/--water são só de proteína, carboidrato, gordura e água. Todo o resto usa série neutra */
+  --serie:var(--ink); --serie-2:var(--muted); --meta:var(--ink);
   /* nomes antigos, usados pelo script e pelos gráficos: apontam para os papéis acima */
   --sel:var(--acao); --sel-ink:var(--acao-ink); --ring:var(--acao); --volt:var(--acao); --volt-ink:var(--acao-ink);
   --accent:var(--link); --accent-ink:#ffffff; --accent-soft:var(--surface-2); --shadow:none;
   /* espaço */
   --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px; --gutter:16px;
   /* letra */
-  --f-xs:12px; --f-sm:13px; --f-md:15px; --f-lg:17px; --f-xl:20px; --f-num:28px; --f-campo:16px; --f-nav:11px;
+  --f-xs:12px; --f-sm:13px; --f-md:15px; --f-lg:17px; --f-xl:20px; --f-num:28px; --f-campo:16px; --f-nav:11px; --f-nav-s:10.5px;
   --font-display:"Inter Tight","Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
   --font-body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
   /* raio, linha, altura de controle */
@@ -53,7 +55,7 @@
   --good:#34d399; --warn:#fb923c; --bad:#f87171; --good-text:#4ade80; --warn-text:#fdba74; --bad-text:#fca5a5;
   --good-bg:rgba(52,211,153,.12); --warn-bg:rgba(251,146,60,.14); --bad-bg:rgba(248,113,113,.12);
   --veu:rgba(0,0,0,.7); --sombra:0 8px 24px rgba(0,0,0,.5);
-  --prot:#5b9cf6; --carb:#fb7185; --fat:#34d399; --kcal:#f6f4ef; --water:#38bdf8; --grid:#232323; --axis:#3a3a3a;
+  --prot:#5b9cf6; --carb:#fb7185; --fat:#34d399; --water:#38bdf8; --grid:#232323; --axis:#3a3a3a;
   color-scheme:dark;
 }
 @media (min-width:901px){:root{--h:38px;--h-sm:32px;--f-campo:15px;--gutter:24px}}
@@ -395,14 +397,18 @@ table.es input[type=number]{width:88px}table.es td,table.es th{padding:var(--s1)
 /* ---------- Navegação: barra embaixo no celular, trilho à esquerda no computador */
 #bottomnav{position:fixed;left:0;right:0;bottom:0;z-index:var(--z-nav);background:var(--surface);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(7,minmax(0,1fr));padding:0 0 env(safe-area-inset-bottom,0px)}
 #bottomnav button{border:0;background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:0 1px;min-height:var(--nav-h);font-size:var(--f-nav);font-weight:600;color:var(--ink-2);cursor:pointer;min-width:0;white-space:nowrap}
-#bottomnav button svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
-#bottomnav button.on{color:var(--acao)}
-:root:not([data-theme="dark"]) #bottomnav button.on{color:var(--ink);font-weight:700}
+#bottomnav button svg{box-sizing:border-box;width:44px;height:28px;padding:4px 12px;border-radius:var(--r-full);stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+/* aba ativa: ícone numa pastilha preenchida com a cor de ação (mesmo idioma do dia selecionado). O peso do rótulo não muda. */
+#bottomnav button.on{color:var(--ink)}
+#bottomnav button.on svg{background:var(--acao);stroke:var(--acao-ink)}
+@media (max-width:899px){#bottomnav button{letter-spacing:-.02em}}
+@media (max-width:400px){#bottomnav button{font-size:var(--f-nav-s)}}
 @media (min-width:900px){
   body{padding-block:0 var(--s5)}
   #bottomnav{left:max(var(--gutter),env(safe-area-inset-left,0px));top:calc(84px + env(safe-area-inset-top,0px));bottom:auto;right:auto;width:98px;display:flex;flex-direction:column;border:1px solid var(--line);border-radius:var(--r);padding:var(--s2) var(--s1);gap:var(--s1)}
   #bottomnav button{width:100%;min-height:52px;border-radius:var(--r-sm);font-size:var(--f-xs)}
-  #bottomnav button.on{background:var(--surface-2)}
+  #bottomnav button.on{background:var(--acao);color:var(--acao-ink)}
+  #bottomnav button.on svg{background:transparent;stroke:currentColor}
   main,#topbar{margin-left:122px}
 }
 @media (min-width:900px) and (max-height:520px){#bottomnav{top:auto;bottom:var(--s3)}}
@@ -637,6 +643,25 @@ body.job-on.has-trfoot #toast{bottom:calc(var(--nav-h) + var(--trfoot-h,68px) + 
 /* v46 */
 .ao-msg{font-size:var(--f-xs);color:var(--ink-2);margin:var(--s1) 0 0}
 #offLink{text-decoration:none}
+/* designer 24/11/2026 · menu, Alimentos e gráficos */
+.bar.meta{overflow:visible}
+.bar.meta::after{content:"";position:absolute;left:83.333%;top:-3px;bottom:-3px;width:2px;margin-left:-1px;background:var(--ink);border-radius:1px}
+.macro .val .over{color:var(--bad-text)}
+.macro .msub{grid-column:1/-1;font-size:var(--f-xs);color:var(--muted)}
+.mrow.todo{min-height:0;padding:0}
+.mrow.todo .t{display:flex;flex-wrap:wrap;align-items:baseline;align-content:center;column-gap:var(--s2)}
+.mrow.todo .t b,.mrow.todo .t small{display:inline}
+.mfoot{border-top:0;padding-top:0}
+/* a quantidade, a medida e o "Adicionar" só aparecem com a busca em uso (foco na linha ou texto no campo) */
+.addrow:not(:focus-within):not(:has(.ac-in:not(:placeholder-shown)))>:not(.ac-wrap){display:none}
+.addrow:not(:focus-within):not(:has(.ac-in:not(:placeholder-shown)))>.ac-wrap{grid-column:1/-1}
+.med .r>.btn{min-width:var(--h)}
+@media (min-width:900px){#mealsCard{max-width:760px}}
+#coachBox{gap:0}
+#coachBox .note,#coachBox .note.bad{border:0;border-top:1px solid var(--line);border-radius:0;padding:var(--s2) 0;background:transparent}
+#coachBox .note:first-child{border-top:0}
+.legend i.dash{height:0;border-top:2px dashed currentColor;border-radius:0;vertical-align:3px;background:none}
+.legend i.diam{width:8px;height:8px;border:2px solid currentColor;border-radius:0;background:none;transform:rotate(45deg);vertical-align:0}
 </style>
 <header id="topbar">
   <div class="tb-row">
@@ -645,7 +670,7 @@ body.job-on.has-trfoot #toast{bottom:calc(var(--nav-h) + var(--trfoot-h,68px) + 
       <button class="nb" id="dPrev" aria-label="Semana anterior">‹</button>
       <button id="dLabel" aria-label="Escolher data">—</button>
       <button class="nb" id="dNext" aria-label="Próxima semana">›</button>
-      <button class="nb today" id="dToday" aria-label="Ir para hoje">Hoje</button><button class="nb" id="lookBtn" aria-label="Aparência: tema e layout" onclick="A.openAppearance()"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5v17M12 8h7.5M12 12h8.5M12 16h7.5"/></svg></button><button class="nb bell" id="bellBtn" aria-label="Alertas e pendências" onclick="A.openBell()"><svg viewBox="0 0 24 24"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg><span class="bdg" id="bellBdg" hidden></span></button>
+      <button class="nb today" id="dToday" aria-label="Ir para hoje">Hoje</button><button class="nb" id="lookBtn" aria-label="Aparência: tema e layout" onclick="A.openAppearance()"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17z" fill="currentColor" stroke="none"/></svg></button><button class="nb bell" id="bellBtn" aria-label="Alertas e pendências" onclick="A.openBell()"><svg viewBox="0 0 24 24"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg><span class="bdg" id="bellBdg" hidden></span></button>
       <input type="date" min="2000-01-01" max="2099-12-31" id="dPick" class="sr" aria-label="Data">
     </div>
   </div>
@@ -665,10 +690,10 @@ body.job-on.has-trfoot #toast{bottom:calc(var(--nav-h) + var(--trfoot-h,68px) + 
   <div class="card dayhero" id="dayHead">
     <div class="card-h"><h2 id="dhTitle">—</h2><div class="aux" id="dhChips"></div></div>
     <div class="kcal"><b id="enBig">—</b><span class="aux"><span id="enBigL">de — kcal</span> · <span id="enRemain"></span></span></div>
-    <div class="bar" role="img" aria-label="Calorias consumidas em relação à meta do dia"><i id="enArc"></i></div>
+    <div class="bar meta" role="img" aria-label="Calorias consumidas em relação à meta do dia"><i id="enArc"></i></div>
     <div class="stat" id="dhKpis"></div>
     <div class="line"><label class="l" for="dayWeight">Peso do dia <small id="dayWeightHint"></small></label><span class="ctl"><input type="number" step="0.1" inputmode="decimal" id="dayWeight" placeholder="kg" aria-label="Peso corporal do dia em kg"></span></div>
-    <div class="line"><span class="l">Água <small id="waterNow"></small></span><span class="ctl"><button class="btn sm ghost" onclick="A.addWater(-250)" aria-label="Tirar 250 ml de água">−250 ml</button><button class="btn sm" onclick="A.addWater(250)">+250 ml</button><button class="btn sm" onclick="A.addWater(500)">+500 ml</button></span></div>
+    <div class="line"><span class="l">Água <small id="waterNow"></small></span><span class="ctl"><button class="btn sm ghost" onclick="A.addWater(-250)" aria-label="Tirar 250 mL de água">−250 mL</button><button class="btn sm" onclick="A.addWater(250)">+250 mL</button><button class="btn sm" onclick="A.addWater(500)">+500 mL</button></span></div>
     <div class="mini mt1"><span id="enHint"></span> · <span id="enSrc"></span></div>
   </div>
 
@@ -676,7 +701,7 @@ body.job-on.has-trfoot #toast{bottom:calc(var(--nav-h) + var(--trfoot-h,68px) + 
     <div class="card-h"><h3>Macros e hidratação</h3><span class="mini" id="macMeta"></span></div>
     <div class="stack" id="macroRows"></div>
     <div class="sep"></div>
-    <div class="grid g3 trio" id="microRow"></div>
+    <div class="stack" id="microRow"></div>
   </div>
 
   <div class="card wide">
@@ -759,7 +784,7 @@ body.job-on.has-trfoot #toast{bottom:calc(var(--nav-h) + var(--trfoot-h,68px) + 
     <div class="card-h"><h3>Progressão de carga</h3>
       <select id="pgEx" class="sel-inline" aria-label="Exercício"></select></div>
     <div class="chart"><canvas id="chProg"></canvas></div>
-    <div class="legend"><span><i style="background:var(--prot)"></i>carga máxima (kg)</span><span><i style="background:var(--carb)"></i>tonelagem (kg × reps ÷ 100)</span></div>
+    <div class="legend"><span><i class="line" style="background:var(--serie)"></i>carga máxima (kg)</span><span><i class="dash" style="color:var(--serie-2)"></i>tonelagem (kg × reps ÷ 100)</span></div>
     <div id="pgSummary" class="mini mt2"></div>
   </div>
 
@@ -792,9 +817,9 @@ body.job-on.has-trfoot #toast{bottom:calc(var(--nav-h) + var(--trfoot-h,68px) + 
   <div class="grid g4" id="kpiRow"></div>
 
   <div class="card wide">
-    <div class="card-h"><h3>Consumo × meta × gasto</h3><span class="mini">kcal por dia</span></div>
+    <div class="card-h"><h3>Consumo × meta × gasto</h3><span class="mini" id="enNote">kcal por dia</span></div>
     <div class="chart tall"><canvas id="chEnergy"></canvas></div>
-    <div class="legend"><span><i style="background:var(--prot)"></i>consumido</span><span><i class="line" style="background:var(--ink)"></i>meta do dia</span><span><i class="line" style="background:var(--carb)"></i>gasto (TMB + ativas)</span></div>
+    <div class="legend"><span><i style="background:var(--serie)"></i>consumido</span><span><i class="dash" style="color:var(--meta)"></i>meta do dia</span><span><i class="line" style="background:var(--serie-2)"></i>gasto (TMB + ativas)</span></div>
   </div>
 
   <div class="grid g2">
@@ -802,12 +827,12 @@ body.job-on.has-trfoot #toast{bottom:calc(var(--nav-h) + var(--trfoot-h,68px) + 
       <div class="card-h"><h3>Peso</h3><span class="mini" id="wtHint"></span></div>
       <div class="chart"><canvas id="chWeight"></canvas></div>
       <div class="empty semdado-msg">Sem pesagens no período. Registre o peso em Hoje.</div>
-      <div class="legend"><span><i style="background:var(--prot)"></i>pesagem diária</span><span><i class="line" style="background:var(--muted)"></i>tendência</span><span><i class="dot" style="background:var(--accent)"></i>bioimpedância</span></div>
+      <div class="legend"></div>
     </div>
     <div class="card">
-      <div class="card-h"><h3>Balanço acumulado</h3><span class="mini">7.700 kcal ≈ 1 kg</span></div>
+      <div class="card-h"><h3>Peso: esperado pelo saldo × medido</h3><span class="mini">kg no período · 7.700 kcal ≈ 1 kg</span></div>
       <div class="chart"><canvas id="chBalance"></canvas></div>
-      <div class="legend"><span><i class="line" style="background:var(--carb)"></i>variação esperada (kg)</span><span><i class="line" style="background:var(--prot)"></i>variação real (kg)</span></div>
+      <div class="legend"><span><i class="dash" style="color:var(--serie-2)"></i>variação esperada pelo saldo (kg)</span><span><i class="line" style="background:var(--serie)"></i>variação medida na balança (kg)</span></div>
     </div>
   </div>
 
@@ -820,7 +845,7 @@ body.job-on.has-trfoot #toast{bottom:calc(var(--nav-h) + var(--trfoot-h,68px) + 
     <div class="card">
       <div class="card-h"><h3>Volume de treino</h3><span class="mini">min · linha = alvo de cárdio</span></div>
       <div class="chart"><canvas id="chVolume"></canvas></div>
-      <div class="legend"><span><i style="background:var(--prot)"></i>musculação</span><span><i style="background:var(--carb)"></i>cárdio</span></div>
+      <div class="legend"><span><i style="background:var(--serie)"></i>musculação</span><span><i style="background:var(--serie-2)"></i>cárdio</span><span><i class="dash" style="color:var(--meta)"></i>alvo de cárdio</span></div>
     </div>
   </div>
 
@@ -916,6 +941,7 @@ body.job-on.has-trfoot #toast{bottom:calc(var(--nav-h) + var(--trfoot-h,68px) + 
     <div class="card">
       <div class="card-h"><div><h2>Protocolo vigente</h2><span class="mini" id="protoMeta"></span></div>
         <div class="row"><button class="btn sm" onclick="A.editMealTimes()">Refeições e horários</button><button class="btn sm" onclick="A.openRotation()">Rotação do treino</button></div></div>
+      <div class="line"><label class="l" for="protoGoal">Objetivo <small>usado na leitura do treinador</small></label><span class="ctl"><select id="protoGoal" aria-label="Objetivo do protocolo" onchange="A.setGoal(this.value)"><option value="">Não informado</option><option value="ganho">Ganho de massa</option><option value="corte">Corte (perda de gordura)</option><option value="manutencao">Manutenção</option></select></span></div>
       <div class="grid g2" id="protoSummary"></div>
     </div>
     <div class="card">
@@ -949,7 +975,7 @@ body.job-on.has-trfoot #toast{bottom:calc(var(--nav-h) + var(--trfoot-h,68px) + 
     </div>
     <div class="card">
       <div class="card-h"><h3>Meus alimentos e rótulos</h3>
-        <div class="row"><button class="btn sm" onclick="A.openLabelAI()">Registrar rótulo de alimento</button><button class="btn sm primary" onclick="A.openFoodForm()" aria-label="Novo alimento">Novo</button></div></div>
+        <div class="row"><button class="btn sm" onclick="A.openLabelAI()">Registrar rótulo de alimento</button><button class="btn sm" onclick="A.openFoodForm()" aria-label="Novo alimento">Novo</button></div></div>
       <div class="list" id="fdCustom"></div>
     </div>
   </div>
@@ -987,7 +1013,7 @@ body.job-on.has-trfoot #toast{bottom:calc(var(--nav-h) + var(--trfoot-h,68px) + 
     </div>
     <div class="card">
       <div class="card-h"><h3>Dados</h3><span class="mini" id="dataStats"></span></div>
-      <p class="mini mb2" id="appVersion">Versão 47 · 23/11/2026</p><p class="mini mb2" id="lastAiErr" hidden></p>
+      <p class="mini mb2" id="appVersion">Versão 48 · 24/11/2026</p><p class="mini mb2" id="lastAiErr" hidden></p>
       <div class="row">
         <button class="btn sm" onclick="A.exportAll()">Exportar backup (JSON)</button>
         <button class="btn sm" onclick="A.exportCSV()">Exportar diário (CSV)</button>
@@ -1006,7 +1032,7 @@ body.job-on.has-trfoot #toast{bottom:calc(var(--nav-h) + var(--trfoot-h,68px) + 
 </main>
 
 <nav id="bottomnav" aria-label="Seções">
-  <button data-tab="hoje" class="on"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>Hoje</button>
+  <button data-tab="hoje" class="on" aria-current="page"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>Hoje</button>
   <button data-tab="treino"><svg viewBox="0 0 24 24"><path d="M6 8v8M18 8v8M3 10v4M21 10v4M6 12h12"/></svg>Treino</button>
   <button data-tab="paineis"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Painéis</button>
   <button data-tab="saude"><svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.5-7 10-7 10z"/><path d="M8 12h2l1.5-3 2 6 1.5-3h2"/></svg>Saúde</button>
@@ -1216,8 +1242,8 @@ const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const norm=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9%+.,/ ]+/g,' ').replace(/\s+/g,' ').trim();
 function kgDec(v){v=Number(v)||0;return v%1?((Math.round(v*100)%10)?2:1):0;}
-function fmt(n,d=0){if(n==null||isNaN(n))return '–';return Number(n).toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d});}
-function sgn(n,d=0){if(n==null||isNaN(n))return '–';return (n>0?'+':'')+fmt(n,d);}
+function fmt(n,d=0){if(n==null||isNaN(n))return '–';const s=Number(n).toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d});return /^-[0,]+$/.test(s)?s.slice(1):s;}
+function sgn(n,d=0){if(n==null||isNaN(n))return '–';const s=fmt(n,d);return (n>0&&!/^[0,]+$/.test(s)?'+':'')+s;}
 function todayISO(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 function isoOf(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 function dateOf(iso){const [y,m,d]=iso.split('-').map(Number);return new Date(y,m-1,d);}
@@ -1230,7 +1256,7 @@ function dtShort(iso){if(!iso)return '–';const [y,m,d]=String(iso).split('-');
 function dayLabel(iso){return `${WD[weekdayIdx(iso)]}, ${dtBR(iso)}`;}
 function nowHM(){const d=new Date();return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');}
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7);}
-function toast(m,ms=2200){const t=$('#toast');t.textContent=m;{const sh=$('#sheet');t.classList.toggle('top',!!sh&&!sh.hidden);}t.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove('show'),ms);}
+function toast(m,ms=2200){const t=$('#toast');t.textContent=m;{const sh=$('#sheet');const tf=$('#tab-foods');t.classList.toggle('top',(!!sh&&!sh.hidden)||(!!tf&&!tf.hidden));}t.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove('show'),ms);}
 function setVal(id,v){const el=document.getElementById(id);if(!el||document.activeElement===el)return;el.value=(v==null?'':v);}
 function num(v){if(v==null||v==='')return null;const n=typeof v==='number'?v:parseFloat(String(v).replace(/\./g,'').replace(',','.'));return isNaN(n)?null:n;}
 function numLoose(v){if(v==null||v==='')return null;if(typeof v==='number')return v;let s=String(v).trim();if(s.indexOf(',')>=0)s=s.replace(/\./g,'').replace(',','.');const n=parseFloat(s);return isNaN(n)?null:n;}
@@ -1323,6 +1349,15 @@ function syncBar(cls,txt){const b=$('#syncBar');b.hidden=false;b.className=cls;$
 
 /* ============================================================ PROTOCOLO & METAS */
 function protoN(){return S.protoN||null;}
+/* Objetivo do protocolo: campo "goal" gravado no documento do protocolo (nutrição; sem ele, treino). Protocolo antigo sem o campo = não informado. */
+const GOALS={ganho:'Ganho de massa',corte:'Corte (perda de gordura)',manutencao:'Manutenção'};
+function goalOf(){const g=(S.protoN&&S.protoN.goal)||(S.protoT&&S.protoT.goal)||'';return GOALS[g]?g:'';}
+/* leitura do saldo médio (kcal/dia) conforme o objetivo: devolve [classe da nota, texto] */
+function coachBalance(avg,g){
+  if(g==='corte')return [avg<-250?'ok':avg<0?'':'warn',avg<-750?'Déficit agressivo: vigie força e massa muscular.':avg<-250?'Faixa ideal para recomposição preservando massa magra.':avg<0?'Déficit leve: bom para lapidar sem perder performance.':'Sem déficit no período; revise os dias de baixo carbo ou o cárdio.'];
+  if(g==='ganho')return avg<=0?['warn','Sem superávit no período: para ganhar massa o consumo precisa ficar acima do gasto.']:avg<=500?['ok','Superávit moderado, coerente com ganho de massa.']:['warn','Superávit acima de 500 kcal/dia: o ganho de gordura tende a vir junto.'];
+  if(g==='manutencao')return Math.abs(avg)<=250?['ok','Consumo e gasto equilibrados, coerente com manutenção.']:avg>0?['warn','Superávit acima de 250 kcal/dia: fora da faixa de manutenção.']:['warn','Déficit acima de 250 kcal/dia: fora da faixa de manutenção.'];
+  return ['',`Objetivo não informado. <button type="button" class="btn xs ghost" onclick="showTab('proto')">Informar o objetivo</button>`];}
 function dayType(iso){const p=protoN();if(!p||!p.dayTypes)return null;const wd=weekdayIdx(iso);const t=(p.weekdays||{})[wd]||(p.weekdays||{})[String(wd)];return t&&p.dayTypes[t]?t:Object.keys(p.dayTypes)[0];}
 function metaFor(iso){const p=protoN();const t=dayType(iso);if(p&&t)return Object.assign({label:t},p.dayTypes[t]);return {label:'sem protocolo',k:2200,p:180,c:220,f:70};}
 function metaLabel(iso){const m=metaFor(iso);return m.label||'';}
@@ -1584,22 +1619,31 @@ function mealPlanRows(md,iso,d){const arr=(d.meals&&d.meals[md.n])||[];const use
 function mealNext(iso){const d=getDay(iso);const defs=mealDefs();const has=n=>((d.meals||{})[n]||[]).length>0;let last=0,lastAt='';defs.forEach(m=>{if(!has(m.n))return;const at=d.meals[m.n].reduce((x,e)=>e&&e.at&&e.at>x?e.at:x,'');if(at>=lastAt){last=m.n;lastAt=at;}});
   if(last){const md=defs.find(m=>m.n===last);const r=mealPlanRows(md,iso,d);if(r.rows.some(x=>x.i<0)&&(d.meals[last]||[]).some(e=>e&&e.plan))return last;}
   const nx=defs.find(m=>m.n>last&&!has(m.n));return nx?nx.n:null;}
-function mealOpenDef(n,iso){const d=getDay(iso);if(((d.meals||{})[n]||[]).length)return true;const nx=mealNext(iso);return nx?n===nx:n===mealDefs()[0].n;}
+/* designer 24/11/2026: abertas só a refeição da vez e a última mexida; em outro dia, só a da vez. O que a pessoa abre ou fecha à mão continua valendo (renderMeals.open). */
+function mealLast(iso){const d=getDay(iso);let n=null,at='';mealDefs().forEach(m=>((d.meals||{})[m.n]||[]).forEach(e=>{if(e&&e.at&&e.at>=at){at=e.at;n=m.n;}}));return n;}
+function mealOpenDef(n,iso){const d=getDay(iso);const nx=mealNext(iso);const any=mealDefs().some(m=>((d.meals||{})[m.n]||[]).length);if(!any)return nx?n===nx:n===mealDefs()[0].n;if(iso!==todayISO())return n===nx;return n===nx||n===mealLast(iso);}
+function mealKeepOpen(n){renderMeals.open=renderMeals.open||{};delete renderMeals.open[n];renderMeals.act={iso:CUR,n:+n};}
+function mealIsOpen(n,iso){const o=(renderMeals.open||{})[n];if(o!=null)return !!o;const a=renderMeals.act;return mealOpenDef(n,iso)||(!!a&&a.iso===iso&&a.n===+n);}
+/* texto do cabeçalho da refeição: estado em palavras e número com unidade (usado no desenho inteiro e no parcial) */
+function mealHeadTxt(md,iso,closed){const n=md.n;const d=getDay(iso);const arr=(d.meals&&d.meals[n])||[];const exp=mealExpected(md);if(!arr.length)return exp?`a lançar · previsto ${fmt(exp.k)} kcal`:'a lançar';
+  const tot=mealTotals(iso,n);const P=mealPlanRows(md,iso,d);const tp=P.rows.length,dn=P.rows.filter(r=>r.i>=0).length;const kc=exp?`${fmt(tot.k)} de ${fmt(exp.k)} kcal`:`${fmt(tot.k)} kcal`;
+  const mac=closed?` · P ${fmt(tot.p)} g · C ${fmt(tot.c)} g · G ${fmt(tot.f)} g`:'';
+  return (tp&&dn<tp?`${dn} de ${tp} ${tp===1?'item':'itens'} · `:tp?'lançada · ':'')+kc+mac;}
 function mealEdOn(n,i,e){const x=renderMeals.ed;return !!(x&&x.iso===CUR&&x.n===n&&x.i===i&&e&&x.name===e.n);}
 /* linha de um item lançado: caixa marcada (desmarcar pede confirmação), nome e conversão, quantidade editável e medida */
-function mealRowHTML(n,i,e,note){const bu=baseU(e);const cur=entryUnit(e);const q=cur?e.g/cur.g:e.g;const qv=+(+q).toFixed(2);const ed=mealEdOn(n,i,e);
+function mealRowHTML(n,i,e,note,label){const bu=baseU(e);const cur=entryUnit(e);const q=cur?e.g/cur.g:e.g;const qv=+(+q).toFixed(2);const ed=mealEdOn(n,i,e);
   return `<div class="mrow on" data-i="${i}"><button type="button" class="ck" aria-pressed="true" onclick="A.delEntry(${n},${i})" aria-label="Desmarcar ${esc(e.n)}"><i>✓</i></button>
-    <button type="button" class="t" onclick="A.mealEdit(${n},${i})"><b>${esc(e.n)}</b><small class="cv">${esc(cur?convTxt(q,cur.n,cur.g,bu,e.k):`${fq(e.g)} ${bu} · ${fmt(e.k)} kcal`)}${note?' · '+esc(note):''}</small></button>
+    <button type="button" class="t" onclick="A.mealEdit(${n},${i})"${label&&label!==e.n?` title="${esc(e.n)}"`:''}><b>${esc(label||e.n)}</b><small class="cv">${esc(`${fq(e.g)} ${bu} · ${fmt(e.k)} kcal`)}${note?' · '+esc(note):''}</small></button>
     <span class="qrow"><input class="qedit" type="number" inputmode="decimal" step="any" value="${qv}" onfocus="try{this.select()}catch(_){}" oninput="A.editEntryG(${n},${i},this.value);mealEdLive(${n},${i},this.value)" onblur="setTimeout(()=>renderMeals(),50)" aria-label="${cur?esc(cur.n):bu==='mL'?'mL':'gramas'} de ${esc(e.n)}"><button type="button" class="btn sm ubtn" onclick="A.mealEdit(${n},${i})" aria-expanded="${ed}" aria-label="Medida de ${esc(e.n)}">${esc(cur?cur.n:bu)}</button></span></div>${ed?mealEdHTML(n,i,e):''}`;}
 /* editor na própria linha: − e +, medidas do alimento, macros, Trocar, Excluir, Pronto */
 function mealEdHTML(n,i,e){const bu=baseU(e);const cur=entryUnit(e);const us=[{n:bu,g:1}].concat(entryUnits(e));
-  return `<div class="med" data-ed="${n}_${i}"><div class="r"><button type="button" class="btn sm" onclick="A.mealStep(${n},${i},-1)" aria-label="Menos">−</button><button type="button" class="btn sm" onclick="A.mealStep(${n},${i},1)" aria-label="Mais">+</button><span class="mini">${e.at?'lançado às '+esc(e.at)+' · ':''}${esc(e.src||'IA')}</span></div>
+  return `<div class="med" data-ed="${n}_${i}"><div class="r"><button type="button" class="btn sm" onclick="A.mealStep(${n},${i},-1)" aria-label="Menos">−</button><button type="button" class="btn sm" onclick="A.mealStep(${n},${i},1)" aria-label="Mais">+</button><span class="mini">${esc(e.n)} · ${e.at?'lançado às '+esc(e.at)+' · ':''}${esc(e.src||'IA')}</span></div>
     <div class="r" role="group" aria-label="Medida">${us.map(u=>{const on=u.g===1?!cur:!!cur&&norm(cur.n)===norm(u.n);return `<button type="button" class="btn sm uchip" aria-pressed="${on}" data-g="${+u.g||1}" data-n="${esc(u.n)}" onclick="A.mealUnit(${n},${i},this)">${esc(u.n)}${u.g!==1?` <small>${fq(u.g)} ${bu}</small>`:''}</button>`;}).join('')}</div>
     <p class="mini mac">P ${fmt(e.p,1)} · C ${fmt(e.c,1)} · G ${fmt(e.f,1)}</p>
     <div class="r"><button type="button" class="btn sm" onclick="A.mealSwapOpen(${n},${i})">Trocar</button><button type="button" class="btn sm ghost" onclick="A.delEntry(${n},${i})">Excluir</button><button type="button" class="btn sm" style="margin-left:auto" onclick="A.mealEdit(${n},${i})">Pronto</button></div></div>`;}
 /* enquanto digita: conversão e kcal da linha mudam na hora (a gravação continua pela A.editEntryG) */
 function mealEdLive(n,i,v){const e=((getDay(CUR).meals||{})[n]||[])[i];const row=$(`#meals .meal[data-n="${n}"] .mrow.on[data-i="${i}"]`);if(!e||!row)return;const q=numLoose(v);if(!(q>0)||!(e.g>0))return;
-  const bu=baseU(e);const cur=entryUnit(e);const g=cur?q*cur.g:q;const r=g/e.g;const k=e.k*r;const el=row.querySelector('small.cv');if(el)el.textContent=cur?convTxt(q,cur.n,cur.g,bu,k):`${fq(g)} ${bu} · ${fmt(k)} kcal`;
+  const bu=baseU(e);const cur=entryUnit(e);const g=cur?q*cur.g:q;const r=g/e.g;const k=e.k*r;const el=row.querySelector('small.cv');if(el)el.textContent=`${fq(g)} ${bu} · ${fmt(k)} kcal`;
   const mc=row.nextElementSibling&&row.nextElementSibling.classList.contains('med')?row.nextElementSibling.querySelector('.mac'):null;if(mc)mc.textContent=`P ${fmt(e.p*r,1)} · C ${fmt(e.c*r,1)} · G ${fmt(e.f*r,1)}`;}
 /* linha de item do plano ainda não lançado */
 function mealTodoHTML(n,r){const nm=planName(r.it.food);return `<div class="mrow todo" data-k="${esc(r.key)}"><button type="button" class="ck" aria-pressed="false" data-k="${esc(r.key)}" onclick="A.addPlanned(${n},this.dataset.k)" aria-label="Lançar ${esc(nm)}"><i>✓</i></button>
@@ -1608,28 +1652,29 @@ function mealTodoHTML(n,r){const nm=planName(r.it.food);return `<div class="mrow
 /* lista da refeição + ações (lançar tudo, repetir ontem) */
 function mealListHTML(md,iso,d){const n=md.n;const P=mealPlanRows(md,iso,d);const arr=P.arr;const out=[];
   P.rows.forEach(r=>{if(r.i<0)out.push(mealTodoHTML(n,r));else if(r.shared){const e=arr[r.i];out.push(`<div class="mrow alsoon"><button type="button" class="ck" aria-pressed="true" onclick="A.delEntry(${n},${r.i})" aria-label="Desmarcar ${esc(planName(r.it.food))}"><i>✓</i></button><span class="t"><b>${esc(planName(r.it.food))}</b><small>lançado junto com ${esc(e.n)}</small></span></div>`);}
-    else{const e=arr[r.i];const swapped=r.m&&norm(e.n)!==norm(r.m.food.n)&&e.plan===r.key?'no lugar de '+planName(r.it.food):'';out.push(mealRowHTML(n,r.i,e,swapped));}});
+    else{const e=arr[r.i];const swapped=r.m&&norm(e.n)!==norm(r.m.food.n)&&e.plan===r.key?'no lugar de '+planName(r.it.food):'';out.push(mealRowHTML(n,r.i,e,swapped,swapped?'':planName(r.it.food)));}});
   arr.forEach((e,i)=>{if(e&&!P.used.has(i))out.push(mealRowHTML(n,i,e,P.rows.length?'fora do plano':''));});
   const pend=P.rows.filter(r=>r.i<0).length;const y=((S.days[addDays(iso,-1)]||{}).meals||{})[n]||[];const nx=mealNext(iso);
-  const foot=(pend||y.length)?`<div class="mfoot">${pend?`<button type="button" class="btn${n===nx?' primary':''}" onclick="A.addAllPlanned(${n})">${arr.length?'Lançar o restante':'Lançar tudo'}</button>`:''}${y.length?`<button type="button" class="btn" onclick="A.repeatYesterday(${n})">Repetir ontem</button>`:''}</div>`:'';
-  return (out.length?`<div class="mlist">${out.join('')}</div>`:'')+foot;}
+  const fb=(pend?`<button type="button" class="btn${n===nx?' primary':''}" onclick="A.addAllPlanned(${n})">${arr.length?'Lançar o restante':'Lançar tudo'}</button>`:'')+(y.length&&(pend||!arr.length)?`<button type="button" class="btn" onclick="A.repeatYesterday(${n})">Repetir ontem</button>`:'');
+  const foot=fb?`<div class="mfoot">${fb}</div>`:'';
+  return foot+(out.length?`<div class="mlist">${out.join('')}</div>`:'');}
 /* uma linha de total por refeição (no lugar da tabela de rodapé) */
 function mealTotHTML(md,iso){const n=md.n;const arr=((getDay(iso).meals||{})[n])||[];if(!arr.length)return '';const tot=mealTotals(iso,n);const exp=mealExpected(md);const diff=exp?tot.k-exp.k:null;
   let acc=0;for(const m of mealDefs()){acc+=mealTotals(iso,m.n).k;if(m.n===n)break;}
   const dcol=exp?(Math.abs(diff)<=exp.k*.1?'var(--good-text)':diff>0?'var(--bad-text)':'var(--warn-text)'):'';
-  return `<b>${fmt(tot.k)} kcal</b> · P ${fmt(tot.p)} · C ${fmt(tot.c)} · G ${fmt(tot.f)}${exp?` · previsto ${fmt(exp.k)} (<span style="color:${dcol}">${sgn(diff)}</span>)`:''} · acumulado do dia ${fmt(acc)} kcal`;}
+  return `<b>${fmt(tot.k)} kcal</b> · P ${fmt(tot.p)} g · C ${fmt(tot.c)} g · G ${fmt(tot.f)} g${exp?` · previsto ${fmt(exp.k)} (<span style="color:${dcol}">${sgn(diff)}</span>)`:''} · acumulado do dia ${fmt(acc)} kcal`;}
 /* quanto falta no dia, no topo das refeições */
 function renderFoodsLeft(){const el=$('#foodsLeft');if(!el)return;const iso=CUR;const t=dayTotals(iso),m=metaFor(iso);const left=m.k-t.k;
   const mac=[['Proteína',t.p,m.p],['Carboidrato',t.c,m.c],['Gordura',t.f,m.f]];
   /* I-12 do QA 8: arredonda antes de subtrair (10 de 259 → faltam 249); I-18: aviso de dia futuro */
   const kR=Math.round(t.k),mR=Math.round(m.k);
-  el.innerHTML=`${iso>todayISO()?`<p class="flfut">Lançando em ${dtShort(iso)} (dia futuro)</p>`:''}<div class="fl1"><b>${fmt(kR)}</b><span>de ${fmt(mR)} kcal · ${mR-kR>=0?'faltam '+fmt(mR-kR):fmt(kR-mR)+' acima'}</span></div><div class="bar"><i style="width:${Math.min(100,m.k?t.k/m.k*100:0)}%"></i></div>
+  el.innerHTML=`${iso>todayISO()?`<p class="flfut">Lançando em ${dtShort(iso)} (dia futuro)</p>`:''}<div class="fl1"><b>${fmt(kR)}</b><span>de ${fmt(mR)} kcal · ${mR-kR>=0?'faltam '+fmt(mR-kR):fmt(kR-mR)+' acima'}</span></div><div class="bar meta"><i style="width:${Math.min(120,m.k?t.k/m.k*100:0)/1.2}%"></i></div>
     <div class="flm">${mac.map(([nm,v0,g0])=>{const v=Math.round(v0),g=Math.round(g0);return `<span>${nm}<br><b>${fmt(v)}</b> de ${fmt(g)} g<br><span class="${g&&v0>g0*1.1?'over':''}">${g-v>=0?'faltam '+fmt(g-v)+' g':fmt(v-g)+' g acima'}</span></span>`;}).join('')}</div>`;}
 /* redesenha só a lista do plano e os itens lançados de UMA refeição: não toca na linha de busca (rascunho e foco ficam) */
 function mealPartRefresh(n,parts,force){const m=$(`#meals .meal[data-n="${n}"]`);if(!m)return;const md=mealDefsOf(CUR).find(x=>x.n===n);if(!md)return;const d=getDay(CUR);
   if(parts.includes('pl')||parts.includes('ml')){const el=m.querySelector('.mlwrap');if(el&&(force||!el.contains(document.activeElement)))el.innerHTML=mealListHTML(md,CUR,d);}
   {const mt=m.querySelector('.mtwrap');if(mt){const h=mealTotHTML(md,CUR);mt.innerHTML=h?`<p class="mtot">${h}</p>`:'';}}renderFoodsLeft();
-  const tot=mealTotals(CUR,n);const exp=mealExpected(md);const th=m.querySelector('.meal-h .tot');if(th)th.innerHTML=`${fmt(tot.k)} kcal${exp?` <span class="muted">/ ${fmt(exp.k)}</span>`:''} · P ${fmt(tot.p)} · C ${fmt(tot.c)} · G ${fmt(tot.f)}`;}
+  const tot=mealTotals(CUR,n);const exp=mealExpected(md);const th=m.querySelector('.meal-h .tot');if(th)th.innerHTML=mealHeadTxt(md,CUR,!!(m.querySelector('.meal-b')||{}).hidden);}
 /* Conferência somente leitura dos itens em mL (C-01): compara as kcal gravadas com as recalculadas pelo cadastro do alimento.
    Não altera nada. Uso no console: A.auditMl()  →  { conferidos, divergentes:[…], semCadastro:[…] } */
 function auditMl(){const div=[],sem=[];let ok=0;const defs={};mealDefs().forEach(m=>{defs[m.n]=m.name;});
@@ -1857,6 +1902,16 @@ function svgSets(exs,opt={}){const list=exs.filter(e=>(e.sets||[]).some(s=>s.kg>
   return `<svg viewBox="0 0 ${w} ${h}" width="100%" role="img" aria-label="${esc(opt.label||'séries do treino')}" style="display:block;max-width:${w}px"><g font-family="system-ui,sans-serif">${g}</g></svg>`;}
 /* v45 · gráfico compacto das séries, para a faixa de duas colunas da sessão (tela e PDF). Quadro estreito para a letra não encolher:
    nome do exercício em até 3 linhas, repetições sobem um degrau quando bateriam no número vizinho (colunas juntas demais para uma linha só). */
+function svgLoadBlocks(exs,opt={}){const list=exs.filter(e=>(e.sets||[]).some(s=>s.kg>0));if(!list.length)return '';
+  const w=opt.w||640,cols=opt.cols||4,pw=w/cols,ph=96,rows=Math.ceil(list.length/cols),h=rows*ph;const cpl=Math.floor((pw-14)/5.2);
+  const tight=st=>st.length>1&&(pw-28)/(st.length-1)<26;const sh=t=>{t=String(t||'');return t.length>cpl?t.slice(0,cpl-1)+'…':t;};let g='';
+  list.forEach((e,i)=>{const c=i%cols,r=Math.floor(i/cols),x0=c*pw,y0=r*ph;const st=e.sets.filter(q=>(q.kg||0)>0);const ks=st.map(q=>q.kg);const lo=Math.min(...ks),hi=Math.max(...ks);
+    const L=x0+14,R=x0+pw-14,T=y0+38,B=y0+68;const X=k=>st.length>1?L+(R-L)*k/(st.length-1):(L+R)/2;const Y=v=>hi>lo?B-(B-T)*(v-lo)/(hi-lo):(T+B)/2;
+    g+=`<rect x="${(x0+3).toFixed(1)}" y="${y0+3}" width="${(pw-6).toFixed(1)}" height="${ph-6}" rx="4" fill="none" stroke="#dcdce2"/>`;
+    g+=`<text x="${(x0+10).toFixed(1)}" y="${y0+17}" font-size="9.5" font-weight="700" fill="#111114">${esc(sh(e.name))}</text>`;
+    if(st.length>1)g+=`<polyline points="${st.map((q,k)=>X(k).toFixed(1)+','+Y(q.kg).toFixed(1)).join(' ')}" fill="none" stroke="#111114" stroke-width="1.4" stroke-linejoin="round"/>`;
+    st.forEach((q,k)=>{const x=X(k),y=Y(q.kg);const an=st.length<2?'middle':k===0?'start':k===st.length-1?'end':'middle';const tx=an==='start'?x-4:an==='end'?x+4:x;g+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="2.6" fill="${q.fail?'#c2410c':'#111114'}"/><text x="${tx.toFixed(1)}" y="${(y-6).toFixed(1)}" text-anchor="${an}" font-size="8.5" font-weight="600" fill="${q.fail?'#c2410c':'#222'}">${fmt(q.kg,kgDec(q.kg))}</text><text x="${tx.toFixed(1)}" y="${y0+84}" text-anchor="${an}" font-size="8" fill="#666">${q.reps!=null?q.reps+(tight(st)?'':' rep'):'S'+(k+1)}</text>`;});});
+  return `<svg viewBox="0 0 ${w} ${h}" width="100%" role="img" aria-label="${esc(opt.label||'evolução da carga por exercício')}" style="display:block;max-width:${w}px"><g font-family="system-ui,sans-serif">${g}</g></svg>`;}
 function svgSetsC(exs,opt={}){const list=exs.filter(e=>(e.sets||[]).some(s=>s.kg>0));if(!list.length)return '';const w=opt.w||365,h=opt.h||160,pl=30,pr=4,gap=1.5;
   const gw=(w-pl-pr)/list.length;const cpl=Math.max(4,Math.floor((gw-3)/5));
   const wrap=t=>{const ws=String(t||'').split(/\s+/).filter(Boolean);const L=[];let cur='';ws.forEach(x=>{const c=cur?cur+' '+x:x;if(c.length<=cpl)cur=c;else{if(cur)L.push(cur);cur=x;}});if(cur)L.push(cur);
@@ -1877,13 +1932,12 @@ function svgSetsC(exs,opt={}){const list=exs.filter(e=>(e.sets||[]).some(s=>s.kg
     g+=`<text x="${cx}" y="${h-4}" text-anchor="middle" font-size="9.5" font-weight="700" fill="${cut&&e.max>cut?'#c2410c':'#222'}">${fmt(e.max,kgDec(e.max))} kg${cut&&e.max>cut?' ↑':''}</text>`;});
   if(cut)g+=`<text x="${w-pr}" y="9" text-anchor="end" font-size="8.5" fill="#c2410c">↑ carga fora da escala (valor embaixo)</text>`;
   return `<svg viewBox="0 0 ${w} ${h}" width="100%" role="img" aria-label="${esc(opt.label||'séries do treino')}" style="display:block;max-width:560px"><g font-family="system-ui,sans-serif">${g}</g></svg>`;}
-const REP_LEG_SERIES='Uma coluna por série, na ordem feita · número em cima = repetições · laranja = série em falha · embaixo, a carga máxima do exercício.';
+const REP_LEG_SERIES='Um bloco por exercício, cada um na própria escala · cada ponto é uma série, na ordem feita · em cima, a carga em kg · embaixo, as repetições · laranja = série em falha.';
 /* v45 · faixa da sessão na tela: gráfico (58 %) e figura com a legenda embaixo, lado a lado em tela larga; empilhados no celular.
    Sem gráfico ou sem figura, o que existir ocupa a largura toda (classe "one"). */
 function repStripHTML(x){const tem=x.ex.some(e=>(e.sets||[]).some(s=>s.kg>0));const gm=gmSessHTML(x);if(!tem&&!gm)return '';
   const col=svg=>`<div class="sess-c"><div class="schart">${svg}</div><div class="legend">${REP_LEG_SERIES}</div></div>`;
-  if(!tem||!gm)return `<div class="sess-x one">${tem?col(svgSets(x.ex,{label:'séries do treino'})):''}${gm}</div>`;
-  return `<div class="sess-x">${col(svgSetsC(x.ex,{label:'séries do treino'}))}${gm}</div>`;}
+  return `${tem?`<div class="sess-x one"><div class="sess-c"><div class="legend"><b>Evolução da carga na sessão (kg por série)</b></div><div class="schart">${svgLoadBlocks(x.ex,innerWidth<640?{w:340,cols:2}:{})}</div><div class="legend">${REP_LEG_SERIES}</div></div></div>`:''}${gm?`<div class="sess-x one">${gm}</div>`:''}`;}
 function repSetChips(sets){return `<div class="sets">${(sets||[]).map((st,k)=>`<span class="set${st.fail?' f':''}"><b>S${k+1}</b> ${st.reps??'?'}×${st.kg!=null?fmt(st.kg,kgDec(st.kg))+' kg':'—'}${st.fail?' F':''}</span>`).join('')}</div>`;}
 /* v46 · link das fotos e vídeos no relatório em tela (só no site). O link só é criado quando pedido aqui ou ao gerar o PDF. */
 function repShareOk(sh){return !!sh&&/^https?:\/\//.test(sh.url||'')&&sh.expiresAt>Date.now();}
@@ -2264,7 +2318,7 @@ let TAB='hoje', SAUDE='bio', MAIS='proto', BIOK='peso', BIOCMP=[];
 // Um filtro de período por página: cada aba guarda o seu e a barra superior mostra o da aba aberta.
 const RANGES={treino:{mode:'30',from:null,to:null},paineis:{mode:'14',from:null,to:null},saude:{mode:'max',from:null,to:null}};const TAB_RANGE={treino:1,paineis:1,saude:1};let RANGE=RANGES.paineis;
 const BIO_LABELS={peso:'Peso (kg)',mme:'Massa muscular esquelética (kg)',pgc:'% Gordura',gord:'Massa de gordura (kg)',mlg:'Massa livre de gordura (kg)',tmb:'TMB (kcal)',agua:'Água corporal (L)',prot:'Proteína (kg)',min:'Minerais (kg)',visc:'Gordura visceral (nível)',smi:'SMI (kg/m²)',cq:'Cintura-quadril',imc:'IMC',score:'Pontuação InBody'};
-function showTab(t){if(t==='mais')t=MAIS||'proto';TAB=t;if(TAB_RANGE[t])RANGE=RANGES[t];$$('#bottomnav button').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));$$('main>.tab').forEach(s=>s.hidden=(s.id!=='tab-'+t));syncPeriodBar();appScrollTop();renderAll();}
+function showTab(t){if(t==='mais')t=MAIS||'proto';TAB=t;if(TAB_RANGE[t])RANGE=RANGES[t];$$('#bottomnav button').forEach(b=>{const on=b.dataset.tab===t;b.classList.toggle('on',on);if(on)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});$$('main>.tab').forEach(s=>s.hidden=(s.id!=='tab-'+t));syncPeriodBar();appScrollTop();renderAll();}
 function showSaude(s){SAUDE=s;$$('#saudeSeg button').forEach(b=>b.classList.toggle('on',b.dataset.s===s));['bio','labs','meds','clin'].forEach(k=>$('#saude-'+k).hidden=(k!==s));renderSaude();}
 function showMais(s){MAIS=s;showTab(s);}
 function dayChanging(next){try{const ae=document.activeElement;if(ae&&ae!==document.body&&ae.matches&&ae.matches('main input,main select,main textarea'))ae.blur();}catch(e){}try{flushPend();wkFlush();}catch(e){}if(TR.parsedKey&&TR.parsedKey.split('|')[1]!==next){TR={images:[],parsed:null,adh:null,dirty:false,parsedKey:null,editingId:null};}}
@@ -2282,12 +2336,18 @@ function mkChart(id,cfg){if(typeof Chart==='undefined'){const el=document.getEle
   const ink=cssVar('--ink-2'),grid=cssVar('--grid'),font=cssVar('--font-body');
   Chart.defaults.color=ink;Chart.defaults.font.family=font;Chart.defaults.font.size=11.5;
   cfg.options=cfg.options||{};cfg.options.responsive=true;cfg.options.maintainAspectRatio=false;cfg.options.animation=false;
-  cfg.options.plugins=Object.assign({legend:{display:false},tooltip:{mode:'index',intersect:false,backgroundColor:cssVar('--ink'),titleColor:cssVar('--bg'),bodyColor:cssVar('--bg'),padding:10,cornerRadius:8}},cfg.options.plugins||{});
+  cfg.options.plugins=Object.assign({legend:{display:false},tooltip:{mode:'index',intersect:false,filter:i=>!(i.dataset&&i.dataset._halo),backgroundColor:cssVar('--ink'),titleColor:cssVar('--bg'),bodyColor:cssVar('--bg'),padding:10,cornerRadius:8}},cfg.options.plugins||{});
   cfg.options.interaction={mode:'index',intersect:false};
   const sc=cfg.options.scales||{};Object.values(sc).forEach(s=>{s.grid=Object.assign({color:grid,drawBorder:false},s.grid||{});s.ticks=Object.assign({color:cssVar('--muted')},s.ticks||{});s.border=Object.assign({color:cssVar('--axis')},s.border||{});});
-  CH[id]=new Chart(el,cfg);}
-const dsLine=(label,data,color,extra={})=>Object.assign({type:'line',label,data,borderColor:color,backgroundColor:color,borderWidth:2,pointRadius:0,pointHoverRadius:4,tension:.25,spanGaps:true},extra);
-const dsBar=(label,data,color,extra={})=>Object.assign({type:'bar',label,data,backgroundColor:color,borderRadius:4,borderSkipped:false,maxBarThickness:28},extra);
+  CH[id]=new Chart(el,cfg);
+  /* texto alternativo do gráfico: título do bloco + séries */
+  try{const cd=el.closest('.card');const h=cd&&cd.querySelector('.card-h h3,.card-h h2');el.setAttribute('role','img');el.setAttribute('aria-label',((h&&h.textContent.trim())||'Gráfico')+': '+(cfg.data.datasets||[]).map(d=>d.label).filter(Boolean).join(', '));}catch(e){}}
+/* contorno na cor do fundo para uma linha continuar visível quando passa por cima das barras */
+function haloDs(d){return Object.assign({},d,{label:'',_halo:true,borderColor:cssVar('--bg'),backgroundColor:cssVar('--bg'),borderWidth:(d.borderWidth||2)+3,borderDash:[],order:(d.order||0)+1,pointRadius:0,pointHoverRadius:0});}
+/* legenda montada a partir do que está desenhado: [tipo ('' caixa, line, dash, dot, diam), cor, texto, mostrar?] */
+function setLegend(id,items){const c=document.getElementById(id);const cd=c&&c.closest('.card');const lg=cd&&cd.querySelector('.legend');if(!lg)return;lg.innerHTML=items.filter(x=>x&&x[3]!==false).map(([k,cor,t])=>`<span><i${k?` class="${k}"`:''} style="${k==='dash'||k==='diam'?'color':'background'}:${cor}"></i>${t}</span>`).join('');}
+const dsLine=(label,data,color,extra={})=>Object.assign({type:'line',label,data,borderColor:color,backgroundColor:color,borderWidth:2,pointRadius:0,pointHoverRadius:4,tension:0,spanGaps:true},extra);
+const dsBar=(label,data,color,extra={})=>Object.assign({type:'bar',label,data,backgroundColor:color,borderRadius:2,maxBarThickness:28},extra);
 
 /* ============================================================ RENDER GERAL */
 let renderQueued=false;
@@ -2317,23 +2377,25 @@ function renderHoje(){
   if(s.wk)chips.push(`<span class="chip ${planned&&planned!==s.wk?'warn':''}">${esc(workoutTag(s.wk))}${planned&&planned!==s.wk?' (previsto '+esc(planned)+')':''}</span>`);const ws=S.workouts[iso+'_'+(s.wk||'')];if(ws)chips.push(`<span class="chip ok">séries registradas · ${ws.adherence?ws.adherence.pct+'%':''}</span>`);
   $('#dhChips').innerHTML=chips.join('');
   const cfg=settings();const dw=d.weight;const prevW=(()=>{const ks=Object.keys(S.days).filter(k=>k<iso&&S.days[k].weight).sort();return ks.length?S.days[ks[ks.length-1]].weight:null;})();
-  $('#dhKpis').innerHTML=`<div class="r"><span class="l">Proteína</span><span class="v">${fmt(t.p)}<small>de ${fmt(m.p)} g${w?' · consumido '+fmt(t.p/w,2)+' g/kg':''}</small></span></div>
-    <div class="r"><span class="l">Gasto estimado</span><span class="v">${fmt(en.expend)}<small>kcal · TMB ${fmt(en.bmr)} + ${fmt(en.active)}</small></span></div>
-    <div class="r"><span class="l">Saldo do dia</span><span class="v">${sgn(en.net)}<small>kcal · ${en.net<0?'déficit':'superávit'} ≈ ${fmt(Math.abs(en.net/7700*1000),0)} g</small></span></div>`;
+  $('#dhKpis').innerHTML=`<div class="r"><span class="l">Gasto estimado</span><span class="v">${fmt(en.expend)}<small>kcal · TMB ${fmt(en.bmr)} + ${fmt(en.active)}</small></span></div>
+    <div class="r"><span class="l">${iso===todayISO()?'Saldo até agora':'Saldo do dia'}</span><span class="v">${sgn(en.net)}<small>kcal${iso===todayISO()?' · consumido − gasto estimado':` · ${en.net<0?'déficit':'superávit'} ≈ ${fmt(Math.abs(en.net/7700*1000),0)} g`}</small></span></div>`;
   setVal('dayWeight',d.weight);{const h=$('#dayWeightHint');if(h)h.textContent=dw?`registrado${d.weightNote?' · '+d.weightNote:''}${prevW?' · '+sgn(dw-prevW,1)+' kg vs anterior':(cfg.protocolStartWeight?' · '+sgn(dw-cfg.protocolStartWeight,1)+' kg desde o início':'')}`:(prevW?`última pesagem ${fmt(prevW,1)} kg`:'sem pesagem anterior');}
   // energia
   HOJE_SIG={iso,k:en.intake,p:t.p,expend:en.expend,water:d.water||0};
   $('#enSrc').textContent=en.basis;
-  const pctReal=m.k?en.intake/m.k*100:0;const pct=Math.min(pctReal,100);const arc=$('#enArc');arc.style.width=pct.toFixed(1)+'%';arc.className=en.intake>m.k*1.05?'bad':en.intake>=m.k*.9?'good':'';
+  const pctReal=m.k?en.intake/m.k*100:0;const pct=Math.min(pctReal,120)/1.2;const arc=$('#enArc');arc.style.width=pct.toFixed(1)+'%';arc.className='';
   $('#enBig').textContent=fmt(en.intake);$('#enBigL').textContent=`de ${fmt(m.k)} kcal`;
   $('#enHint').textContent=`${fmt(pctReal,0)} % da meta de kcal`;$('#enRemain').textContent=en.intake<=m.k?`faltam ${fmt(m.k-en.intake)}`:`${fmt(en.intake-m.k)} acima`;
   // macros
   $('#macMeta').textContent=`meta ${m.label}: ${fmt(m.k)} kcal`;
-  const mac=[['Proteína',t.p,m.p,'--prot',w?'meta '+fmt(m.p/w,1)+' g/kg':''],['Carboidrato',t.c,m.c,'--carb',''],['Gordura',t.f,m.f,'--fat',w?'meta '+fmt(m.f/w,2)+' g/kg':'']];
-  $('#macroRows').innerHTML=mac.map(([n,v,g,c,sub])=>{const p=g?Math.min(v/g*100,100):0;const over=g&&v>g*1.1;return `<div class="macro"><span class="n"><i style="background:var(${c})"></i>${n} <small class="muted">${sub}</small></span><span class="val">${fmt(v)} / ${fmt(g)} g · ${g?fmt(v/g*100,0):0} %</span><div class="bar"><i style="width:${p}%;background:${over?'var(--bad)':'var('+c+')'}"></i></div></div>`;}).join('');
-  const water=d.water||0;const micro=[['Água',water,cfg.waterGoal,'ml',water>=cfg.waterGoal,false],['Fibras',t.fib,cfg.fiberGoal,'g',t.fib>=cfg.fiberGoal,false],['Sódio',t.sod,cfg.sodiumGoal,'mg',t.sod<=cfg.sodiumGoal,true]];
-  $('#microRow').innerHTML=micro.map(([n,v,g,u,ok,inv])=>`<div class="micro"><div class="row between"><b>${n}</b><small>${fmt(v)} / ${fmt(g)} ${u}</small></div><div class="bar mt1"><i style="width:${Math.min(v/g*100,100)}%;background:${ok?(inv?'var(--ink-2)':'var(--good)'):(inv?'var(--bad)':'var(--water)')}"></i></div></div>`).join('');
-  {const wn=$('#waterNow');if(wn)wn.textContent=`${fmt(water)} de ${fmt(cfg.waterGoal)} ml`;}
+  const mac=[['Proteína',t.p,m.p,'--prot',w?'meta '+fmt(m.p/w,1)+' g/kg · consumido '+fmt(t.p/w,2)+' g/kg':''],['Carboidrato',t.c,m.c,'--carb',''],['Gordura',t.f,m.f,'--fat',w?'meta '+fmt(m.f/w,2)+' g/kg':'']];
+  /* designer 24/11/2026: um formato só ("123 de 259 g · faltam 136 g"); o trilho vai de 0 a 120 % da meta, com um traço na meta; acima da meta é dito em texto, a cor da barra não muda */
+  const falta=(v0,g0,u,lim)=>{const v=Math.round(v0),g=Math.round(g0);return g-v>=0?(lim?'limite':`faltam ${fmt(g-v)} ${u}`):`${fmt(v-g)} ${u} acima${lim?' do limite':''}`;};
+  const linha=(n,v,g,u,c,sub,over,lim)=>`<div class="macro"><span class="n"><i style="background:var(${c})"></i>${n}</span><span class="val">${fmt(v)} de ${fmt(g)} ${u} · <span class="${over?'over':''}">${falta(v,g,u,lim)}</span></span><div class="bar meta" role="img" aria-label="${n}: ${g?fmt(v/g*100,0):0} % ${lim?'do limite':'da meta'}"><i style="width:${g?Math.min(v/g*100,120)/1.2:0}%;background:var(${c})"></i></div>${sub?`<small class="msub">${sub}</small>`:''}</div>`;
+  $('#macroRows').innerHTML=mac.map(([n,v,g,c,sub])=>linha(n,v,g,'g',c,sub,g&&v>g*1.1)).join('');
+  const water=d.water||0;
+  $('#microRow').innerHTML=linha('Água',water,cfg.waterGoal,'mL','--water','',false)+linha('Fibras',t.fib,cfg.fiberGoal,'g','--serie-2','',false)+linha('Sódio',t.sod,cfg.sodiumGoal,'mg','--serie-2','',t.sod>cfg.sodiumGoal,true);
+  {const wn=$('#waterNow');if(wn)wn.textContent=`${fmt(water)} de ${fmt(cfg.waterGoal)} mL`;}
   renderSessSummary(iso);renderMeals();renderSession();renderActivities();renderMedsToday();
 }
 /* Resumo do treino do dia (o que o relógio e a letra do treino já dizem), acima do formulário */
@@ -2369,9 +2431,9 @@ function renderMeals(){
   const mealEl=inMeal?ae.closest('.meal'):null;const draftInProgress=inMeal&&mealEl&&(ae.classList.contains('qedit')||ae.classList.contains('uedit')||((mealEl.querySelector('.ac-in')||{}).value||'').trim().length>0);
   if(draftInProgress){renderMeals.dirty=true;renderMealSummary();defs.forEach(md=>mealPartRefresh(md.n,[]));return;}
   const refocusId=inMeal?ae.id:null;
-  renderMeals.dirty=false;let drafts=captureDrafts();if(renderMeals.lastIso&&renderMeals.lastIso!==iso)drafts={};renderMeals.lastIso=iso;renderMeals.restored=renderMeals.restored||{};if(!renderMeals.restored[iso]&&!Object.values(drafts).some(v=>(v.ac||'').trim()||(v.qt||'').trim())){renderMeals.restored[iso]=true;const st=mealDraftLoad();if(st){drafts=st;Object.entries(st).forEach(([n,v])=>{if(v.picked)AC[n]=Object.assign(AC[n]||{},{picked:v.picked});open[n]=true;});}}let acc={k:0,p:0,c:0,f:0};
-  box.innerHTML=defs.map(md=>{const n=md.n;const arr=d.meals[n]||[];const tot=mealTotals(iso,n);const exp=mealExpected(md);const time=mealTime(md,iso);const isOpen=open[n]??mealOpenDef(n,iso);
-    return `<div class="meal" data-n="${n}"><div class="meal-h" onclick="A.toggleMeal(${n})"><div class="row"><b>${esc(md.name)}</b><button class="chip ghost xs" onclick="event.stopPropagation();A.editMealTime(${n})" title="horário da refeição">${time?esc(time):'horário'}</button></div><span class="tot">${fmt(tot.k)} kcal${exp?` <span class="muted">/ ${fmt(exp.k)}</span>`:''} · P ${fmt(tot.p)} · C ${fmt(tot.c)} · G ${fmt(tot.f)}</span></div>
+  renderMeals.dirty=false;let drafts=captureDrafts();if(renderMeals.lastIso&&renderMeals.lastIso!==iso){drafts={};Object.keys(open).forEach(k=>delete open[k]);renderMeals.act=null;}renderMeals.lastIso=iso;renderMeals.restored=renderMeals.restored||{};if(!renderMeals.restored[iso]&&!Object.values(drafts).some(v=>(v.ac||'').trim()||(v.qt||'').trim())){renderMeals.restored[iso]=true;const st=mealDraftLoad();if(st){drafts=st;Object.entries(st).forEach(([n,v])=>{if(v.picked)AC[n]=Object.assign(AC[n]||{},{picked:v.picked});open[n]=true;});}}let acc={k:0,p:0,c:0,f:0};
+  box.innerHTML=defs.map(md=>{const n=md.n;const arr=d.meals[n]||[];const tot=mealTotals(iso,n);const exp=mealExpected(md);const time=mealTime(md,iso);const isOpen=mealIsOpen(n,iso);
+    return `<div class="meal" data-n="${n}"><div class="meal-h" onclick="A.toggleMeal(${n})"><div class="row"><b>${esc(md.name)}</b><button class="chip ghost xs" onclick="event.stopPropagation();A.editMealTime(${n})" title="horário da refeição">${time?esc(time):'horário'}</button></div><span class="tot">${mealHeadTxt(md,iso,!isOpen)}</span></div>
     <div class="meal-b" ${isOpen?'':'hidden'}>
       <div class="mlwrap">${mealListHTML(md,iso,d)}</div>
       <div class="addrow" oninput="mealDraftSave()" onchange="mealDraftSave()" onfocusout="mealLeft(${n})"><div class="ac-wrap"><input class="ac-in" id="ac${n}" placeholder="buscar alimento…" autocomplete="off" oninput="A.acInput(${n},'tap')" onclick="A.acInput(${n},'tap')" onkeydown="A.acKey(event,${n})" onfocus="A.acInput(${n})"><div class="ac" id="acl${n}" hidden></div></div>
@@ -2469,7 +2531,7 @@ function renderProgress(){const sel=$('#pgEx');const names=exerciseNames();const
   const name=sel.value;const pts=[];const PB=periodBounds(RANGES.treino);workoutsSorted().filter(w=>w.date>=PB.from&&w.date<=PB.to).forEach(w=>{const e=(w.exercises||[]).find(x=>norm(x.protoName||x.name)===norm(name));if(e&&(e.sets||[]).length)pts.push({d:w.date,max:maxLoad(e.sets),ton:tonnage(e.sets),sets:e.sets});});
   {const pc=$('#pgCard');if(pc)pc.classList.toggle('semdado',!pts.length);}
   if(!pts.length){if(CH.chProg){CH.chProg.destroy();delete CH.chProg;}$('#pgSummary').textContent=name?'Sem registros deste exercício ainda.':'Cadastre um treino para ver a progressão.';return;}
-  mkChart('chProg',{data:{labels:pts.map(p=>dtShort(p.d)),datasets:[dsLine('carga máx (kg)',pts.map(p=>p.max),cssVar('--prot'),{pointRadius:4}),dsLine('tonelagem/100',pts.map(p=>+(p.ton/100).toFixed(1)),cssVar('--carb'),{borderDash:[4,3],pointRadius:3})]},options:{scales:{y:{beginAtZero:true}}}});
+  mkChart('chProg',{data:{labels:pts.map(p=>dtShort(p.d)),datasets:[dsLine('carga máx (kg)',pts.map(p=>p.max),cssVar('--serie'),{pointRadius:4}),dsLine('tonelagem/100',pts.map(p=>+(p.ton/100).toFixed(1)),cssVar('--serie-2'),{borderDash:[4,3],pointRadius:3})]},options:{scales:{y:{beginAtZero:true}}}});
   const a=pts[0],b=pts[pts.length-1];$('#pgSummary').innerHTML=`${pts.length} sessões · carga máx ${fmt(a.max)} → <b>${fmt(b.max)} kg</b> (${sgn(b.max-a.max)}) · tonelagem ${fmt(a.ton)} → <b>${fmt(b.ton)} kg</b> · última: ${setsSummary(b.sets)}`;}
 /* ===== Comparativo dinâmico (aba Treino): grandeza × agrupamento, sobre os treinos do período da página */
 let CMP={metric:'ton',by:'letter',letters:null,cycle:'current'};
@@ -2489,7 +2551,7 @@ function renderCmp(){const box=$('#cmpTable');if(!box)return;const sel=$('#cmpMe
   if(CMP.by==='exercise')rows=rows.slice(0,14);
   const exLabel=CMP.by==='exercise'&&!['ton','tonAvg','max','sets'].includes(CMP.metric)?'Tonelagem total (kg)':label;
   {const cc=$('#cmpCard');if(cc)cc.classList.toggle('semdado',!rows.length);}
-  if(rows.length)mkChart('chCmp',{data:{labels:rows.map(r=>r.k),datasets:[dsBar(exLabel,rows.map(r=>+Number(r.v).toFixed(1)),cssVar('--prot'))]},options:{indexAxis:CMP.by==='exercise'?'y':'x',scales:{x:{grid:{display:CMP.by==='exercise'}},y:{beginAtZero:true,ticks:{autoSkip:false}}}}});else if(CH.chCmp){CH.chCmp.destroy();delete CH.chCmp;}
+  if(rows.length)mkChart('chCmp',{data:{labels:rows.map(r=>r.k),datasets:[dsBar(exLabel,rows.map(r=>+Number(r.v).toFixed(1)),cssVar('--serie'))]},options:{indexAxis:CMP.by==='exercise'?'y':'x',scales:{x:{grid:{display:CMP.by==='exercise'}},y:{beginAtZero:true,ticks:{autoSkip:false}}}}});else if(CH.chCmp){CH.chCmp.destroy();delete CH.chCmp;}
   box.innerHTML=rows.length?`<table><thead><tr><th>${CMP.by==='exercise'?'Exercício':CMP.by==='weekday'?'Dia':CMP.by==='date'?'Sessão':'Treino'}</th><th class="num">${CMP.by==='exercise'?'Execuções':'Sessões'}</th><th class="num">${esc(exLabel)}</th></tr></thead><tbody>${rows.map(r=>`<tr><td class="wrap">${esc(r.k)}</td><td class="num">${r.n}</td><td class="num"><b>${fmt(r.v,kgDec(r.v))}</b> ${unit}</td></tr>`).join('')}</tbody></table>`:`<div class="empty">Nenhum treino com séries registradas ${CMP.cycle==='all'?'no período':'no ciclo atual (desde '+dtBR(cycleStart()||CUR)+')'} e nos treinos escolhidos. ${CMP.cycle==='all'?'Amplie o período no filtro do topo.':'Escolha "Todos os ciclos" para ver o histórico anterior.'}</div>`;}
 function renderProto(){const t=S.protoT;$('#trProtoMeta').textContent=t?`${t.name||''}${t.coach?' · '+t.coach:''}${t.since?' · desde '+dtBR(t.since):''}`:'';
   if(!t||!t.workouts){$('#trProto').innerHTML='<div class="empty">Nenhum protocolo de treino cadastrado. Envie o arquivo do personal na aba Protocolo.</div>';return;}
@@ -2561,27 +2623,32 @@ function renderPaineis(){
   /* indicador sem dado não ocupa linha: vai para uma frase só, no fim da lista */
   {const KP=KPI_ROWS;const com=KP.filter(x=>x.v!=='–'),sem=KP.filter(x=>x.v==='–');
   $('#kpiRow').innerHTML=com.map(x=>`<div class="kpi"><span class="l">${x.l}</span><span class="v">${x.v}<small> ${x.u}</small></span><span class="d">${x.d}</span></div>`).join('')+(sem.length?`<div class="mini semdados">Sem dado no período: ${sem.map(x=>x.l.toLowerCase()+' ('+x.d+')').join(' · ')}</div>`:'');}
-  const lab=dates.map(d=>dtShort(d));const step=dates.length>45?Math.ceil(dates.length/30):1;const tick={autoSkip:true,maxTicksLimit:dates.length>45?12:16};
-  mkChart('chEnergy',{data:{labels:lab,datasets:[dsBar('consumido',dates.map(d=>dayTotals(d).k||null),cssVar('--prot')),dsLine('meta',dates.map(d=>metaFor(d).k),cssVar('--ink'),{borderWidth:1.5,stepped:true}),dsLine('gasto',dates.map(d=>hasEnergyData(d)?energy(d).expend:null),cssVar('--carb'),{borderDash:[5,4]})]},options:{scales:{x:{ticks:tick,grid:{display:false}},y:{beginAtZero:true}}}});
+  const lab=dates.map(d=>dtShort(d));const step=dates.length>45?Math.ceil(dates.length/30):1;const tick={autoSkip:true,maxTicksLimit:dates.length>45?12:16,maxRotation:0,autoSkipPadding:6};const hj=todayISO();const cS=cssVar('--serie'),cS2=cssVar('--serie-2'),cM=cssVar('--meta');
+  /* designer 24/11/2026: consumido em tinta (hoje, ainda parcial, mais claro); meta em degrau tracejado; gasto como um traço por dia, sem ligar um dia ao outro */
+  {const mt=dsLine('meta',dates.map(d=>metaFor(d).k),cM,{borderWidth:1.5,stepped:'middle',borderDash:[5,4],order:1});
+  mkChart('chEnergy',{data:{labels:lab,datasets:[dsBar('consumido',dates.map(d=>dayTotals(d).k||null),dates.map(d=>d===hj?cS2:cS),{order:5}),mt,haloDs(mt),dsLine('gasto',dates.map(d=>hasEnergyData(d)?energy(d).expend:null),cS2,{showLine:false,pointStyle:'line',pointRadius:Math.max(1.5,Math.min(7,140/dates.length)),pointHoverRadius:7,pointBorderWidth:2,order:3})]},options:{scales:{x:{ticks:tick,grid:{display:false}},y:{beginAtZero:true}}}});
+  setLegend('chEnergy',[['','var(--serie)','consumido'],['','var(--serie-2)','hoje (parcial)',dates.includes(hj)&&dayTotals(hj).k>0],['dash','var(--meta)','meta do dia'],['line','var(--serie-2)','gasto (TMB + ativas)']]);
+  {const sem=dates.filter(d=>d<=hj&&!(dayTotals(d).k>0)).length;const en=$('#enNote');if(en)en.textContent='kcal por dia'+(sem?` · ${plur(sem,'dia','dias')} sem refeição lançada`:'');}}
   // peso
   const wpts=wd.map(d=>S.days[d].weight);const xs=wd.map(d=>daysBetween(dates[0],d));const lr=linreg(xs,wpts);
   const exPts=examsSorted().filter(e=>e.date>=dates[0]&&e.date<=dates[dates.length-1]);
-  mkChart('chWeight',{data:{labels:lab,datasets:[dsLine('peso',dates.map(d=>S.days[d]&&S.days[d].weight||null),cssVar('--prot'),{pointRadius:3}),dsLine('tendência',dates.map((d,i)=>lr&&wd.length>=3?+(lr.a+lr.b*i).toFixed(2):null),cssVar('--muted'),{borderDash:[3,3],borderWidth:1.5}),{type:'scatter',label:'bioimpedância',data:dates.map(d=>{const e=exPts.find(x=>x.date===d);return e?e.peso:null;}),backgroundColor:cssVar('--accent'),pointRadius:6,pointStyle:'rectRot'}]},options:{scales:{x:{ticks:tick,grid:{display:false}},y:{ticks:{callback:v=>fmt(v,1)}}}}});
+  mkChart('chWeight',{data:{labels:lab,datasets:[dsLine('peso',dates.map(d=>S.days[d]&&S.days[d].weight||null),cS,{pointRadius:3}),dsLine('tendência',dates.map((d,i)=>lr&&wd.length>=3?+(lr.a+lr.b*i).toFixed(2):null),cS2,{borderDash:[3,3],borderWidth:1.5}),{type:'scatter',label:'bioimpedância',data:dates.map(d=>{const e=exPts.find(x=>x.date===d);return e?e.peso:null;}),backgroundColor:cssVar('--bg'),borderColor:cS,borderWidth:2,pointRadius:6,pointStyle:'rectRot'}]},options:{scales:{x:{ticks:tick,grid:{display:false}},y:{ticks:{callback:v=>fmt(v,1)}}}}});
   {const wc=$('#chWeight').closest('.card');if(wc)wc.classList.toggle('semdado',!wd.length&&!exPts.some(e=>e.peso!=null&&dates.includes(e.date)));}
-  $('#wtHint').textContent=lr&&wd.length>=3?`tendência ${sgn(lr.b*7,2)} kg/semana`:(wd.length?plur(wd.length,'pesagem','pesagens'):'sem pesagens');
+  $('#wtHint').textContent='kg · '+(lr&&wd.length>=3?`tendência ${sgn(lr.b*7,2)} kg/semana`:(wd.length?plur(wd.length,'pesagem','pesagens'):'sem pesagens'));
+  setLegend('chWeight',[['line','var(--serie)','pesagem',wd.length>0],['dash','var(--serie-2)','tendência',!!lr&&wd.length>=3],['diam','var(--serie)','bioimpedância',exPts.some(e=>e.peso!=null&&dates.includes(e.date))]]);
   // balanço acumulado
   let acc=0;const w0=wd.length?S.days[wd[0]].weight:null;const expArr=[],realArr=[];
   /* saldo acumulado só em dias com consumo registrado: sem refeições não há saldo */
   dates.forEach(d=>{if(dayTotals(d).k>0)acc+=dayTotals(d).k-energy(d).expend;expArr.push(+(acc/7700).toFixed(2));realArr.push(S.days[d]&&S.days[d].weight&&w0!=null?+(S.days[d].weight-w0).toFixed(2):null);});
-  mkChart('chBalance',{data:{labels:lab,datasets:[dsLine('esperado',expArr,cssVar('--carb')),dsLine('real',realArr,cssVar('--prot'),{pointRadius:3})]},options:{scales:{x:{ticks:tick,grid:{display:false}},y:{ticks:{callback:v=>sgn(v,1)}}}}});
+  mkChart('chBalance',{data:{labels:lab,datasets:[dsLine('esperado',expArr,cS2,{borderDash:[5,4]}),dsLine('real',realArr,cS,{pointRadius:3})]},options:{scales:{x:{ticks:tick,grid:{display:false}},y:{ticks:{callback:v=>sgn(v,1)}}}}});
   // macros
-  mkChart('chMacros',{data:{labels:lab,datasets:[dsBar('proteína',dates.map(d=>dayTotals(d).p||null),cssVar('--prot'),{stack:'m'}),dsBar('carbo',dates.map(d=>dayTotals(d).c||null),cssVar('--carb'),{stack:'m'}),dsBar('gordura',dates.map(d=>dayTotals(d).f||null),cssVar('--fat'),{stack:'m'}),dsLine('meta proteína',dates.map(d=>metaFor(d).p),cssVar('--ink'),{borderWidth:1.5,stepped:true})]},options:{scales:{x:{stacked:true,ticks:tick,grid:{display:false}},y:{stacked:true,beginAtZero:true}}}});
+  mkChart('chMacros',{data:{labels:lab,datasets:[dsBar('proteína',dates.map(d=>dayTotals(d).p||null),cssVar('--prot'),{stack:'m'}),dsBar('carbo',dates.map(d=>dayTotals(d).c||null),cssVar('--carb'),{stack:'m'}),dsBar('gordura',dates.map(d=>dayTotals(d).f||null),cssVar('--fat'),{stack:'m'}),dsLine('meta proteína',dates.map(d=>metaFor(d).p),cM,{borderWidth:1.5,stepped:'middle',borderDash:[5,4]})]},options:{scales:{x:{stacked:true,ticks:tick,grid:{display:false}},y:{stacked:true,beginAtZero:true}}}});
   // volume
-  mkChart('chVolume',{data:{labels:lab,datasets:[dsBar('musculação',dates.map(d=>musMinOf(d)||null),cssVar('--prot'),{stack:'v'}),dsBar('cárdio',dates.map(d=>cardioMinOf(d)||null),cssVar('--carb'),{stack:'v'}),dsLine('alvo cárdio',dates.map(d=>cardioAlvoDia(d)||null),cssVar('--ink'),{borderWidth:1.5,stepped:true,borderDash:[3,3]})]},options:{scales:{x:{stacked:true,ticks:tick,grid:{display:false}},y:{stacked:true,beginAtZero:true}}}});
+  mkChart('chVolume',{data:{labels:lab,datasets:[dsBar('musculação',dates.map(d=>musMinOf(d)||null),cS,{stack:'v',order:5}),dsBar('cárdio',dates.map(d=>cardioMinOf(d)||null),cS2,{stack:'v',order:5}),...(al=>[al,haloDs(al)])(dsLine('alvo cárdio',dates.map(d=>cardioAlvoDia(d)||null),cM,{borderWidth:1.5,stepped:true,borderDash:[3,3],order:1}))]},options:{scales:{x:{stacked:true,ticks:tick,grid:{display:false}},y:{stacked:true,beginAtZero:true}}}});
   renderCoach(dates);renderTable(dates);
 }
 function coachContext(dates){const eat=dates.filter(d=>dayTotals(d).k>0);const lines=[];const s=settings();
-  lines.push(`Perfil: ${s.profile.nome||'atleta'}, ${s.profile.idade||'?'} anos, ${s.profile.altura||'?'} cm, peso ref ${fmt(refWeight(CUR),1)} kg. Protocolo: ${S.protoN?S.protoN.name:'—'} / ${S.protoT?S.protoT.name:'—'}.`);
+  lines.push(`Perfil: ${s.profile.nome||'atleta'}, ${s.profile.idade||'?'} anos, ${s.profile.altura||'?'} cm, peso ref ${fmt(refWeight(CUR),1)} kg. Protocolo: ${S.protoN?S.protoN.name:'—'} / ${S.protoT?S.protoT.name:'—'}. Objetivo: ${GOALS[goalOf()]||'não informado'}.`);
   const m=metaFor(CUR);lines.push(`Metas hoje (${m.label}): ${fmt(m.k)} kcal, P ${m.p} C ${m.c} G ${m.f}. Cárdio alvo: ${(S.protoN&&S.protoN.cardio)?JSON.stringify(S.protoN.cardio):'60/110 min'}.`);
   lines.push('Dias (data | kcal | P/C/G | gasto | saldo | peso | treino | musc min | cárdio min):');
   dates.forEach(d=>{const t=dayTotals(d),e=energy(d),ss=sessionOf(d);if(t.k||ss.wk||S.days[d]?.weight)lines.push(`${d} | ${fmt(t.k)} | ${fmt(t.p)}/${fmt(t.c)}/${fmt(t.f)} | ${fmt(e.expend)} | ${sgn(e.net)} | ${S.days[d]?.weight||'-'} | ${ss.wk||dayTag(d)||'-'} | ${ss.trainMin||0} | ${cardioMinOf(d)}`);});
@@ -2591,7 +2658,7 @@ function coachContext(dates){const eat=dates.filter(d=>dayTotals(d).k>0);const l
   const meds=medsActive();if(meds.length)lines.push('Medicamentos: '+meds.map(m=>`${m.name} ${m.dosePerTake||''} ${(m.schedule?.times||[]).join('/')}`).join('; ')+` · adesão ${medAdherence(dates).pct??'-'}%`);
   return lines.join('\n').slice(0,40000);}
 function renderCoach(dates){const eat=dates.filter(d=>dayTotals(d).k>0);const items=[];
-  if(eat.length>=2){let n=0;eat.forEach(d=>n+=energy(d).net);const avg=n/eat.length;const proj=avg*7/7700;items.push({c:avg<-250?'ok':avg<0?'':'warn',t:`<b>Balanço (${eat.length} dias):</b> média ${sgn(avg)} kcal/dia → projeção ${sgn(proj,2)} kg/semana. `+(avg<-750?'Déficit agressivo: vigie força e massa muscular.':avg<-250?'Faixa ideal para recomposição preservando massa magra.':avg<0?'Déficit leve: bom para lapidar sem perder performance.':'Sem déficit no período; revise os dias de baixo carbo ou o cárdio.')});
+  if(eat.length>=2){let n=0;eat.forEach(d=>n+=energy(d).net);const avg=n/eat.length;const proj=avg*7/7700;{const g=goalOf();const cb=coachBalance(avg,g);items.push({c:cb[0],t:`<b>Balanço (${eat.length} dias)${g?' · objetivo: '+GOALS[g].toLowerCase():''}:</b> média ${sgn(avg)} kcal/dia → projeção ${sgn(proj,2)} kg/semana. `+cb[1]});}
     const pAdh=eat.filter(d=>dayTotals(d).p>=metaFor(d).p*.95).length/eat.length*100;const avgP=eat.reduce((a,d)=>a+dayTotals(d).p,0)/eat.length;const w=refWeight(CUR);
     items.push({c:pAdh>=80?'ok':pAdh>=50?'warn':'bad',t:`<b>Proteína:</b> meta batida em ${fmt(pAdh,0)} % dos dias · média ${fmt(avgP)} g (${w?fmt(avgP/w,1)+' g/kg':'g/kg: sem pesagem'}). `+(pAdh>=80?'Excelente para retenção muscular.':'Priorize a proteína nas refeições 1 e pós-treino.')});}
   else items.push({c:'',t:'Registre ao menos 2 dias de alimentação para a leitura energética.'});
@@ -2616,7 +2683,12 @@ function renderBio(){const PB=periodBounds(RANGES.saude);const ex=examsSorted().
     const ds=keys.map((k,i)=>{const base=(pts.find(e=>e[k]!=null)||{})[k];return dsLine(BIO_LABELS[k],pts.map(e=>e[k]!=null&&base?+(e[k]/base*100).toFixed(1):null),PAL[i%PAL.length],{pointRadius:4,tension:.2});});
     mkChart('chBio',{data:{labels:pts.map(e=>dtShort(e.date)),datasets:ds},options:{plugins:{legend:{display:true,position:'bottom',labels:{boxWidth:10,boxHeight:10,usePointStyle:true}}},scales:{y:{ticks:{callback:v=>fmt(v,0)+' %'}}}}});
     $('#bioRange').innerHTML='Índice: primeiro exame = 100 %. '+keys.map((k,i)=>{const a=pts.find(e=>e[k]!=null),b=[...pts].reverse().find(e=>e[k]!=null);return a&&b?`<b style="color:${PAL[i%PAL.length]}">${esc(BIO_LABELS[k])}</b> ${fmt(a[k],k==='tmb'?0:1)} → ${fmt(b[k],k==='tmb'?0:1)} (${sgn((b[k]/a[k]-1)*100,1)} %)`:'';}).join(' · ');}
-  else if(pts.length){mkChart('chBio',{data:{labels:pts.map(e=>dtShort(e.date)),datasets:[dsLine(BIO_LABELS[BIOK],pts.map(e=>e[BIOK]),cssVar('--prot'),{pointRadius:5,tension:.2})]},options:{scales:{y:{ticks:{callback:v=>fmt(v,BIOK==='tmb'?0:1)}}}}});$('#bioRange').textContent=BIO_RANGE[BIOK]?`Referência InBody: ${BIO_RANGE[BIOK]}`:'';}
+  else if(pts.length){/* designer 24/11/2026: eixo proporcional às datas dos exames; faixa de referência desenhada no fundo */
+    const xs=pts.map(e=>daysBetween(pts[0].date,e.date));const rg=String(BIO_RANGE[BIOK]||'').match(/\d[\d.]*(?:,\d+)?/g);const nBR=v=>+String(v).replace(/\./g,'').replace(',','.');const lo=rg&&rg.length>=2?nBR(rg[0]):null,hi=rg&&rg.length>=2?nBR(rg[1]):null;const faixa=lo!=null&&hi!=null&&hi>lo;const cF=cssVar('--surface-2');
+    mkChart('chBio',{data:{datasets:[dsLine(BIO_LABELS[BIOK],pts.map((e,i)=>({x:xs[i],y:e[BIOK]})),cssVar('--serie'),{pointRadius:5,clip:8})]},
+      plugins:[{id:'faixaRef',beforeDatasetsDraw(c){if(!faixa)return;const a=c.chartArea,y=c.scales.y;const t=Math.max(a.top,y.getPixelForValue(hi)),b=Math.min(a.bottom,y.getPixelForValue(lo));if(!(b>t))return;c.ctx.save();c.ctx.fillStyle=cF;c.ctx.fillRect(a.left,t,a.right-a.left,b-t);c.ctx.restore();}}],
+      options:{scales:{x:{type:'linear',min:0,max:xs[xs.length-1]||1,afterBuildTicks:ax=>{ax.ticks=xs.map(v=>({value:v}));},ticks:{maxRotation:0,autoSkip:true,autoSkipPadding:6,callback:v=>{const i=xs.indexOf(v);return i<0?'':dtShort(pts[i].date);}},grid:{display:false}},y:{title:{display:true,text:BIO_LABELS[BIOK]},ticks:{callback:v=>fmt(v,BIOK==='tmb'?0:1)}}},plugins:{tooltip:{callbacks:{title:it=>it.length&&pts[it[0].dataIndex]?dtBR(pts[it[0].dataIndex].date):''}}}}});
+    $('#bioRange').textContent=BIO_RANGE[BIOK]?`Referência InBody: ${BIO_RANGE[BIOK]}${faixa?' (faixa cinza no gráfico)':''}`:'';}
   else if(CH.chBio){CH.chBio.destroy();delete CH.chBio;$('#bioRange').textContent='';}
   const cols=[['date','Data'],['tipo','Aparelho'],...EXAM_DEFS];
   $('#examCount').textContent=ex.length+' no período';
@@ -2642,7 +2714,8 @@ function renderMeds(){renderRx();const meds=Object.values(S.meds).sort((a,b)=>(a
   const adh=(()=>{let due=0,tk=0;medsF.forEach(m=>{const a=medAdherenceFor(m,dates);due+=a.due;tk+=a.taken;});return {due,taken:tk,pct:due?Math.round(tk/due*100):null};})();
   $('#medAdhHint').textContent=adh.due?`${adh.pct} % · ${adh.taken} de ${adh.due} doses${mf==='*'?' · '+medsF.length+' medicamento'+(medsF.length===1?'':'s')+' ativo'+(medsF.length===1?'':'s'):''}`:'sem doses previstas';
   $('#medAdhTable').innerHTML=medsF.length?`<table><thead><tr><th>Medicamento</th><th class="num">Doses</th><th class="num">Adesão</th><th>Leitura</th></tr></thead><tbody>${medsF.map(m=>{const ins=medInsight(m);const a=medAdherenceFor(m,dates);return `<tr><td class="wrap"><b>${esc(m.name)}</b></td><td class="num">${a.taken}/${a.due}</td><td class="num"><span class="status ${a.pct==null?'':a.pct>=85?'ok':a.pct>=60?'warn':'bad'}">${a.pct!=null?a.pct+' %':'—'}</span></td><td class="wrap mini">${esc(ins.long)}</td></tr>`;}).join('')}</tbody></table>`:'';
-  if(adh.due)mkChart('chMeds',{data:{labels:dates.map(dtShort),datasets:[dsBar('adesão %',perDay,cssVar('--prot'))]},options:{scales:{x:{ticks:{maxTicksLimit:10},grid:{display:false}},y:{min:0,max:100}}}});else if(CH.chMeds){CH.chMeds.destroy();delete CH.chMeds;}}
+  if(adh.due)mkChart('chMeds',{data:{labels:dates.map(dtShort),datasets:[dsBar('adesão %',perDay,cssVar('--serie'))]},options:{scales:{x:{ticks:{maxTicksLimit:10},grid:{display:false}},y:{min:0,max:100}}}});else if(CH.chMeds){CH.chMeds.destroy();delete CH.chMeds;}
+  {const mc=$('#chMeds')&&$('#chMeds').closest('.card');if(mc)mc.classList.toggle('semdado',!adh.due);}}
 function renderClin(){const PB=periodBounds(RANGES.saude);const cl=Object.values(S.clinical).filter(c=>c.date>=PB.from&&c.date<=PB.to).sort((a,b)=>a.date<b.date?1:-1);const al=computeAlerts().filter(a=>a.sub==='clin');
   $('#clinAlerts').innerHTML=al.map(a=>`<div class="note ${a.lv==='bad'?'bad':'warn'}">${esc(a.t)}</div>`).join('');
   $('#clinList').innerHTML=cl.length?cl.map(c=>`<div class="wk-card"><details><summary><span>${dtBR(c.date)} · <b>${esc(c.title||c.type)}</b> <small class="muted">${esc(c.specialty||'')}${c.physician?' · '+esc(c.physician):''}</small></span><span class="mini">${(c.alerts||[]).length} alerta(s)</span></summary>
@@ -2654,7 +2727,7 @@ function renderClin(){const PB=periodBounds(RANGES.saude);const cl=Object.values
 
 /* ============================================================ MAIS */
 function renderMais(){if(TAB==='foods'){renderMeals();renderFoodsPage();}else if(TAB==='config')renderConfig();else renderProtoPage();}
-function renderProtoPage(){const n=S.protoN,t=S.protoT;$('#protoMeta').textContent=[n&&n.name,t&&t.name].filter(Boolean).join(' · ');
+function renderProtoPage(){const n=S.protoN,t=S.protoT;{const g=$('#protoGoal');if(g){if(document.activeElement!==g)g.value=goalOf();g.disabled=!(n||t);}}$('#protoMeta').textContent=[n&&n.name,t&&t.name].filter(Boolean).join(' · ');
   const nut=n?`<div><div class="eyebrow">Nutrição · ${esc(n.coach||'')}</div>${Object.entries(n.dayTypes||{}).map(([k,v])=>`<div class="item"><div class="t"><b>${esc(v.label||k)}</b><small>${Object.entries(n.weekdays||{}).filter(([,x])=>x===k).map(([d])=>WDS[d]).join(' · ')}</small></div><div class="num">${fmt(v.k)}<small>P ${v.p} · C ${v.c} · G ${v.f}</small></div></div>`).join('')}<div class="row mt2">${n.water?`<span class="chip">água ${fmt(n.water)} ml</span>`:''}${n.proteinPerKg?`<span class="chip">${fmt(n.proteinPerKg,2)} g/kg de proteína</span>`:''}${n.cardio?`<span class="chip">cárdio ${n.cardio.trainDay}/${n.cardio.offDay} min${n.cardio.fasted?' jejum':''}</span>`:''}</div>${(n.meals||[]).length?`<details class="more mt2"><summary>${plur(n.meals.length,'refeição planejada','refeições planejadas')}</summary>${n.meals.map(m=>`<div class="mini mt2"><b>${esc(m.name)}</b>${m.time?' '+esc(m.time):''}<br>${Object.entries(Array.isArray(m.items)?{all:m.items}:(m.items||{})).map(([k,arr])=>`<i>${esc(k)}:</i> ${arr.map(it=>`${esc(it.food)} ${it.qty?fmt(it.qty)+' '+esc(it.unit||'g'):''}`).join(', ')}`).join('<br>')}</div>`).join('')}</details>`:''}${(n.supplements||[]).length?`<div class="mini mt2"><b>Suplementos:</b> ${n.supplements.map(s=>`${esc(s.name)} ${esc(s.dose||'')} ${esc(s.timing||'')}`).join(' · ')}</div>`:''}${(n.notes||[]).length?`<div class="mini mt2">${n.notes.map(esc).join(' · ')}</div>`:''}</div>`:'<div class="empty">Sem protocolo nutricional.</div>';
   const tr=t?`<div><div class="eyebrow">Treino · ${esc(t.coach||'')}</div>${(t.workouts||[]).map(w=>`<div class="item"><div class="t"><b>Treino ${esc(w.v)}</b><small>${esc(w.title||w.groups||'')}</small></div><div class="num">${(w.exercises||[]).length}<small>exercícios</small></div></div>`).join('')}${t.weekly?`<div class="mini mt2">${esc(t.weekly)}</div>`:''}${t.cardio?`<div class="mini">${esc(t.cardio)}</div>`:''}</div>`:'<div class="empty">Sem protocolo de treino.</div>';
   $('#protoSummary').innerHTML=nut+tr;
@@ -2724,15 +2797,17 @@ const A={
   goAlert(tab,sub){showTab(tab);if(tab==='saude'&&sub)showSaude(sub);},
   /* ---------- Hoje */
   addWater(ml){const d=getDay(CUR);d.water=Math.max(0,(d.water||0)+ml);saveDay(CUR,d);renderAll();},
-  toggleMeal(n){renderMeals.open=renderMeals.open||{};const d=getDay(CUR);const cur=renderMeals.open[n]??mealOpenDef(n,CUR);renderMeals.open[n]=!cur;renderMeals();},
+  setGoal(v){v=GOALS[v]?v:'';const path=S.protoN?'protocol/nutrition':S.protoT?'protocol/training':null;if(!path){toast('Cadastre o protocolo antes de informar o objetivo');renderProtoPage();return;}
+    const p=JSON.parse(JSON.stringify(path==='protocol/nutrition'?S.protoN:S.protoT));if(v)p.goal=v;else delete p.goal;Store.set(path,p);renderAll();toast(v?'Objetivo: '+GOALS[v]:'Objetivo não informado');},
+  toggleMeal(n){renderMeals.open=renderMeals.open||{};const d=getDay(CUR);const cur=mealIsOpen(n,CUR);renderMeals.open[n]=!cur;renderMeals();},
   /* A lista NÃO usa handlers inline de mouse: no iPhone o toque fecha o teclado (blur) antes do mousedown sintético e a escolha se perdia.
      Os itens carregam data-act/data-i/data-n e são tratados por delegação em init() (touchend com preventDefault + mousedown no desktop). */
   acInput(n,via){const inp=$('#ac'+n),box=$('#acl'+n);if(!inp||!box)return;const q=inp.value;const st0=AC[n]||{};if(st0.justAdded&&!q.trim()&&via!=='tap'){box.hidden=true;return;}const row=(f,i,extra)=>`<button type="button" class="${i===0?'sel':''}" data-act="pick" data-i="${i}" data-n="${n}"><span class="n">${esc(f.n)}${f.brand?` <small class="muted">${esc(f.brand)}</small>`:''}${extra||''}</span><span class="pill src-${esc(f.src)}">${esc(f.src)}</span><span class="m">${fmt(f.k)} kcal · P${fmt(f.p)}</span></button>`;
-    if(q.trim().length===0){const sug=frequentFoods(n);AC[n]={res:sug,sel:0,q:''};if(!sug.length){box.innerHTML=`<button type="button" class="act" data-act="label" data-n="${n}"><span class="n">Registrar rótulo de alimento</span></button>`;acReveal(box);return;}
-      box.innerHTML=`<div class="hd">Mais usados nesta refeição</div>`+sug.map((f,i)=>row(f,i,` <small class="muted">· ${f.uses}× · última ${fmt(f.lastG)} ${f.base==='ml'?'mL':'g'}</small>`)).join('')+`<button type="button" class="act" data-act="label" data-n="${n}"><span class="n">Registrar rótulo de alimento</span></button>`;acReveal(box);return;}
+    if(q.trim().length===0){const sug=frequentFoods(n);AC[n]={res:sug,sel:0,q:''};const rep=(((S.days[addDays(CUR,-1)]||{}).meals||{})[n]||[]).length?`<button type="button" class="act" data-act="repeat" data-n="${n}"><span class="n">Repetir ontem nesta refeição</span></button>`:'';if(!sug.length){box.innerHTML=rep+`<button type="button" class="act" data-act="label" data-n="${n}"><span class="n">Registrar rótulo de alimento</span></button>`;acReveal(box);return;}
+      box.innerHTML=`<div class="hd">Mais usados nesta refeição</div>`+sug.map((f,i)=>row(f,i,` <small class="muted">· ${f.uses}× · última ${fmt(f.lastG)} ${f.base==='ml'?'mL':'g'}</small>`)).join('')+rep+`<button type="button" class="act" data-act="label" data-n="${n}"><span class="n">Registrar rótulo de alimento</span></button>`;acReveal(box);return;}
     if(q.trim().length<2){box.hidden=true;return;}const res=searchFoods(q);AC[n]={res,sel:0,q};
     box.innerHTML=res.map((f,i)=>row(f,i)).join('')+`<button type="button" class="act" data-act="label" data-n="${n}"><span class="n">Registrar rótulo de "${esc(q)}"</span></button><button type="button" class="act" data-act="ai" data-n="${n}"><span class="n">Estimar "${esc(q)}" com IA</span></button>`;acReveal(box);},
-  acAct(btn){const n=+btn.dataset.n,act=btn.dataset.act,st=AC[n]||{};if(act==='pick')A.pickFood(n,st.res&&st.res[+btn.dataset.i]);else if(act==='ai')A.openFoodAI(n,st.q||'');else if(act==='label')A.openLabelAI(n,st.q||'');},
+  acAct(btn){const n=+btn.dataset.n,act=btn.dataset.act,st=AC[n]||{};if(act==='pick')A.pickFood(n,st.res&&st.res[+btn.dataset.i]);else if(act==='ai')A.openFoodAI(n,st.q||'');else if(act==='label')A.openLabelAI(n,st.q||'');else if(act==='repeat'){const b=$('#acl'+n);if(b)b.hidden=true;A.repeatYesterday(n);}},
   acKey(ev,n){const st=AC[n];const box=$('#acl'+n);if(box.hidden||!st)return;const items=Array.from(box.querySelectorAll('button[data-act=pick]'));if(ev.key==='ArrowDown'){st.sel=Math.min(st.sel+1,items.length-1);}else if(ev.key==='ArrowUp'){st.sel=Math.max(st.sel-1,0);}else if(ev.key==='Enter'){ev.preventDefault();if(items.length)A.pickFood(n,st.res[st.sel]);return;}else if(ev.key==='Escape'){box.hidden=true;return;}else return;items.forEach((b,i)=>b.classList.toggle('sel',i===st.sel));},
   acPick(n,i){A.pickFood(n,AC[n]&&AC[n].res[i]);},
   pickFood(n,f){if(!f)return;AC[n]=Object.assign(AC[n]||{},{picked:f});$('#ac'+n).value=f.n;$('#acl'+n).hidden=true;const me=$('#me'+n);const bu=f.base==='ml'?'mL':'g';const units=[{n:bu,g:1}].concat((f.u||[]).map(u=>({n:u.n,g:u.g})));if(f.g&&f.g!==100&&!units.some(u=>u.g===f.g))units.push({n:'porção',g:f.g});me.innerHTML=units.map((u,i)=>`<option value="${u.g}"${i?` data-n="${esc(u.n)}"`:''}>${esc(u.n)}${i?' ('+fq(u.g)+' '+bu+')':''}</option>`).join('');const qEl=$('#qt'+n);
@@ -2757,7 +2832,7 @@ const A={
     const d=getDay(CUR);(d.meals[n]=d.meals[n]||[]).push(e);
     AC[n]={justAdded:true};inp.value='';qEl.value='';meEl.innerHTML='<option value="1">g</option>';$('#conv'+n).textContent='';
     // limpa o rascunho e devolve o foco à busca da mesma refeição para o próximo item
-    renderMeals.open[n]=true;mealDraftClear(n);saveDay(CUR,d);renderAll();if(!auto)setTimeout(()=>{const el=$('#ac'+n);if(el){el.focus({preventScroll:true});}},30);
+    mealKeepOpen(n);mealDraftClear(n);saveDay(CUR,d);renderAll();if(!auto)setTimeout(()=>{const el=$('#ac'+n);if(el){el.focus({preventScroll:true});}},30);
     toast(`${e.n}: ${fmt(e.k)} kcal ${auto?'salvas automaticamente na':'adicionadas à'} ${mealDefs().find(m=>m.n===n)?.name||'refeição'}`);},
   editMealTime(n){const defs=mealDefs();const md=defs.find(m=>m.n===n);if(!md)return;const d=getDay(CUR);const today=(d.mealTimes||{})[n]||'';
     openSheet(`Horário · ${md.name}`,`<div class="grid g2"><label class="f"><span>Horário padrão (protocolo)</span><input type="time" id="mtStd" value="${esc(md.time||'')}"></label><label class="f"><span>Só hoje (${dtBR(CUR)})</span><input type="time" id="mtDay" value="${esc(today)}"></label></div><div class="row end mt3"><button class="btn ghost sm" onclick="A.editMealTimes()">Todas as refeições</button><button class="btn primary" onclick="A.saveMealTime(${n})">Salvar</button></div>`);},
@@ -2792,25 +2867,25 @@ const A={
     if(sw.i>=0){const old=arr[sw.i];if(!old||old.n!==sw.name){A._sw=null;toast('A refeição mudou enquanto a janela estava aberta: confira a lista');closeSheet();return;}['plan','planAlso','at'].forEach(k=>{if(old[k]!=null)e[k]=old[k];});arr[sw.i]=e;msg=`${old.n} trocado por ${e.n}`;}
     else{const it=plannedItems(md,CUR).find(y=>y&&planKey(y)===sw.key);if(!it){toast('O plano deste dia mudou: confira a lista');closeSheet();return;}if(planDone(it,arr,planMatch(it))){toast('Esse item já foi lançado');closeSheet();return;}
       e.plan=sw.key;if(CUR===todayISO())e.at=nowHM();arr.push(e);msg=`${e.n}: ${fq(e.g)} ${baseU(e)} no lugar de ${planName(it.food)}`;}
-    A._sw=null;renderMeals.ed=null;closeSheet();saveDay(CUR,d);renderMeals.open[sw.n]=true;renderAll();mealPartRefresh(sw.n,['ml'],true);toast(msg);},
+    A._sw=null;renderMeals.ed=null;closeSheet();saveDay(CUR,d);mealKeepOpen(sw.n);renderAll();mealPartRefresh(sw.n,['ml'],true);toast(msg);},
   /* copia os itens de ontem da mesma refeição (os que cumprem item do plano já lançado hoje ficam de fora) */
   repeatYesterday(n){const md=mealDefs().find(m=>m.n===n);const y=addDays(CUR,-1);const src=((S.days[y]||{}).meals||{})[n]||[];if(!md||!src.length){toast('Ontem não há itens nesta refeição');return;}
     const go=()=>{const d=getDay(CUR);const arr=d.meals[n]=d.meals[n]||[];let c=0,skip=0;src.forEach(x=>{if(!x||!x.n)return;if(x.plan&&arr.some(a=>a&&(a.plan===x.plan||(Array.isArray(a.planAlso)&&a.planAlso.includes(x.plan))||(!!a.plan&&planFood(a.plan)===planFood(x.plan)&&!planKeysNow().has(x.plan))))){skip++;return;}
         const e=JSON.parse(JSON.stringify(x));delete e.at;if(CUR===todayISO())e.at=nowHM();arr.push(e);c++;});
-      if(c){saveDay(CUR,d);renderMeals.open[n]=true;renderAll();mealPartRefresh(n,['ml'],true);}toast(c?`${md.name}: ${plur(c,'item de ontem lançado','itens de ontem lançados')}${skip?` (${skip} já estava${skip>1?'m':''} lançado${skip>1?'s':''})`:''}`:'Os itens de ontem já estão lançados');};
+      if(c){saveDay(CUR,d);mealKeepOpen(n);renderAll();mealPartRefresh(n,['ml'],true);}toast(c?`${md.name}: ${plur(c,'item de ontem lançado','itens de ontem lançados')}${skip?` (${skip} já estava${skip>1?'m':''} lançado${skip>1?'s':''})`:''}`:'Os itens de ontem já estão lançados');};
     const cur=((getDay(CUR).meals||{})[n]||[]).length;if(cur){confirmInline(`A ${md.name} já tem ${plur(cur,'item','itens')}. Lançar também ${plur(src.length,'item','itens')} de ontem?`,go);return;}go();},
   togglePlan(n){const po=renderMeals.planOpen=renderMeals.planOpen||{};const k=CUR+'|'+n;po[k]=!po[k];mealPartRefresh(n,['pl']);},
   addPlanned(n,key){const md=mealDefs().find(m=>m.n===n);if(!md)return;const it=plannedItems(md,CUR).find(x=>x&&x.food&&planKey(x)===key);if(!it){toast('O plano deste dia mudou: confira a lista');mealPartRefresh(n,['pl']);return;}
     const m=planMatch(it);const d=getDay(CUR);const arr=d.meals[n]=d.meals[n]||[];
     if(planDone(it,arr,m)){toast('Já lançado nesta refeição. Para desfazer, toque na caixa marcada da linha.',3500);return;}
     if(!m){A.openFoodAI(n,`${it.qty||''} ${it.unit||'g'} de ${it.food}`,key);return;}
-    const e=entryFrom(m.food,m.grams,planUnitTxt(it),m.um);e.plan=key;if(CUR===todayISO())e.at=nowHM();arr.push(e);saveDay(CUR,d);renderMeals.open[n]=true;renderAll();mealPartRefresh(n,['pl','ml']);
+    const e=entryFrom(m.food,m.grams,planUnitTxt(it),m.um);e.plan=key;if(CUR===todayISO())e.at=nowHM();arr.push(e);saveDay(CUR,d);mealKeepOpen(n);renderAll();mealPartRefresh(n,['pl','ml']);
     toast(`${planName(it.food)}: ${planQtyTxt(it,m)} · lançado`);},
   async addAllPlanned(n){const md=mealDefs().find(m=>m.n===n);if(!md)return;const items=plannedItems(md,CUR).filter(it=>it&&String(it.food||'').trim());if(!items.length)return;const d=getDay(CUR);const arr=d.meals[n]=d.meals[n]||[];const pend=[],pendK=[];let skipped=0,added=0;
     items.forEach(it=>{const m=planMatch(it);if(planDone(it,arr,m)){skipped++;return;} /* já lançado nesta refeição: não duplica */
       if(m){const e=entryFrom(m.food,m.grams,planUnitTxt(it),m.um);e.plan=planKey(it);if(CUR===todayISO())e.at=nowHM();arr.push(e);added++;}
       else{pend.push(`${it.qty||''} ${it.unit||'g'} de ${it.food}`);pendK.push(planKey(it));}});
-    if(added)saveDay(CUR,d);renderMeals.open[n]=true;renderAll();mealPartRefresh(n,['pl','ml']);if(pend.length)A.openFoodAI(n,pend.join('; '),pendK);else toast(skipped?`Refeição completada conforme o plano (${skipped} já lançado${skipped>1?'s':''})`:'Refeição lançada conforme o plano');},
+    if(added)saveDay(CUR,d);mealKeepOpen(n);renderAll();mealPartRefresh(n,['pl','ml']);if(pend.length)A.openFoodAI(n,pend.join('; '),pendK);else toast(skipped?`Refeição completada conforme o plano (${skipped} já lançado${skipped>1?'s':''})`:'Refeição lançada conforme o plano');},
   openFoodAI(n,prefill,planKeyArg){A._faPlan=planKeyArg||null;const defs=mealDefs();openSheet('Registrar refeição por foto ou texto',`
     <label class="f mt2"><span>Refeição</span><select id="faMeal" onchange="this.dataset.touched=1"${Number.isInteger(n)?' data-touched="1"':''}>${defs.map(m=>`<option value="${m.n}" ${m.n===n?'selected':''}>${esc(m.name)}</option>`).join('')}</select></label>
     <label class="f mt2"><span>Texto</span><textarea id="faText" placeholder="Ex.: 150 g de frango grelhado, 1 concha de arroz integral, salada à vontade, 1 scoop de whey">${esc(prefill||'')}</textarea></label>
@@ -2825,7 +2900,7 @@ const A={
   saveFoodAI(){const n=parseInt($('#faMeal').value);const d=getDay(CUR);const rows=$$('#faResult tbody tr');let c=0;rows.forEach((tr,i)=>{if(!tr.querySelector('input[type=checkbox]').checked)return;const g=k=>numLoose(tr.querySelector(`[data-f=${k}]`).value)||0;if(!(g('grams')>0)&&!(g('kcal')>0)){A._faSkip=(A._faSkip||0)+1;return;}const it=A._fa[i]||{};(d.meals[n]=d.meals[n]||[]).push({n:tr.querySelector('[data-f=name]').value.trim()||it.name,src:it.source==='rótulo'?'Rótulo':it.source==='TACO'?'TACO':'IA',g:g('grams'),k:g('kcal'),p:g('p'),c:g('c'),f:g('f'),fib:+(it.fib||0),sod:+(it.sod||0),...(Array.isArray(A._faPlan)?(A._faPlan[c]?{plan:A._faPlan[c]}:{}):(A._faPlan&&c===0?{plan:A._faPlan}:{}))});c++;});
     /* R2-06: se a IA devolveu menos linhas que os itens pedidos, as chaves que sobraram ficam na última linha lançada (planAlso), para o plano não continuar "a lançar" */
     if(Array.isArray(A._faPlan)&&c>0&&A._faPlan.length>c){const arr=d.meals[n];arr[arr.length-1].planAlso=A._faPlan.slice(c);}A._faPlan=null;
-    saveDay(CUR,d);closeSheet();renderMeals.open[n]=true;renderAll();toast(plur(c,'item adicionado','itens adicionados')+(A._faSkip?` · ${A._faSkip} sem gramas e sem kcal ficaram de fora`:''));A._faSkip=0;},
+    saveDay(CUR,d);closeSheet();mealKeepOpen(n);renderAll();toast(plur(c,'item adicionado','itens adicionados')+(A._faSkip?` · ${A._faSkip} sem gramas e sem kcal ficaram de fora`:''));A._faSkip=0;},
   saveSession(src){{const fora=(id,k,max,msg)=>{const el=$('#'+id);if(!el||el.value==='')return false;const n=numInt(el.value);const cur=sessionOf(CUR)[k];if(n!=null&&((n>=0&&n<=max)||n===cur))return false;toast(msg,5500);el.value=cur==null?'':cur;return true;};
       if(fora('sCardioMin','cardioMin',600,'Cárdio: informe de 0 a 600 minutos. O valor digitado não foi gravado.')||fora('sCardioKcal','cardioKcal',5000,'Gasto do cárdio: informe de 0 a 5.000 kcal. O valor digitado não foi gravado.'))return;}
     const d=getDay(CUR);const s=d.session||{};const v=id=>{const x=$('#'+id).value;return x===''?null:numInt(x);};s.wk=$('#sWk').value;s.trainMin=v('sTrainMin');s.cardioMin=v('sCardioMin');{const kv=v('sCardioKcal');if(kv!=null&&kv>0)s.cardioKcal=kv;else delete s.cardioKcal;}{const fv=$('#sFast').value;const co=cardioOf(CUR);s.cardioFast=(s.cardioMin||co.acts||co.wk)?(fv===''?(src==='fast'||s.cardioFast==null?null:s.cardioFast):Number(fv)):null;}s.activeKcal=v('sActive');s.totalKcal=v('sTotal');s.steps=v('sSteps');s.commuteMin=v('sCommute');d.session=s;saveDay(CUR,d);renderAll();if(s.cardioKcal>0&&!cardioMinOf(CUR)&&src!==undefined)toast('Informe os minutos do cárdio: sem os minutos, o gasto não é somado.',5000);},
@@ -3131,7 +3206,7 @@ const A={
   saveFood(id,mealN){const n=$('#nfName').value.trim();if(!n){toast('Informe o nome');return;}const k=numLoose($('#nf_k').value)||0;if(!(k>0)){toast('Informe as kcal por 100 '+(($('#nfBaseWrap')||{dataset:{}}).dataset.unit==='mL'?'mL':'g'));$('#nf_k').focus();return;}if(['p','c','f','fib','sod'].some(f=>{const el=$('#nf_'+f);const v=el?numLoose(el.value):null;return v!=null&&v<0;})){toast('Macros não podem ser negativos');return;}id=id||uid();PLAN_MEMO={};const u=$('#nfU').value.split(/[;,](?=[^=;,]*=)/).map(x=>x.split('=')).filter(x=>x[0]&&x[1]).map(x=>({n:x[0].trim(),g:numLoose(x[1])})).filter(x=>x.g>0);
     const doc={id,n,k,p:numLoose($('#nf_p').value)||0,c:numLoose($('#nf_c').value)||0,f:numLoose($('#nf_f').value)||0,fib:numLoose($('#nf_fib').value)||0,sod:numLoose($('#nf_sod').value)||0,u,kw:norm(n),createdAt:(S.foods[id]||{}).createdAt||new Date().toISOString()};{const w=$('#nfBaseWrap');if(w&&w.dataset.unit==='mL')doc.base='ml';}
     Store.set('foods/'+id,doc);closeSheet();
-    if(Number.isInteger(mealN)){renderMeals.open=renderMeals.open||{};renderMeals.open[mealN]=true;renderMeals();A.pickFood(mealN,Object.assign({src:'Meu'},doc));renderAll();toast(`${n} cadastrado · informe a quantidade`);}
+    if(Number.isInteger(mealN)){renderMeals.open=renderMeals.open||{};mealKeepOpen(mealN);renderMeals();A.pickFood(mealN,Object.assign({src:'Meu'},doc));renderAll();toast(`${n} cadastrado · informe a quantidade`);}
     else{renderAll();toast('Alimento salvo');}},
   delFood(id){PLAN_MEMO={};const f=customFoods().find(x=>x.id===id);confirmInline(`Excluir o alimento ${f?f.n:''} dos seus alimentos? Os lançamentos já feitos continuam.`,()=>{Store.del('foods/'+id);renderAll();toast('Alimento excluído');});},
   openLabelAI(mealN,name){const m=Number.isInteger(mealN)?mealN:null;openSheet('Registrar rótulo de alimento',`<label class="drop mt2"><input hidden type="file" id="lbFiles" accept="image/*" multiple onchange="A.previewFiles('lbFiles','lbThumbs')"><span>Tirar foto ou escolher da fototeca</span></label><div class="thumbs mt2" id="lbThumbs"></div><label class="f mt2"><span>Nome do produto (opcional)</span><input id="lbName" value="${esc(name||'')}" placeholder="ex.: Cacao Whey Essential"></label><div class="row mt3"><button class="btn accent ai" id="lbGo" onclick="A.analyzeLabel(${m===null?'null':m})">Ler arquivo</button><button class="btn ghost sm" onclick="A.openFoodForm(null,{n:document.getElementById('lbName').value},${m===null?'null':m})">Digitar valores</button><span class="mini" id="lbStatus"></span></div>`);},
@@ -3365,7 +3440,7 @@ function labUpsert(date,lab,markers,notes,source){const same=labsSorted().filter
 /* ============================================================ LABORATORIAIS: todos os marcadores, gráficos múltiplos, insight e PDF */
 function cssId(s){return String(s).replace(/[^a-z0-9]/gi,'_');}
 function labChart(id,s,small){const ref=LAB_REF[s.key]||{};const last=s.pts[s.pts.length-1];const lo=last.low??ref.lo,hi=last.high??ref.hi;
-  mkChart(id,{data:{labels:s.pts.map(p=>dtShort(p.date)),datasets:[dsLine(s.name,s.pts.map(p=>p.v),cssVar('--prot'),{pointRadius:small?3:5,pointBackgroundColor:s.pts.map(p=>(p.flag==='ok'||!p.flag)?cssVar('--prot'):cssVar('--bad'))}),...(hi!=null&&hi<9e5?[dsLine('limite sup.',s.pts.map(()=>hi),cssVar('--muted'),{borderDash:[3,3],borderWidth:1})]:[]),...(lo!=null&&lo>0?[dsLine('limite inf.',s.pts.map(()=>lo),cssVar('--muted'),{borderDash:[3,3],borderWidth:1})]:[])]},options:{scales:{y:{ticks:{maxTicksLimit:small?4:6}},x:{ticks:{maxTicksLimit:small?4:8}}}}});}
+  mkChart(id,{data:{labels:s.pts.map(p=>dtShort(p.date)),datasets:[dsLine(s.name,s.pts.map(p=>p.v),cssVar('--serie'),{pointRadius:small?3:5,pointBackgroundColor:s.pts.map(p=>(p.flag==='ok'||!p.flag)?cssVar('--serie'):cssVar('--bad'))}),...(hi!=null&&hi<9e5?[dsLine('limite sup.',s.pts.map(()=>hi),cssVar('--muted'),{borderDash:[3,3],borderWidth:1})]:[]),...(lo!=null&&lo>0?[dsLine('limite inf.',s.pts.map(()=>lo),cssVar('--muted'),{borderDash:[3,3],borderWidth:1})]:[])]},options:{scales:{y:{ticks:{maxTicksLimit:small?4:6}},x:{ticks:{maxTicksLimit:small?4:8}}}}});}
 function labInsight(s){const pts=(s.pts||[]).filter(x=>typeof x.v==='number'&&!isNaN(x.v));const n=pts.length;if(!n)return {short:'Sem valor numérico registrado.',long:'Resultado sem valor numérico; não há variação a calcular.',trend:'—',d:0,p:null,out:0};const f=pts[0],l=pts[n-1];const ref=LAB_REF[s.key]||{};const lo=l.low??ref.lo,hi=l.high??ref.hi;const u=s.unit||'';const F=v=>fmt(v,Math.abs(v)%1?2:0);
   const faixa=(lo!=null||hi!=null)?` (faixa ${lo!=null&&lo>0?F(lo):'—'}–${hi!=null&&hi<9e5?F(hi):'—'}${u?' '+u:''})`:'';
   const st=l.flag==='high'?'acima da referência':l.flag==='low'?'abaixo da referência':l.flag==='ok'?'dentro da referência':'sem referência';
@@ -3906,10 +3981,9 @@ function gmSessPDFc(x){try{const g=gmSession(x.ex.map(e=>e.name));if(!g.n)return
 /* v45 · faixa da sessão no PDF: UM bloco que não quebra, logo depois da tabela. Gráfico à esquerda (292 de 515 pt, 57 %) e figura à direita.
    Sem gráfico ou sem figura, o que existir ocupa a largura toda. */
 function repStripPDF(x){const tem=x.ex.some(e=>(e.sets||[]).some(s=>s.kg>0));const leg=REP_LEG_SERIES.replace(' do exercício.','.');
-  if(tem){const gc=gmSessPDFc(x);if(gc){const ch=pdfSvg(svgSetsC(x.ex,{h:142}),292);ch.margin=[0,3,0,3];
-      return {unbreakable:true,margin:[0,2,0,10],stack:[{columnGap:12,columns:[{width:292,stack:[{text:'Séries da sessão (kg por série)',bold:true,fontSize:8.5,lineHeight:1.15,color:'#111114'},ch,{text:leg,fontSize:7.5,lineHeight:1.15,color:'#555'}]},{width:'*',stack:gc.col}]},{text:gc.nota,fontSize:7.5,lineHeight:1.15,color:'#4b4b55',margin:[0,4,0,0]}]};}
-    const ch=pdfSvg(svgSets(x.ex));return ch?{unbreakable:true,margin:[0,2,0,10],stack:[ch,{text:leg,style:'legend'}]}:null;}
-  const gm=gmSessPDF(x,true);if(gm)gm.margin=[0,6,0,10];return gm;}
+  if(tem){const ch=pdfSvg(svgLoadBlocks(x.ex,{w:515,cols:3}),515);ch.margin=[0,3,0,3];const bl={faixa:1,unbreakable:true,margin:[0,2,0,6],stack:[{text:'Evolução da carga na sessão (kg por série)',bold:true,fontSize:8.5,lineHeight:1.15,color:'#111114'},ch,{text:REP_LEG_SERIES,fontSize:7.5,lineHeight:1.15,color:'#555'}]};
+    const gm=gmSessPDF(x,true);if(gm)gm.margin=[0,4,0,10];return gm?{faixa:1,stack:[bl,gm]}:bl;}
+  const gm=gmSessPDF(x,true);if(gm){gm.margin=[0,6,0,10];gm.faixa=1;}return gm;}
 /* ---- janela */
 let GMS=null;
 function gmConfOf(k){const c=(S.settings||{}).muscleConfirm;return gmOwn(c,k)?c[k]:null;}
