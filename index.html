@@ -315,7 +315,8 @@ table.es input[type=number]{width:88px}table.es td,table.es th{padding:var(--s1)
 
 /* ---------- Gráficos */
 .chart{position:relative;height:240px;width:100%;max-width:100%}
-.chart.tall{height:300px}.chart.sm{height:150px}
+.chart.tall{height:300px}.chart.sm{height:150px}.chart.band{height:150px}
+.mband{border-top:1px solid var(--line);padding:var(--s3) 0 var(--s1)}.mband:first-of-type{border-top:0;padding-top:0}.mband-h{display:flex;justify-content:space-between;align-items:baseline;gap:var(--s2);flex-wrap:wrap;margin-bottom:var(--s1)}.mband-h b i{width:10px;height:10px;border-radius:2px;display:inline-block;margin-right:var(--s2)}
 .chart canvas{max-width:100%}
 .legend{display:flex;gap:var(--s3);flex-wrap:wrap;font-size:var(--f-xs);color:var(--ink-2);margin-top:var(--s2)}
 .legend i{width:10px;height:10px;border-radius:2px;display:inline-block;margin-right:var(--s1);vertical-align:-1px}
@@ -324,7 +325,7 @@ table.es input[type=number]{width:88px}table.es td,table.es th{padding:var(--s1)
 .semdado .chart,.semdado .legend{display:none}
 .labgrid{gap:var(--s3)}.labcell{border-top:1px solid var(--line);padding:var(--s2) 0;min-width:0}
 @media (max-width:600px){.labgrid{grid-template-columns:1fr}}
-@media (min-width:901px){.chart{height:280px}}
+@media (min-width:901px){.chart{height:280px}.chart.band{height:150px}}
 
 /* ---------- Treino */
 .sess{margin-bottom:var(--s2);display:flex;flex-wrap:wrap;align-items:baseline;gap:0 var(--s2)}
@@ -838,9 +839,12 @@ body.job-on.has-trfoot #toast{bottom:calc(var(--nav-h) + var(--trfoot-h,68px) + 
 
   <div class="grid g2">
     <div class="card">
-      <div class="card-h"><h3>Macros por dia</h3><span class="mini">g · linha = meta de proteína</span></div>
-      <div class="chart"><canvas id="chMacros"></canvas></div>
-      <div class="legend"><span><i style="background:var(--prot)"></i>proteína</span><span><i style="background:var(--carb)"></i>carbo</span><span><i style="background:var(--fat)"></i>gordura</span></div>
+      <div class="card-h"><h3>Macros e água por dia</h3><span class="mini">uma linha por faixa, cada uma na sua escala</span></div>
+      <div class="mband"><div class="mband-h"><b><i style="background:var(--prot)"></i>Proteína</b><span class="mini" id="mbNoteP"></span></div><div class="chart band"><canvas id="chMacros"></canvas></div></div>
+      <div class="mband"><div class="mband-h"><b><i style="background:var(--carb)"></i>Carboidrato</b><span class="mini" id="mbNoteC"></span></div><div class="chart band"><canvas id="chMacC"></canvas></div></div>
+      <div class="mband"><div class="mband-h"><b><i style="background:var(--fat)"></i>Gordura</b><span class="mini" id="mbNoteF"></span></div><div class="chart band"><canvas id="chMacF"></canvas></div></div>
+      <div class="mband"><div class="mband-h"><b><i style="background:var(--water)"></i>Água</b><span class="mini" id="mbNoteW"></span></div><div class="chart band"><canvas id="chWater"></canvas></div></div>
+      <p class="mini" id="mbLegend">Ponto cheio = dia na meta (95 % ou mais) · ponto vazado = abaixo da meta · tracejado = meta do dia · hoje (parcial) em pontilhado · a linha se interrompe em dia sem registro.</p>
     </div>
     <div class="card">
       <div class="card-h"><h3>Volume de treino</h3><span class="mini">min · linha = alvo de cárdio</span></div>
@@ -1013,7 +1017,7 @@ body.job-on.has-trfoot #toast{bottom:calc(var(--nav-h) + var(--trfoot-h,68px) + 
     </div>
     <div class="card">
       <div class="card-h"><h3>Dados</h3><span class="mini" id="dataStats"></span></div>
-      <p class="mini mb2" id="appVersion">Versão 48 · 24/11/2026</p><p class="mini mb2" id="lastAiErr" hidden></p>
+      <p class="mini mb2" id="appVersion">Versão 49 · 24/11/2026</p><p class="mini mb2" id="lastAiErr" hidden></p>
       <div class="row">
         <button class="btn sm" onclick="A.exportAll()">Exportar backup (JSON)</button>
         <button class="btn sm" onclick="A.exportCSV()">Exportar diário (CSV)</button>
@@ -2626,8 +2630,8 @@ function renderPaineis(){
   const lab=dates.map(d=>dtShort(d));const step=dates.length>45?Math.ceil(dates.length/30):1;const tick={autoSkip:true,maxTicksLimit:dates.length>45?12:16,maxRotation:0,autoSkipPadding:6};const hj=todayISO();const cS=cssVar('--serie'),cS2=cssVar('--serie-2'),cM=cssVar('--meta');
   /* designer 24/11/2026: consumido em tinta (hoje, ainda parcial, mais claro); meta em degrau tracejado; gasto como um traço por dia, sem ligar um dia ao outro */
   {const mt=dsLine('meta',dates.map(d=>metaFor(d).k),cM,{borderWidth:1.5,stepped:'middle',borderDash:[5,4],order:1});
-  mkChart('chEnergy',{data:{labels:lab,datasets:[dsBar('consumido',dates.map(d=>dayTotals(d).k||null),dates.map(d=>d===hj?cS2:cS),{order:5}),mt,haloDs(mt),dsLine('gasto',dates.map(d=>hasEnergyData(d)?energy(d).expend:null),cS2,{showLine:false,pointStyle:'line',pointRadius:Math.max(1.5,Math.min(7,140/dates.length)),pointHoverRadius:7,pointBorderWidth:2,order:3})]},options:{scales:{x:{ticks:tick,grid:{display:false}},y:{beginAtZero:true}}}});
-  setLegend('chEnergy',[['','var(--serie)','consumido'],['','var(--serie-2)','hoje (parcial)',dates.includes(hj)&&dayTotals(hj).k>0],['dash','var(--meta)','meta do dia'],['line','var(--serie-2)','gasto (TMB + ativas)']]);
+  mkChart('chEnergy',{data:{labels:lab,datasets:[dsLine('consumido',dates.map(d=>dayTotals(d).k||null),cS,{spanGaps:false,pointRadius:dates.length>45?2:3.5,pointHoverRadius:5,pointBorderWidth:1.7,pointBorderColor:cS,pointBackgroundColor:dates.map(d=>d===hj?cssVar('--surface'):cS),segment:{borderDash:c=>dates[c.p1DataIndex]===hj?[3,3]:undefined},order:2}),mt,dsLine('gasto',dates.map(d=>hasEnergyData(d)?energy(d).expend:null),cS2,{spanGaps:false,borderWidth:1.5,pointRadius:dates.length>45?0:2,pointHoverRadius:4,order:3})]},options:{scales:{x:{ticks:tick,grid:{display:false}},y:{beginAtZero:true}}}});
+  setLegend('chEnergy',[['line','var(--serie)','consumido'],['dash','var(--serie)','hoje (parcial)',dates.includes(hj)&&dayTotals(hj).k>0],['dash','var(--meta)','meta do dia'],['line','var(--serie-2)','gasto (TMB + ativas)']]);
   {const sem=dates.filter(d=>d<=hj&&!(dayTotals(d).k>0)).length;const en=$('#enNote');if(en)en.textContent='kcal por dia'+(sem?` · ${plur(sem,'dia','dias')} sem refeição lançada`:'');}}
   // peso
   const wpts=wd.map(d=>S.days[d].weight);const xs=wd.map(d=>daysBetween(dates[0],d));const lr=linreg(xs,wpts);
@@ -2642,7 +2646,16 @@ function renderPaineis(){
   dates.forEach(d=>{if(dayTotals(d).k>0)acc+=dayTotals(d).k-energy(d).expend;expArr.push(+(acc/7700).toFixed(2));realArr.push(S.days[d]&&S.days[d].weight&&w0!=null?+(S.days[d].weight-w0).toFixed(2):null);});
   mkChart('chBalance',{data:{labels:lab,datasets:[dsLine('esperado',expArr,cS2,{borderDash:[5,4]}),dsLine('real',realArr,cS,{pointRadius:3})]},options:{scales:{x:{ticks:tick,grid:{display:false}},y:{ticks:{callback:v=>sgn(v,1)}}}}});
   // macros
-  mkChart('chMacros',{data:{labels:lab,datasets:[dsBar('proteína',dates.map(d=>dayTotals(d).p||null),cssVar('--prot'),{stack:'m'}),dsBar('carbo',dates.map(d=>dayTotals(d).c||null),cssVar('--carb'),{stack:'m'}),dsBar('gordura',dates.map(d=>dayTotals(d).f||null),cssVar('--fat'),{stack:'m'}),dsLine('meta proteína',dates.map(d=>metaFor(d).p),cM,{borderWidth:1.5,stepped:'middle',borderDash:[5,4]})]},options:{scales:{x:{stacked:true,ticks:tick,grid:{display:false}},y:{stacked:true,beginAtZero:true}}}});
+  /* v49 (24/11/2026, protótipo aprovado): uma faixa de linha por macro e uma de água, cada uma na própria escala e com a sua meta.
+     Ponto cheio = dia na meta (≥ 95 %); vazado = abaixo; hoje (parcial) vazado e ligado por pontilhado; dia sem registro interrompe a linha. */
+  {const sf=cssVar('--surface');const faixa=(id,note,nome,val,meta,cor,un,dec)=>{const v=dates.map(d=>{const x=val(d);return x>0?x:null;});const m=dates.map(d=>{const x=meta(d);return x>0?x:null;});const ok=i=>v[i]!=null&&m[i]!=null&&v[i]>=m[i]*.95;
+      mkChart(id,{data:{labels:lab,datasets:[dsLine(nome,v,cor,{spanGaps:false,pointRadius:dates.length>45?2:3.5,pointHoverRadius:5,pointBorderWidth:1.7,pointBorderColor:cor,pointBackgroundColor:dates.map((d,i)=>ok(i)&&d!==hj?cor:sf),segment:{borderDash:c=>dates[c.p1DataIndex]===hj?[3,3]:undefined},order:2}),dsLine('meta',m,cM,{borderWidth:1.5,stepped:'middle',borderDash:[5,4],order:1})]},options:{scales:{x:{ticks:tick,grid:{display:false}},y:{beginAtZero:true}}}});
+      const reg=dates.map((d,i)=>i).filter(i=>v[i]!=null&&dates[i]!==hj);const n=reg.filter(ok).length;const ms=[...new Set(m.filter(x=>x!=null).map(x=>fmt(x,dec)))];const el=$('#'+note);
+      if(el)el.textContent=(ms.length===1?`meta ${ms[0]} ${un} · `:ms.length>1?`meta de ${ms[0]} a ${ms[ms.length-1]} ${un} · `:'')+(reg.length?`na meta em ${n} de ${plur(reg.length,'dia','dias')}`:'sem registro no período');};
+    faixa('chMacros','mbNoteP','proteína (g)',d=>dayTotals(d).p,d=>metaFor(d).p,cssVar('--prot'),'g',0);
+    faixa('chMacC','mbNoteC','carboidrato (g)',d=>dayTotals(d).c,d=>metaFor(d).c,cssVar('--carb'),'g',0);
+    faixa('chMacF','mbNoteF','gordura (g)',d=>dayTotals(d).f,d=>metaFor(d).f,cssVar('--fat'),'g',0);
+    faixa('chWater','mbNoteW','água (L)',d=>((S.days[d]||{}).water||0)/1000,d=>(s.waterGoal||0)/1000,cssVar('--water'),'L',1);}
   // volume
   mkChart('chVolume',{data:{labels:lab,datasets:[dsBar('musculação',dates.map(d=>musMinOf(d)||null),cS,{stack:'v',order:5}),dsBar('cárdio',dates.map(d=>cardioMinOf(d)||null),cS2,{stack:'v',order:5}),...(al=>[al,haloDs(al)])(dsLine('alvo cárdio',dates.map(d=>cardioAlvoDia(d)||null),cM,{borderWidth:1.5,stepped:true,borderDash:[3,3],order:1}))]},options:{scales:{x:{stacked:true,ticks:tick,grid:{display:false}},y:{stacked:true,beginAtZero:true}}}});
   renderCoach(dates);renderTable(dates);
