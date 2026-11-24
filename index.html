@@ -1034,7 +1034,7 @@ body.job-on.has-trfoot #toast{bottom:calc(var(--nav-h) + var(--trfoot-h,68px) + 
     </div>
     <div class="card">
       <div class="card-h"><h3>Dados</h3><span class="mini" id="dataStats"></span></div>
-      <p class="mini mb2" id="appVersion">Versão 50 · 24/11/2026</p><p class="mini mb2" id="lastAiErr" hidden></p>
+      <p class="mini mb2" id="appVersion">Versão 51 · 24/11/2026</p><p class="mini mb2" id="lastAiErr" hidden></p>
       <div class="row">
         <button class="btn sm" onclick="A.exportAll()">Exportar backup (JSON)</button>
         <button class="btn sm" onclick="A.exportCSV()">Exportar diário (CSV)</button>
@@ -4219,7 +4219,10 @@ function roPrev(){const r=A._ro,el=$('#rtPreview');if(!el)return;if(r.off||!r.se
 /* ---------- Montar meu treino */
 function bdFromProto(t){return ((t&&t.workouts)||[]).map(w=>({v:w.v,title:w.title||w.groups||'',ex:(w.exercises||[]).map(e=>{const m=/^\s*(\d+)\s*[x×]\s*([^|+]+?)\s*$/i.exec(e.scheme||'');const b=exFind(e.name);return {name:e.name,group:e.group||(b&&b.g)||'',equip:e.equip||(b&&b.e)||'',src:e.src||(b?b.src:'arquivo'),sets:m?+m[1]:null,reps:m?m[2]:'',free:m?'':(e.scheme||''),rest:e.rest||null,note:e.note||'',link:e.link||null};})}));}
 function bdToWorkouts(ws){return ws.map(w=>({v:w.v,title:(w.title||'').trim(),groups:[...new Set(w.ex.map(e=>e.group).filter(Boolean))].join(' · '),exercises:w.ex.map(e=>{const o={name:e.name,scheme:e.free?String(e.free).trim():`${+e.sets>0?+e.sets:3}×${String(e.reps||'10').trim()}`,note:(e.note||'').trim()||null,group:e.group||null,link:e.link||null};if(+e.rest>0)o.rest=+e.rest;if(e.equip)o.equip=e.equip;if(e.src)o.src=e.src;return o;})}));}
-function bdLine(e){return [e.free?e.free:`${e.sets||3}×${e.reps||'10'}`,+e.rest>0?e.rest+' s':'',e.group].filter(Boolean).join(' · ');}
+/* v51 (decisão do Antonio, 24/11/2026): o padrão 3×10 com 60 s só vale em treino montado aqui. Em treino que veio de arquivo (do treinador) o exercício novo entra em branco. */
+function bdDef(){const b=A._bd,w=b.ws[b.cur],t=S.protoT;const imp=!!(t&&(t.workouts||[]).some(x=>x.v===w.v)&&(!t.source||t.source==='arquivo'))&&!b.sgId;return imp?{sets:null,reps:'',rest:null}:{sets:3,reps:'10',rest:60};}
+function bdBlank(e){return !e.free&&(!(+e.sets>0)||!String(e.reps||'').trim());}
+function bdLine(e){return [e.free?e.free:bdBlank(e)?'séries e repetições a preencher':`${e.sets}×${e.reps}`,+e.rest>0?e.rest+' s':'',e.group].filter(Boolean).join(' · ');}
 function bdSaveDraft(){clearTimeout(bdSaveDraft._t);bdSaveDraft._t=setTimeout(()=>{const b=A._bd;if(!b)return;Store.set('train_forms/rascunho',{id:'rascunho',kind:'rascunho',at:new Date().toISOString(),uid:Store.uid||null,ws:thaw(b.ws)});const el=$('#bdDraft');if(el)el.textContent='Rascunho gravado às '+new Date().toTimeString().slice(0,5);},700);}
 function bdRender(){const b=A._bd;if(!b)return;if(b.cur>=b.ws.length)b.cur=Math.max(0,b.ws.length-1);const w=b.ws[b.cur];const dr=(S.tforms||{}).rascunho;
   shSet('Montar meu treino',`<div class="bd-root"><div class="row bd-top"><button type="button" class="btn sm ai" id="bdSug" onclick="A.sgOpen()">Pedir sugestão</button><span class="mini" id="bdDraft">${b.fromDraft&&dr?'Rascunho de '+esc(dtShort(String(dr.at).slice(0,10)))+' ':''}</span>${b.fromDraft?`<button type="button" class="btn xs ghost" onclick="A.bdReset()">Recomeçar do treino em uso</button>`:''}</div>
@@ -4334,14 +4337,14 @@ Object.assign(A,{
   bdMove(i,d){const b=A._bd,x=b.ws[b.cur].ex,j=i+d;if(j<0||j>=x.length)return;[x[i],x[j]]=[x[j],x[i]];if(b.open===i)b.open=j;else if(b.open===j)b.open=i;bdSaveDraft();bdRender();},
   bdDelEx(i){const b=A._bd;b.ws[b.cur].ex.splice(i,1);b.open=-1;bdSaveDraft();bdRender();},
   bdSet(i,k,v){const b=A._bd,e=b.ws[b.cur].ex[i];if(!e)return;e[k]=k==='sets'||k==='rest'?(v===''?null:Math.max(0,Math.round(+v)||0)):v;const el=$('#bdL'+i);if(el)el.textContent=bdLine(e);bdSaveDraft();},
-  bdFree(i){const b=A._bd,e=b.ws[b.cur].ex[i];if(e.free){e.free='';if(!e.sets)e.sets=3;if(!e.reps)e.reps='10';}else e.free=`${e.sets||3}×${e.reps||'10'}`;bdSaveDraft();bdRender();},
+  bdFree(i){const b=A._bd,e=b.ws[b.cur].ex[i];if(e.free){e.free='';}else e.free=bdBlank(e)?'1×':`${e.sets}×${e.reps}`;bdSaveDraft();bdRender();},
   bdSearch(){bdSearchRender();},
   bdFilter(){bdFilterRun();},
   bdClear(){$('#bdG').value='';$('#bdE').value='';bdFilterRun();},
-  bdPick(i,btn){const b=A._bd,x=(b._res||[])[i];if(!x)return;b.ws[b.cur].ex.push({name:x.n,group:x.g,equip:x.e,src:x.src,sets:3,reps:'10',free:'',rest:60,note:'',link:null});if(btn){btn.disabled=true;btn.textContent='Adicionado';}bdSaveDraft();},
-  bdCreate(){const n=$('#bdQ').value.trim().slice(0,60),g=$('#bdG').value,e=$('#bdE').value;if(n.length<3)return;if(!g){toast('Escolha o grupo muscular para criar o exercício');$('#bdG').focus();return;}if(exFind(n)){toast('Já existe um exercício com esse nome');return;}tfSave('exercicio',{name:n,group:g,equip:e||'Outros'});const b=A._bd;b.ws[b.cur].ex.push({name:n,group:g,equip:e||'Outros',src:'meu',sets:3,reps:'10',free:'',rest:60,note:'',link:null});bdSaveDraft();toast('Exercício criado e adicionado');$('#bdQ').value='';bdFilterRun();},
-  bdBack(){A._bd.open=-1;bdRender();},
-  bdApply(){const b=A._bd;if(!b.ws.length){toast('Monte ao menos um treino');return;}const vazio=b.ws.filter(w=>!w.ex.length).map(w=>w.v);if(vazio.length){toast((vazio.length>1?'Treinos ':'Treino ')+vazio.join(', ')+' sem exercício: adicione ou exclua');return;}clearTimeout(bdSaveDraft._t);
+  bdPick(i,btn){const b=A._bd,x=(b._res||[])[i];if(!x)return;b.ws[b.cur].ex.push(Object.assign({name:x.n,group:x.g,equip:x.e,src:x.src,free:'',note:'',link:null},bdDef()));if(btn){btn.disabled=true;btn.textContent='Adicionado';}bdSaveDraft();},
+  bdCreate(){const n=$('#bdQ').value.trim().slice(0,60),g=$('#bdG').value,e=$('#bdE').value;if(n.length<3)return;if(!g){toast('Escolha o grupo muscular para criar o exercício');$('#bdG').focus();return;}if(exFind(n)){toast('Já existe um exercício com esse nome');return;}tfSave('exercicio',{name:n,group:g,equip:e||'Outros'});const b=A._bd;b.ws[b.cur].ex.push(Object.assign({name:n,group:g,equip:e||'Outros',src:'meu',free:'',note:'',link:null},bdDef()));bdSaveDraft();toast('Exercício criado e adicionado');$('#bdQ').value='';bdFilterRun();},
+  bdBack(){const b=A._bd;b.open=b.ws[b.cur].ex.findIndex(bdBlank);bdRender();},
+  bdApply(){const b=A._bd;if(!b.ws.length){toast('Monte ao menos um treino');return;}const vazio=b.ws.filter(w=>!w.ex.length).map(w=>w.v);if(vazio.length){toast((vazio.length>1?'Treinos ':'Treino ')+vazio.join(', ')+' sem exercício: adicione ou exclua');return;}{const f=b.ws.map((w,wi)=>({w,wi,i:w.ex.findIndex(bdBlank)})).find(x=>x.i>=0);if(f){b.cur=f.wi;b.open=f.i;bdRender();toast('Preencha séries e repetições de '+f.w.ex[f.i].name+' (treino '+f.w.v+')',5000);return;}}clearTimeout(bdSaveDraft._t);
     trainAsk({workouts:bdToWorkouts(b.ws),source:'montador',keep:false,rotation:b.seq||null,summary:b.sgId?'Sugestão editada no montador':null,after:()=>{Store.del('train_forms/rascunho');A._bd=null;}});},
   sgOpen(){const last=tfList('anamnese')[0];const s=settings();A._sg={step:1,an:last?{goal:last.goal,level:last.level,days:last.days,minutes:last.minutes,equip:(last.equip||[]).slice(),limits:(last.limits||[]).slice(),limitsNote:last.limitsNote||''}:{goal:(S.protoN&&SG_GOAL[S.protoN.goal]?S.protoN.goal:null),level:null,days:null,minutes:null,equip:[],limits:[],limitsNote:''},hf:{ans:HF_Q.map(()=>null),truth:false,aware:false},useHf:true};sgRender();},
   sgPick(k,v,multi){const an=A._sg.an;if(k==='days'||k==='minutes')v=+v;if(multi){const a=an[k]||(an[k]=[]);const i=a.indexOf(v);if(i>=0)a.splice(i,1);else a.push(v);}else an[k]=v;sgRender();},
