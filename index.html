@@ -150,6 +150,7 @@ label.f{display:flex;flex-direction:column;gap:var(--s1);font-size:var(--f-xs);c
 .periodbar input[type=date]{width:150px}
 #pbCustomBtn{display:none}
 #syncBar{font-size:var(--f-xs);color:var(--ink-2);padding:0 0 var(--s2);margin-bottom:var(--s2);border-bottom:1px solid var(--line);display:flex;gap:var(--s2);align-items:center;flex-wrap:wrap}
+#syncBar[hidden].hold{display:flex!important;visibility:hidden}
 #syncBar .dot{width:8px;height:8px;border-radius:50%;background:var(--muted);flex:none}
 #syncBar.ok .dot{background:var(--good)}
 #syncBar.warn .dot{background:var(--warn)}
@@ -323,9 +324,10 @@ table.es input[type=number]{width:88px}table.es td,table.es th{padding:var(--s1)
 .ro-l,.bd-h,.bd-r{display:flex;align-items:center;gap:var(--s2);border-top:1px solid var(--line);min-height:var(--h)}.ro-l:first-child,.bd-ex:first-child .bd-h,.bd-r:first-child{border-top:0}.ro-n{width:20px;color:var(--ink-2);font-size:var(--f-sm);font-variant-numeric:tabular-nums;flex:none}.ro-t,.bd-rn{flex:1;min-width:0}.ro-a{display:flex;flex:none}.ro-a .icon-btn:disabled{opacity:.3}
 .bd-nm{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:0;background:none;border:0;padding:var(--s2) 0;font:inherit;color:var(--ink);text-align:left;cursor:pointer}.bd-nm b,.bd-rn b{display:block;overflow-wrap:anywhere}.bd-rn{display:flex;flex-direction:column;padding:var(--s2) 0}
 .bd-f{display:flex;flex-direction:column;gap:var(--s2);padding:0 0 var(--s3)}.bd-top{justify-content:space-between}
-.opts{display:flex;flex-wrap:wrap;gap:var(--s2)}.opts button{min-height:var(--h);padding:0 var(--s3);border:1px solid var(--line);border-radius:var(--r-sm);background:var(--surface);color:var(--ink);font:inherit;cursor:pointer}.opts button.on{background:var(--acao);color:var(--acao-ink);border-color:var(--acao)}
+.opts{display:flex;flex-wrap:wrap;gap:var(--s2)}.opts button{min-height:var(--h);min-width:var(--h);padding:0 var(--s3);border:1px solid var(--line);border-radius:var(--r-sm);background:var(--surface);color:var(--ink);font:inherit;cursor:pointer}.opts button.on{background:var(--acao);color:var(--acao-ink);border-color:var(--acao)}
 .hf-q{display:flex;flex-direction:column;gap:var(--s2);padding:var(--s3) 0;border-top:1px solid var(--line)}.hf-q:first-child{border-top:0}
-@media (min-width:641px){#sheet .panel:has(.bd-root){max-width:760px}}
+.tpg tbody th,.tpg thead th:first-child{position:sticky;left:0;z-index:1;background:var(--surface)}
+@media (min-width:641px){#sheet .panel:has(.bd-root),#sheet .panel:has(.tpg){max-width:760px}}
 .chart.tall{height:300px}.chart.sm{height:150px}.chart.band{height:150px}
 .mband{border-top:1px solid var(--line);padding:var(--s3) 0 var(--s1)}.mband:first-of-type{border-top:0;padding-top:0}.mband-h{display:flex;justify-content:space-between;align-items:baseline;gap:var(--s2);flex-wrap:wrap;margin-bottom:var(--s1)}.mband-h b i{width:10px;height:10px;border-radius:2px;display:inline-block;margin-right:var(--s2)}
 .chart canvas{max-width:100%}
@@ -518,7 +520,7 @@ table.es input[type=number]{width:88px}table.es td,table.es th{padding:var(--s1)
   .tab>#alerts,.tab>#trLogCard,.tab>#mealsCard,.tab>.stack,.tab>#cmpCard,.tab>.wide,.tab>:not(.card){grid-column:1/-1}
   .tab>.stack:not(#alerts){display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s4) var(--s5);align-items:start}
   .tab>.stack:not(#alerts)>.card:first-child,.tab>.stack>.wide{grid-column:1/-1}
-  #tab-treino>#trLogCard{order:-2}#tab-treino>#actCard{order:-1}
+  #tab-treino>#trMiss{order:-3}#tab-treino>#trLogCard{order:-2}#tab-treino>#actCard{order:-1}
   #tab-hoje>#alerts{order:-5}#tab-hoje>.dayhero{order:-4}#tab-hoje>.dayhero+.card{order:-3}
 }
 @media (min-width:501px) and (max-width:899px){main{max-width:none}.tab>.dayhero{grid-column:1/-1}}
@@ -620,7 +622,7 @@ body.job-on.has-trfoot #toast{bottom:calc(var(--nav-h) + var(--trfoot-h,68px) + 
 #foodsLeft .flm{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s3);font-size:var(--f-xs);color:var(--ink-2);font-variant-numeric:tabular-nums}
 #foodsLeft .flm b{color:var(--ink);font-size:var(--f-sm)}
 #foodsLeft .flm .over{color:var(--bad-text)}
-@media (max-width:900px){#foodsLeft{position:sticky;top:0;z-index:4}}
+@media (max-width:900px){#foodsLeft{position:sticky;top:0;z-index:calc(var(--z-topo) + 1)}}
 .mlist{display:flex;flex-direction:column}
 .mrow{display:flex;align-items:center;gap:var(--s2);border-top:1px solid var(--line);min-height:56px;padding:var(--s1) 0}
 .mrow .ck{flex:none;width:44px;height:44px;margin-left:-10px;display:grid;place-items:center;background:none;border:0;padding:0;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
@@ -730,6 +732,7 @@ body.job-on.has-trfoot #toast{bottom:calc(var(--nav-h) + var(--trfoot-h,68px) + 
 
 <!-- ================================================= TREINO -->
 <section id="tab-treino" class="tab" hidden>
+  <div id="trMiss"></div>
   <!-- Um bloco só: registro das séries e, no fim, a sessão do dia (cárdio, relógio, passos) -->
   <div class="card" id="trLogCard">
     <div class="card-h"><h2>Treino do dia</h2><span class="aux" id="trLogTitle">—</span></div>
@@ -814,7 +817,6 @@ body.job-on.has-trfoot #toast{bottom:calc(var(--nav-h) + var(--trfoot-h,68px) + 
   <div class="card">
     <div class="card-h"><div><h3>Protocolo de treino</h3><span class="mini" id="trProtoMeta"></span></div>
       <div class="row"><button class="btn sm" id="trBuild" onclick="A.openBuilder()">Montar meu treino</button><button class="btn sm ai" onclick="A.goProto()">Atualizar protocolo</button></div></div>
-    <div id="trMiss"></div>
     <div class="line" id="trSeq" hidden></div>
     <div class="stack" id="trProto"></div>
   </div>
@@ -1034,7 +1036,7 @@ body.job-on.has-trfoot #toast{bottom:calc(var(--nav-h) + var(--trfoot-h,68px) + 
     </div>
     <div class="card">
       <div class="card-h"><h3>Dados</h3><span class="mini" id="dataStats"></span></div>
-      <p class="mini mb2" id="appVersion">Versão 52 · 24/11/2026</p><p class="mini mb2" id="lastAiErr" hidden></p>
+      <p class="mini mb2" id="appVersion">Versão 53 · 25/11/2026</p><p class="mini mb2" id="lastAiErr" hidden></p>
       <div class="row">
         <button class="btn sm" onclick="A.exportAll()">Exportar backup (JSON)</button>
         <button class="btn sm" onclick="A.exportCSV()">Exportar diário (CSV)</button>
@@ -1322,7 +1324,7 @@ const Store={
   saveLocal(){try{localStorage.setItem(LS_KEY,JSON.stringify(S));this._full=false;}catch(e){if(!this._full){this._full=true;toast('Este navegador ficou sem espaço: as últimas alterações não foram guardadas. Exporte o backup em Ajustes.',8000);}}},
   watchCloud(){
     const db=this.db;let got=0;const need=14;let timer=setTimeout(()=>{if(!this.ready&&!(window.ncSync&&window.ncSync.problem()))syncBar('warn','Ainda sem resposta do banco… verifique a conexão.');},10000);
-    const done=()=>{got++;if(got>=need&&!this.ready){this.ready=true;clearTimeout(timer);ensureRestRule();const cf=window.ncSync;if(cf&&cf.problem()){cf.paint();}else{syncBar('ok','Sincronizado na nuvem'+(this.uid?'':' · somente leitura'));setTimeout(()=>{if(!(cf&&cf.problem()))$('#syncBar').hidden=true;},4000);}}renderAll();};
+    const done=()=>{got++;if(got>=need&&!this.ready){this.ready=true;clearTimeout(timer);ensureRestRule();const cf=window.ncSync;if(cf&&cf.problem()){cf.paint();}else{syncBar('ok','Sincronizado na nuvem'+(this.uid?'':' · somente leitura'));setTimeout(()=>{if(!(cf&&cf.problem()))syncBarOff();},4000);}}renderAll();};
     const col=(name,target,order)=>{let q=db.collection(name);if(order)q=q.orderBy(order,'desc');q=q.limit(1000);let first=true;
       // data() chega CONGELADO (Object.freeze profundo): sem clonar, qualquer edição em um documento já existente
       // (push/splice em refeições, peso, água…) falha em silêncio. Por isso tudo entra no estado como cópia mutável.
@@ -1344,7 +1346,7 @@ const Store={
     if(this.mode==='local'){this.saveLocal();return;}
     this.pending[path]=data;if(this.inflight[path])return;this.inflight[path]=true;
     let d;try{while(this.pending[path]!==undefined){d=this.pending[path];delete this.pending[path];await this.db.doc(path).set(JSON.parse(JSON.stringify(d)));}
-      if(this.pendFail&&!Object.keys(this._rt||{}).length&&!Object.keys(this.pending).length){this.pendFail=false;if(!window.ncSync){syncBar('ok','Sincronizado na nuvem');setTimeout(()=>{if(!Store.pendFail)$('#syncBar').hidden=true;},3000);}}}
+      if(this.pendFail&&!Object.keys(this._rt||{}).length&&!Object.keys(this.pending).length){this.pendFail=false;if(!window.ncSync){syncBar('ok','Sincronizado na nuvem');setTimeout(()=>{if(!Store.pendFail)syncBarOff();},3000);}}}
     catch(e){console.warn('set',path,e);const perm=e.code==='invalid_argument'||e.code==='not_granted'||e.code==='permission_denied';if(!perm){if(this.pending[path]===undefined)this.pending[path]=d;this.retryLater(path);this.pendFail=true;if(!window.ncSync)syncBar('warn','Alteração ainda não gravada: tentando de novo…');}toast(perm?'Sem permissão de gravação neste link.':'Falha ao salvar (vou tentar de novo): '+(e.message||e.code));}
     finally{this.inflight[path]=false;if(this.delAfter&&this.delAfter[path]){delete this.delAfter[path];this.db.doc(path).delete().catch(()=>{});}}
   },
@@ -1367,6 +1369,7 @@ function appScrollTop(){const m=document.documentElement.classList.contains('emb
 let _rlT=null;function relayout(){clearTimeout(_rlT);_rlT=setTimeout(()=>{Object.values(CH).forEach(c=>{try{c.resize();}catch(e){}});renderAll();},120);}
 ['resize','orientationchange','pageshow'].forEach(ev=>window.addEventListener(ev,relayout));if(window.visualViewport)window.visualViewport.addEventListener('resize',relayout);
 try{if(window.self!==window.top)document.documentElement.classList.add('embedded');}catch(e){document.documentElement.classList.add('embedded');}
+function syncBarOff(){const b=$('#syncBar');if(!b||b.hidden)return;const r=b.getBoundingClientRect();const vis=r.height>0&&r.bottom>0;b.hidden=true;if(vis)b.classList.add('hold');}
 function syncBar(cls,txt){const b=$('#syncBar');b.hidden=false;b.className=cls;$('#syncTxt').textContent=txt;}
 
 /* ============================================================ PROTOCOLO & METAS */
@@ -1996,7 +1999,7 @@ function reportHTML(d,o){
     <div class="kpi"><span class="v">${d.daysReg}<small> / ${plur(nDays,'dia','dias')}</small></span><span class="l">Dias com registro</span><span class="d">${d.nd.length} com alimentação · ${plur(d.wts.length,'pesagem','pesagens')}</span></div>
     <div class="kpi"><span class="v">${t.k>0?fmt(t.k):'—'}<small> kcal</small></span><span class="l">Consumo total</span><span class="d">${d.kAvg!=null?fmt(d.kAvg)+' kcal/dia · '+(kcalP!=null?kcalP+' % da meta':''):'—'}</span></div>
     <div class="kpi"><span class="v">${fmt(t.p)}<small> g</small></span><span class="l">Proteína total</span><span class="d">${d.pAvg!=null?fmt(d.pAvg)+' g/dia'+(d.w1?' · '+fmt(d.pAvg/d.w1.w,2)+' g/kg':''):'—'}</span></div>
-    <div class="kpi"><span class="v">${d.trainDays}${d.plannedN&&!d.plannedFrom?`<small> / ${d.plannedN} previstos</small>`:''}</span><span class="l">Treinos realizados</span><span class="d">dias de musculação · ${repSessTxt(d)} · ${fmt(d.musMin)} min · aderência média ${d.adhAvg!=null?fmt(d.adhAvg)+' %':'—'}${d.cycleStart?' · ciclo atual, desde '+dtShort(d.cycleStart):''}${d.restTxt?' · '+d.restTxt:''}</span></div>
+    <div class="kpi"><span class="v">${d.trainDays}${d.plannedN&&!d.plannedFrom?`<small> / ${d.plannedN} previstos</small>`:''}</span><span class="l">Treinos realizados</span><span class="d">dias de musculação · ${repSessTxt(d)} · ${fmt(d.musMin)} min · aderência média das sessões feitas ${d.adhAvg!=null?fmt(d.adhAvg)+' %':'—'}${d.cycleStart?' · ciclo atual, desde '+dtShort(d.cycleStart):''}${d.restTxt?' · '+d.restTxt:''}</span></div>
     <div class="kpi"><span class="v">${fmt(t.ton)}<small> kg</small></span><span class="l">Tonelagem total</span><span class="d">${plur(t.sets,'série','séries')} · ${plur(t.reps,'repetição','repetições')}${t.fail?' · '+t.fail+' em falha':''}</span></div>
     <div class="kpi"><span class="v">${fmt(d.car)}<small> / ${fmt(d.carAlvo)} min</small></span><span class="l">Cárdio realizado × prescrito</span><span class="d">${d.fasted} em jejum</span></div>
     <div class="kpi"><span class="v">${fmt(t.steps)}</span><span class="l">Passos no período</span><span class="d">${d.stepsAvg!=null?fmt(d.stepsAvg)+' por dia':'sem registro'}</span></div>
@@ -2069,7 +2072,7 @@ function reportText(d,o){
       const cg=x.ex.filter(e=>e.max).map(e=>{const pv=repPrevTxt(e);return `${e.name} ${repLoadTxt(e)}${pv?' ('+pv+')':''}`;});if(cg.length)L.push('  Cargas: '+cg.join('; '));
       if(x.note)L.push('  Obs. do treino: '+x.note);x.ex.filter(e=>e.note).forEach(e=>L.push(`  Obs. ${e.name}: ${e.note}`));});chs.forEach(ch);}
   if(sec('nutri'))L.push(!d.nd.length?'*Nutrição:* sem alimentação registrada no período':`*Nutrição:* ${d.nd.length} ${d.nd.length===1?'dia registrado':'dias registrados'} · média ${fmt(d.kAvg)} kcal (meta ${fmt(d.mAvg.k)}, ${pc(d.kAvg,d.mAvg.k)}) · P ${fmt(d.pAvg)} g (meta ${fmt(d.mAvg.p)}) · C ${fmt(d.cAvg)} · G ${fmt(d.fAvg)} · dias na meta (±10%): ${d.inPlan}/${d.nd.length}`);
-  if(sec('treino')){L.push(`*Treino:* ${plur(d.trainDays,'dia','dias')} de musculação${d.cycleStart&&d.cycleStart>d.from?' (ciclo atual, desde '+dtShort(d.cycleStart)+')':''} · ${d.withLetter} com a letra do treino${d.withLetter?' ('+d.letters.filter(l=>d.cnt[l]).map(l=>l+' '+d.cnt[l]+'×').join(', ')+')':''} · na sequência ${d.asPlanned} · trocados ${d.swapped} · aderência média ${d.adhAvg!=null?fmt(d.adhAvg)+'%':'—'}${d.aoN?' ('+d.aoN+' sem séries, contados como 100 %)':''}${d.restTxt?' · '+d.restTxt:''} · exercícios: ${IND_KEYS.map(k=>d.ind[k]+' '+IND_LABEL[k]).join(' · ')}`);
+  if(sec('treino')){L.push(`*Treino:* ${plur(d.trainDays,'dia','dias')} de musculação${d.cycleStart&&d.cycleStart>d.from?' (ciclo atual, desde '+dtShort(d.cycleStart)+')':''} · ${d.withLetter} com a letra do treino${d.withLetter?' ('+d.letters.filter(l=>d.cnt[l]).map(l=>l+' '+d.cnt[l]+'×').join(', ')+')':''} · na sequência ${d.asPlanned} · trocados ${d.swapped} · aderência média das sessões feitas ${d.adhAvg!=null?fmt(d.adhAvg)+'%':'—'}${d.aoN?' ('+d.aoN+' sem séries, contados como 100 %)':''}${d.restTxt?' · '+d.restTxt:''} · exercícios: ${IND_KEYS.map(k=>d.ind[k]+' '+IND_LABEL[k]).join(' · ')}`);
     if(d.cmpRows&&d.cmpRows.length)L.push(`*Comparativo:* ${d.cmpRows.map(g=>`${g.k}: ${g.n}× · ${g.pctN?fmt(g.pct/g.pctN)+' %':'—'} · ${fmt(g.ton/g.n)} kg/sessão`).join(' | ')}`);}
   if(sec('prog')){const pr=d.progRows.slice(0,8);if(pr.length)L.push(`*Carga:* ${pr.map(p=>`${p.name} ${p.min&&p.min!==p.max?'mín '+kgTxt(p.min)+' · máx '+kgTxt(p.max):kgTxt(p.max)} kg${p.nD>1?' ('+sgn(p.dMax,kgDec(p.dMax))+' kg)':''}`).join(' · ')}`);}
   if(sec('cardio'))L.push(`*Cárdio:* ${fmt(d.car)}/${fmt(d.carAlvo)} min (${pc(d.car,d.carAlvo)}) · jejum ${d.fasted}× · passos ${d.stepsAvg!=null?fmt(d.stepsAvg)+'/dia':'—'}${d.actRows&&d.actRows.length?' · '+plur(d.actRows.length,'atividade no período','atividades no período'):''}`);
@@ -2344,7 +2347,7 @@ let TAB='hoje', SAUDE='bio', MAIS='proto', BIOK='peso', BIOCMP=[];
 // Um filtro de período por página: cada aba guarda o seu e a barra superior mostra o da aba aberta.
 const RANGES={treino:{mode:'30',from:null,to:null},paineis:{mode:'14',from:null,to:null},saude:{mode:'max',from:null,to:null}};const TAB_RANGE={treino:1,paineis:1,saude:1};let RANGE=RANGES.paineis;
 const BIO_LABELS={peso:'Peso (kg)',mme:'Massa muscular esquelética (kg)',pgc:'% Gordura',gord:'Massa de gordura (kg)',mlg:'Massa livre de gordura (kg)',tmb:'TMB (kcal)',agua:'Água corporal (L)',prot:'Proteína (kg)',min:'Minerais (kg)',visc:'Gordura visceral (nível)',smi:'SMI (kg/m²)',cq:'Cintura-quadril',imc:'IMC',score:'Pontuação InBody'};
-function showTab(t){if(t==='mais')t=MAIS||'proto';TAB=t;if(TAB_RANGE[t])RANGE=RANGES[t];$$('#bottomnav button').forEach(b=>{const on=b.dataset.tab===t;b.classList.toggle('on',on);if(on)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});$$('main>.tab').forEach(s=>s.hidden=(s.id!=='tab-'+t));syncPeriodBar();appScrollTop();renderAll();}
+function showTab(t){{const sb=$('#syncBar');if(sb)sb.classList.remove('hold');}if(t==='mais')t=MAIS||'proto';TAB=t;if(TAB_RANGE[t])RANGE=RANGES[t];$$('#bottomnav button').forEach(b=>{const on=b.dataset.tab===t;b.classList.toggle('on',on);if(on)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});$$('main>.tab').forEach(s=>s.hidden=(s.id!=='tab-'+t));syncPeriodBar();appScrollTop();renderAll();}
 function showSaude(s){SAUDE=s;$$('#saudeSeg button').forEach(b=>b.classList.toggle('on',b.dataset.s===s));['bio','labs','meds','clin'].forEach(k=>$('#saude-'+k).hidden=(k!==s));renderSaude();}
 function showMais(s){MAIS=s;showTab(s);}
 function dayChanging(next){try{const ae=document.activeElement;if(ae&&ae!==document.body&&ae.matches&&ae.matches('main input,main select,main textarea'))ae.blur();}catch(e){}try{flushPend();wkFlush();}catch(e){}if(TR.parsedKey&&TR.parsedKey.split('|')[1]!==next){TR={images:[],parsed:null,adh:null,dirty:false,parsedKey:null,editingId:null};}}
@@ -2352,9 +2355,9 @@ function setDate(iso){if(!okISO(iso)){toast('Data inválida: use um ano entre 20
 function refreshToday(){if(autoDate&&CUR!==todayISO()){dayChanging(todayISO());CUR=todayISO();renderAll();}}
 function openSheet(title,html){if(!JOB.running)jobHide();$('#sheetTitle').textContent=title;const sb=$('#sheetBody');sb.innerHTML=html;sheetFoot();$('#sheet').hidden=false;{const pn=$('#sheet .panel');if(pn)pn.scrollTop=0;}document.body.style.overflow='hidden';}
 /* a última linha de botões da janela vira rodapé fixo: o botão principal fica à vista sem rolar, sempre à direita */
-function sheetFoot(){const sb=$('#sheetBody');if(!sb)return;const last=sb.lastElementChild;const f=last&&last.classList.contains('row')&&last.querySelector(':scope>.btn.primary,:scope>.btn.accent')&&!last.querySelector('input,select,textarea')?last:null;if(f)f.classList.add('sheet-f');sb.classList.toggle('has-foot',!!f);}
+function sheetFoot(){const sb=$('#sheetBody');if(!sb)return;const host=sb.lastElementChild&&sb.lastElementChild.classList.contains('bd-root')?sb.lastElementChild:sb;const last=host.lastElementChild;const f=last&&last.classList.contains('row')&&last.querySelector(':scope>.btn.primary,:scope>.btn.accent')&&!last.querySelector('input,select,textarea')?last:null;if(f)f.classList.add('sheet-f');sb.classList.toggle('has-foot',!!f);}
 function acReveal(box){box.hidden=false;try{const wrap=box.closest('.ac-wrap')||box.parentElement;const vv=window.visualViewport;const emb=document.documentElement.classList.contains('embedded');const nav=$('#bottomnav');const nr=nav&&nav.offsetParent!==null?nav.getBoundingClientRect():null;let limit=vv?vv.height:innerHeight;if(nr&&nr.top>innerHeight/2&&nr.width>innerWidth*.6)limit=Math.min(limit,nr.top);const fl=$('#foodsLeft');const flb=fl&&fl.offsetParent&&getComputedStyle(fl).position==='sticky'?fl.getBoundingClientRect().bottom:0;const top=Math.max(0,$('#topbar').getBoundingClientRect().bottom,flb)+8;box.style.maxHeight='';if(box.getBoundingClientRect().bottom>limit-4){const delta=wrap.getBoundingClientRect().top-top;if(delta>4){const sc=emb?$('main'):window;sc.scrollBy({top:delta});}const room=limit-wrap.getBoundingClientRect().bottom-8;if(room<box.getBoundingClientRect().height)box.style.maxHeight=Math.max(120,room)+'px';}}catch(e){}}
-function closeSheet(){$('#sheet').hidden=true;$('#sheetBody').innerHTML='';if(A._tp)setTimeout(()=>{if(A._tp&&$('#sheet').hidden){toast('O treino ainda não foi aplicado. Na aba Treino dá para escolher o dia ou descartar.',6000);renderAll();}},60);const rp=$('#report');document.body.style.overflow=rp&&!rp.hidden?'hidden':'';}
+function closeSheet(){$('#sheet').hidden=true;$('#sheetBody').innerHTML='';if(A._tp)setTimeout(()=>{if(A._tp&&$('#sheet').hidden){toast('O treino ainda não foi aplicado. Na aba Treino dá para continuar ou descartar.',6000);renderAll();}},60);const rp=$('#report');document.body.style.overflow=rp&&!rp.hidden?'hidden':'';}
 
 /* ============================================================ GRÁFICOS */
 const CH={};
@@ -3070,7 +3073,7 @@ const A={
   pendSkip(iso,kind){const d=getDay(iso);d.skip=Object.assign({},d.skip||{},{[kind]:true});saveDay(iso,d);renderAll();A.openBell();toast(kind==='treino'?`${dtBR(iso)}: sem treino registrado`:`${dtBR(iso)}: sem refeição registrada`);},
   pendGo(iso,kind){closeSheet();setDate(iso);if(kind==='treino'){showTab('treino');cardOpen('sessCard',true);cardOpen('trLogCard',true);}else{showTab('foods');cardOpen('mealsCard',true);}},
   openBell(){const p=pendencies();const al=computeAlerts();
-    openSheet('Alertas e pendências',`${p.length?`<div class="eyebrow mb2">Pendências</div>${p.map(x=>x.kind==='categoria'?`<div class="pend"><div><b>Atividade</b> · ${dtBR(x.iso).slice(0,5)} <small class="muted">${esc(WDS[weekdayIdx(x.iso)])}</small><div class="mini">${esc(actPendName(x.p))}${x.p.min?' ('+fmt(x.p.min)+' min)':''} aguardando categoria</div></div><div class="row"><button class="btn xs" onclick="closeSheet();A.actAsk()">Escolher categoria</button></div></div>`:`<div class="pend"><div><b>${x.kind==='treino'?'Treino':'Refeições'}</b> · ${dtBR(x.iso).slice(0,5)} <small class="muted">${esc(WDS[weekdayIdx(x.iso)])}</small><div class="mini">${x.kind==='treino'?'nenhum treino registrado':'nenhuma refeição registrada'}</div></div><div class="row"><button class="btn xs" onclick="A.pendGo('${x.iso}','${x.kind}')">Registrar</button><button class="btn xs" onclick="A.pendSkip('${x.iso}','${x.kind}')">Não registrar</button></div></div>`).join('')}`:'<div class="empty">Nenhuma pendência.</div>'}
+    openSheet('Alertas e pendências',`${p.length?`<div class="eyebrow mb2">Pendências</div>${p.map(x=>x.kind==='naoreg'?`<div class="pend"><div><b>Treino</b> · ${dtBR(x.iso).slice(0,5)} <small class="muted">${esc(WDS[weekdayIdx(x.iso)])}</small><div class="mini">${x.n>1?plur(x.n,'dia','dias')+' sem treino registrado':'treino previsto não registrado'}: passar para frente ou manter o plano?</div></div><div class="row"><button class="btn xs" id="bellMiss" onclick="A.missOpen()">Responder</button></div></div>`:x.kind==='categoria'?`<div class="pend"><div><b>Atividade</b> · ${dtBR(x.iso).slice(0,5)} <small class="muted">${esc(WDS[weekdayIdx(x.iso)])}</small><div class="mini">${esc(actPendName(x.p))}${x.p.min?' ('+fmt(x.p.min)+' min)':''} aguardando categoria</div></div><div class="row"><button class="btn xs" onclick="closeSheet();A.actAsk()">Escolher categoria</button></div></div>`:`<div class="pend"><div><b>${x.kind==='treino'?'Treino':'Refeições'}</b> · ${dtBR(x.iso).slice(0,5)} <small class="muted">${esc(WDS[weekdayIdx(x.iso)])}</small><div class="mini">${x.kind==='treino'?'nenhum treino registrado':'nenhuma refeição registrada'}</div></div><div class="row"><button class="btn xs" onclick="A.pendGo('${x.iso}','${x.kind}')">Registrar</button><button class="btn xs" onclick="A.pendSkip('${x.iso}','${x.kind}')">Não registrar</button></div></div>`).join('')}`:'<div class="empty">Nenhuma pendência.</div>'}
     ${al.length?`<div class="eyebrow mt4 mb2">Alertas</div>${al.map(a=>`<div class="alertline ${a.lv}" onclick="closeSheet();A.goAlert('${a.tab}','${a.sub||''}')"><span class="dot"></span><span class="t">${esc(a.t)}</span><span class="arr">›</span></div>`).join('')}`:''}`);},
   pField(k,v){if(!TR.parsed)return;TR.parsed[k]=(k==='notes')?String(v).trim():(k==='cardio_fasted'?!!v:numLoose(v));TR.dirty=true;wkAutosave();},
   addParsedEx(name){TR.parsed.exercises.push({name,sets:[],cells:setsToCells([],3),note:null});TR.dirty=true;renderParsed();wkAutosave();},
@@ -3348,7 +3351,7 @@ Object.assign(A,{
     <label class="f mt2"><span>Comparar</span><select id="repCmp"><option value="none" ${(prev.cmp||'none')==='none'?'selected':''}>Sem comparação (histórico cronológico)</option><option value="letter" ${prev.cmp==='letter'?'selected':''}>Por tipo de treino (A, B, C…)</option><option value="weekday" ${prev.cmp==='weekday'?'selected':''}>Por dia da semana</option><option value="both" ${prev.cmp==='both'?'selected':''}>Tipo de treino × dia da semana</option></select></label>
     <div class="grid g2 mt2"><label class="f"><span>Nível de detalhe</span><select id="repDetail"><option value="resumido" ${prev.detail==='resumido'?'selected':''}>Resumido (indicadores)</option><option value="detalhado" ${prev.detail==='detalhado'?'selected':''}>Detalhado (dia a dia e exercício a exercício)</option></select></label></div>
     </details>
-    <div class="row end"><button class="btn primary" onclick="A.buildReport()">Gerar relatório</button></div>`);A.repBioAuto();},
+    <div class="row end"><button class="btn primary" onclick="A.buildReport()">Gerar relatório</button></div>`);{const n=to===CUR?(from===dataStart()&&![7,14,30,90].includes(dates.length)?'max':String(dates.length)):'';$$('#repSeg button').forEach(b=>b.classList.toggle('on',!!n&&b.dataset.n===n));}A.repBioAuto();},
   repPreset(n){const to=CUR;const from=n==='max'?dataStart():addDays(to,-(n-1));$('#repFrom').value=from;$('#repTo').value=to;$$('#repSeg button').forEach(b=>b.classList.toggle('on',b.dataset.n===String(n)));A.repBioAuto();},
   /* v46 · B2: a caixa "Bioimpedância" acompanha o período enquanto o usuário não mexer nela: marcada só quando há exame dentro do período */
   repBioAuto(){const f=$('#repFrom'),t=$('#repTo'),c=$('#repBio');if(!f||!t||!c)return;let a=f.value,b=t.value;if(!a||!b)return;if(a>b){const x=a;a=b;b=x;}const ex=examsSorted();const inP=ex.filter(e=>e.date>=a&&e.date<=b);const last=ex.filter(e=>e.date<=b).slice(-1)[0];
@@ -3555,7 +3558,7 @@ function reportPDF(d,o){
   C.push({columns:[[{text:'Treinador',style:'metaL'},{text:coach||'—',style:'metaV'}],[{text:'Protocolo nutricional',style:'metaL'},{text:(S.protoN&&S.protoN.name)||'—',style:'metaV'}],[{text:'Protocolo de treino',style:'metaL'},{text:((S.protoT&&S.protoT.name)||'—')+(cycleStart()&&d.from<cycleStart()?` (vigente desde ${dtShort(cycleStart())}; treinos anteriores com a aderência da época)`:''),style:'metaV'}],[{text:'Emissão',style:'metaL'},{text:`nº ${o.num||'—'} · `+(o.emitted?dtBR(todayISOof(o.emitted))+' às '+o.emitted.toTimeString().slice(0,5):dtBR(todayISO())),style:'metaV'}]],columnGap:10,margin:[0,10,0,4],unbreakable:true});
   if(sec('resumo')){const t=d.tot;const wDelta=d.w0&&d.w1&&d.w0.d!==d.w1.d?d.w1.w-d.w0.w:null;const kcalP=d.kAvg!=null&&d.mAvg.k?pct(d.kAvg,d.mAvg.k):null;h2('Totais do período');
     C.push(pdfKpis([{v:d.daysReg,u:`/ ${plur(nDays,'dia','dias')}`,l:'Dias com registro',d:`${d.nd.length} com alimentação · ${plur(d.wts.length,'pesagem','pesagens')}`},{v:t.k>0?fmt(t.k):'—',u:'kcal',l:'Consumo total',d:d.kAvg!=null?fmt(d.kAvg)+' kcal/dia'+(kcalP!=null?' · '+kcalP+' % da meta':''):'—'},{v:fmt(t.p),u:'g',l:'Proteína total',d:d.pAvg!=null?fmt(d.pAvg)+' g/dia'+(d.w1?' · '+fmt(d.pAvg/d.w1.w,2)+' g/kg':''):'—'},
-      {v:d.trainDays,u:d.plannedN&&!d.plannedFrom?`/ ${d.plannedN} previstos`:'',l:'Treinos realizados',d:`dias de musculação · ${repSessTxt(d)} · ${fmt(d.musMin)} min · aderência média ${d.adhAvg!=null?fmt(d.adhAvg)+' %':'—'}${d.cycleStart?' · ciclo atual, desde '+dtShort(d.cycleStart):''}${d.restTxt?' · '+d.restTxt:''}`},{v:fmt(t.ton),u:'kg',l:'Tonelagem total',d:`${plur(t.sets,'série','séries')} · ${plur(t.reps,'repetição','repetições')}${t.fail?' · '+t.fail+' em falha':''}`},{v:fmt(d.car),u:`/ ${fmt(d.carAlvo)} min`,l:'Cárdio realizado × prescrito',d:`${d.fasted} em jejum`},
+      {v:d.trainDays,u:d.plannedN&&!d.plannedFrom?`/ ${d.plannedN} previstos`:'',l:'Treinos realizados',d:`dias de musculação · ${repSessTxt(d)} · ${fmt(d.musMin)} min · aderência média das sessões feitas ${d.adhAvg!=null?fmt(d.adhAvg)+' %':'—'}${d.cycleStart?' · ciclo atual, desde '+dtShort(d.cycleStart):''}${d.restTxt?' · '+d.restTxt:''}`},{v:fmt(t.ton),u:'kg',l:'Tonelagem total',d:`${plur(t.sets,'série','séries')} · ${plur(t.reps,'repetição','repetições')}${t.fail?' · '+t.fail+' em falha':''}`},{v:fmt(d.car),u:`/ ${fmt(d.carAlvo)} min`,l:'Cárdio realizado × prescrito',d:`${d.fasted} em jejum`},
       {v:fmt(t.steps),l:'Passos no período',d:d.stepsAvg!=null?fmt(d.stepsAvg)+' por dia':'sem registro'},{v:fmt(t.act),u:'kcal',l:'Calorias ativas (Apple Watch)',d:d.actAvg!=null?fmt(d.actAvg)+' kcal/dia':'sem registro'},{v:d.w1?fmt(d.w1.w,1):'—',u:'kg',l:'Peso no fim do período',d:wDelta!=null?sgn(wDelta,1)+' kg desde '+dtShort(d.w0.d):d.wts.length?'1 pesagem':'sem pesagens'}]));
     C.push({text:[{text:'Indicadores por exercício no período: ',style:'legend'},IND_KEYS.some(k=>d.ind[k])?pdfTags(d.ind):{text:'nenhum exercício com séries no período',style:'legend'}],margin:[0,0,0,4]});}
   if(sec('peso')){h2('Evolução do peso');
@@ -3941,6 +3944,8 @@ function pendencies(){const out=[];const today=todayISO();const used=Object.keys
     const hasM=Object.values(d.meals||{}).some(a=>(a||[]).length);if(!hasM&&!sk.refeicao)out.push({iso,kind:'refeicao'});}
   /* I-07 do QA 8: atividades lidas do Apple Fitness aguardando categoria também são pendência */
   actPendAll().forEach(({iso,p})=>out.push({iso,kind:'categoria',p}));
+  /* I-05 do QA 9: treino não registrado esperando resposta (passar para frente ou manter o plano) */
+  {let mr=null;try{mr=Store.ready?missRun():null;}catch(e){}if(mr)out.push({iso:mr.days[mr.days.length-1],kind:'naoreg',n:mr.days.length});}
   return out;}
 function renderBell(){const b=$('#bellBtn');if(!b)return;const p=pendencies();const n=p.length+computeAlerts().length;b.classList.toggle('pend',p.length>0);const bd=$('#bellBdg');bd.hidden=!n;bd.textContent=n>9?'9+':String(n);b.title=p.length?plur(p.length,'pendência','pendências'):'Alertas';}
 /* ============================================================ GRUPO MUSCULAR (v44)
@@ -4155,7 +4160,7 @@ function exFind(name){const k=gmKey(name);if(!k)return null;if(EXF.ver!==DATA_VE
 /* ---------- treino não registrado: passar para frente ou manter o plano (decisão do Antonio, 24/11/2026) */
 function missDec(iso){const m=(S.settings||{}).missDec;return (m&&m[iso])||null;}
 function missRun(){const t=S.protoT;if(!t||!t.rotation||!t.rotation.length)return null;const a=agenda();if(!a.ok)return null;const today=todayISO();const und=[];
-  for(let k=1;k<=14;k++){const d=addDays(today,-k);if(d<a.W)break;const di=dayInfo(d);if(!di.auto)break;if(isTrainDay(di.planned)&&!missDec(d))und.unshift(d);else if(und.length)break;}
+  for(let k=1;k<=14;k++){const d=addDays(today,-k);if(d<a.W)break;const di=dayInfo(d);if(!di.auto)break;if(missDec(d))break;if(isTrainDay(di.planned))und.unshift(d);else break;}
   if(!und.length)return null;const rot=t.rotation,n=rot.length,s=agendaSlot(und[0]);if(s==null)return null;const k=und.length;
   return {days:und,wk:rot[s],lost:Array.from({length:k},(x,i)=>rot[(s+i)%n]).filter(isTrainDay),stay:rot[(s+k)%n]};}
 function missOpen(){const r=missRun();if(!r){toast('Nenhum treino pendente de resposta');return;}const k=r.days.length;const un=[...new Set(r.lost)];
@@ -4178,7 +4183,7 @@ function trainAsk(plan){const cur=S.protoT;const L=plan.workouts.map(w=>w.v);pla
 function tpRender(){const p=A._tp;const ws=p.workouts;const nE=ws.reduce((a,w)=>a+(w.exercises||[]).length,0),nS=ws.reduce((a,w)=>a+(w.exercises||[]).reduce((b,e)=>b+tpSets(e.scheme),0),0);const today=todayISO();const seq=tpSeq();const same=tpSame();
   const fora=p.source==='arquivo'?ws.reduce((a,w)=>a+(w.exercises||[]).filter(e=>!exFind(e.name)).length,0):0;
   const src=p.source==='arquivo'?'Lido do arquivo'+(p.file?' '+p.file:''):p.source==='sugestao'?'Sugestão aceita':'Montado por você';
-  shSet('Em que dia começa?',`<p class="mini">${esc(src)}</p>
+  shSet(same?'Aplicar treino':'Em que dia começa?',`<p class="mini">${esc(src)}</p>
   <div class="list mt2">${ws.map(w=>`<div class="tp-l"><b>Treino ${esc(w.v)}</b><span>${esc(w.title||w.groups||'')}${w.title||w.groups?' · ':''}${plur((w.exercises||[]).length,'exercício','exercícios')}</span></div>`).join('')}</div>
   <p class="mini mt2">${plur(ws.length,'treino','treinos')} · ${plur(nE,'exercício','exercícios')}${nS?' · '+plur(nS,'série','séries'):''}${fora?' · '+plur(fora,'exercício fora do banco (entra com o nome do arquivo)','exercícios fora do banco (entram com o nome do arquivo)'):''}</p>
   ${p.others.length?`<label class="ck mt2"><input type="checkbox" id="tpKeep" ${p.keep?'checked':''} onchange="A.tpKeep(this.checked)"><span>Manter os treinos que não vieram no arquivo: ${esc(p.others.map(w=>w.v).join(', '))}</span></label>`:''}
@@ -4207,9 +4212,9 @@ function tpDaysRender(){const p=A._tp,g=p.grid,N=g.length,today=todayISO();const
   shSet('Escolher os dias',`<p class="mini">Toque para pôr o treino no dia. O mesmo treino pode ir em mais de um dia; dia sem treino é descanso.</p>
   <div class="tbl-wrap mt2"><table class="tpg"><thead><tr><th></th>${g.map((x,i)=>`<th><small>${esc(WDS[weekdayIdx(addDays(today,i))])}</small><br>${esc(dtShort(addDays(today,i)))}</th>`).join('')}</tr></thead><tbody>
   ${ws.map(w=>`<tr><th scope="row" title="Treino ${esc(w.v)}">${esc(w.v)}</th>${g.map((x,i)=>`<td><button type="button" class="tpc${x===w.v?' on':''}" aria-pressed="${x===w.v}" aria-label="Treino ${esc(w.v)} em ${esc(dayLab(addDays(today,i)))}" onclick="A.tpCell(${i},${esc(JSON.stringify(w.v))})">${x===w.v?esc(w.v):''}</button></td>`).join('')}</tr>`).join('')}
-  <tr class="rest"><th scope="row" title="Descanso"><small>desc.</small></th>${g.map(x=>`<td>${x?'':'<span class="mini">•</span>'}</td>`).join('')}</tr></tbody></table></div>
+  <tr class="rest"><th scope="row"><small>descanso</small></th>${g.map(x=>`<td>${x?'':'<span class="mini">•</span>'}</td>`).join('')}</tr></tbody></table></div>
   <label class="f mt2"><span>A sequência se repete a cada</span><select id="tpN" onchange="A.tpN(+this.value)">${[2,3,4,5,6,7,8,9,10,11,12,13,14].map(n=>`<option value="${n}" ${n===N?'selected':''}>${n} dias</option>`).join('')}</select></label>
-  <p class="mini mt2">Como fica: ${g.map((x,i)=>`${esc(WDS[weekdayIdx(addDays(today,i))])} <b>${esc(rotMini(x||'OFF'))}</b>`).join(' · ')}, e repete. Treino não feito no dia: o site pergunta se passa para frente.</p>
+  <p class="mini mt2">Como fica: ${g.map((x,i)=>`${esc(WDS[weekdayIdx(addDays(today,i))])} <b>${esc(rotMini(x||'OFF'))}</b>`).join(' · ')}, e repete. Treino não feito no dia: o app pergunta se passa para frente.</p>
   ${sem.length?`<div class="note warn mt2">${sem.length>1?'Treinos':'Treino'} ${esc(sem.join(', '))} sem dia: ${sem.length>1?'ficam':'fica'} fora da sequência.</div>`:''}
   <div class="row end mt3"><button class="btn ghost" onclick="A.tpBack()">Voltar</button><button class="btn primary" id="tpApply" onclick="A.tpApplyDays()">Aplicar</button></div>`);}
 
@@ -4219,10 +4224,10 @@ function roRender(){const r=A._ro,t=S.protoT;const ws=t.workouts;const tit=v=>v=
   <div class="list mt2" id="roList">${r.seq.map((v,i)=>`<div class="ro-l"><span class="ro-n">${i+1}</span><span class="ro-t"><b>${esc(rotTag(v))}</b>${tit(v)?` <small class="muted">${esc(tit(v))}</small>`:''}</span><span class="ro-a"><button type="button" class="icon-btn" ${i===0?'disabled':''} onclick="A.roMove(${i},-1)" aria-label="Subir ${esc(rotTag(v))}, posição ${i+1}">↑</button><button type="button" class="icon-btn" ${i===r.seq.length-1?'disabled':''} onclick="A.roMove(${i},1)" aria-label="Descer ${esc(rotTag(v))}, posição ${i+1}">↓</button><button type="button" class="icon-btn" onclick="A.roDel(${i})" aria-label="Tirar ${esc(rotTag(v))}, posição ${i+1}">✕</button></span></div>`).join('')||'<div class="empty">Sequência vazia.</div>'}</div>
   <div class="row mt2 ro-add">${ws.map(w=>`<button type="button" class="btn xs" onclick="A.roAdd(${esc(JSON.stringify(w.v))})">+ ${esc(w.v)}</button>`).join('')}<button type="button" class="btn xs" onclick="A.roAdd('OFF')">+ Descanso</button></div>
   <div class="grid g2 mt3"><label class="f"><span>Vale a partir de</span><input type="date" min="2000-01-01" max="2099-12-31" id="rtDate" value="${esc(r.date)}" onchange="A.roSet('date',this.value)"></label><label class="f"><span>Nesse dia o treino é</span><select id="rtWk" onchange="A.roSet('wk',this.value)">${opts.map(l=>`<option value="${esc(l)}" ${l===r.wk?'selected':''}>${esc(rotTag(l))}</option>`).join('')}</select></label></div>
-  <label class="ck mt2"><input type="checkbox" id="rtOff" ${r.off?'checked':''} onchange="A.roSet('off',this.checked)"><span>Sem rotação automática (só sugestão por treino não feito)</span></label>
+  <label class="ck mt2"><input type="checkbox" id="rtOff" ${r.off?'checked':''} onchange="A.roSet('off',this.checked)"><span>Não seguir sequência (eu escolho o treino a cada dia)</span></label>
   <div id="rtPreview" class="mt2"></div>
   <div class="row end mt3"><button class="btn primary" id="roSave" onclick="A.saveRotation()">Salvar</button></div>`);roPrev();}
-function roPrev(){const r=A._ro,el=$('#rtPreview');if(!el)return;if(r.off||!r.seq.length||!r.date){el.innerHTML='';return;}const i0=r.seq.indexOf(r.wk);if(i0<0){el.innerHTML='';return;}const rot=r.seq.slice(i0).concat(r.seq.slice(0,i0));el.innerHTML=`<p class="mini">Próximos 7 dias a partir de ${esc(dtShort(r.date))}:</p><div class="sqs mt1">${seqPreview(rot,r.date,7)}</div>`;}
+function roPrev(){const r=A._ro,el=$('#rtPreview');if(!el)return;if(r.off||!r.seq.length||!r.date){el.innerHTML='';return;}const i0=r.seq.indexOf(r.wk);if(i0<0){el.innerHTML='';return;}const rot=r.seq.slice(i0).concat(r.seq.slice(0,i0));const T=todayISO();el.innerHTML=`${r.date>T?`<div class="note warn" id="roFut">Até ${esc(dtShort(addDays(r.date,-1)))} não haverá treino previsto: a sequência só começa em ${esc(dtShort(r.date))}.</div>`:''}<p class="mini">${r.date<T?'7 dias':'Próximos 7 dias'} a partir de ${esc(dtShort(r.date))}:</p><div class="sqs mt1">${seqPreview(rot,r.date,7)}</div>`;}
 
 /* ---------- Montar meu treino */
 function bdFromProto(t){return ((t&&t.workouts)||[]).map(w=>({v:w.v,title:w.title||w.groups||'',ex:(w.exercises||[]).map(e=>{const m=/^\s*(\d+)\s*[x×]\s*([^|+]+?)\s*$/i.exec(e.scheme||'');const b=exFind(e.name);return {name:e.name,group:e.group||(b&&b.g)||'',equip:e.equip||(b&&b.e)||'',src:e.src||(b?b.src:'arquivo'),sets:m?+m[1]:null,reps:m?m[2]:'',free:m?'':(e.scheme||''),rest:e.rest||null,note:e.note||'',link:e.link||null};})}));}
@@ -4252,10 +4257,10 @@ function bdSearchRender(){const b=A._bd,w=b.ws[b.cur];
   <div class="row end mt3"><button type="button" class="btn primary" id="bdDone" onclick="A.bdBack()">Concluir</button></div></div>`);bdFilterRun();}
 function bdFilterRun(){const b=A._bd,w=b.ws[b.cur];const q=gmFold($('#bdQ').value).trim().split(/\s+/).filter(Boolean),g=$('#bdG').value,e=$('#bdE').value;const all=exBank();
   const hit=all.filter(x=>(!g||x.g===g)&&(!e||x.e===e)&&q.every(k=>gmFold(x.n).includes(k)));const has=new Set(w.ex.map(x=>gmKey(x.name)));const show=hit.slice(0,40);b._res=show;
-  $('#bdCount').textContent=hit.length?`${plur(hit.length,'exercício','exercícios')}${hit.length>40?' · mostrando 40; digite mais para afinar':''} · banco com ${fmt(all.length)}`:'';
+  $('#bdCount').textContent=hit.length?`${hit.length>40?`mostrando 40 de ${fmt(hit.length)} exercícios; digite mais para afinar`:plur(hit.length,'exercício','exercícios')}`:'';
   const raw=$('#bdQ').value.trim();
   $('#bdRes').innerHTML=show.map((x,i)=>`<div class="bd-r"><span class="bd-rn"><b>${esc(x.n)}</b><span class="mini">${esc([x.g,x.e,EX_SRC[x.src]].filter(Boolean).join(' · '))}</span></span><button type="button" class="btn xs" ${has.has(gmKey(x.n))?'disabled':''} onclick="A.bdPick(${i},this)">${has.has(gmKey(x.n))?'Adicionado':'Adicionar'}</button></div>`).join('')
-    ||`<div class="empty">Nenhum exercício encontrado.</div><div class="row mt2">${g||e?`<button type="button" class="btn sm" onclick="A.bdClear()">Tirar os filtros</button>`:''}${raw.length>=3?`<button type="button" class="btn sm" id="bdCreate" onclick="A.bdCreate()">Criar “${esc(raw.slice(0,40))}”</button>`:''}</div>${raw.length>=3?'<p class="mini mt1">Para criar, escolha antes o grupo muscular acima.</p>':''}`;}
+    ||`<div class="empty">Nenhum exercício encontrado.</div><div class="row mt2">${g||e?`<button type="button" class="btn sm" onclick="A.bdClear()">Tirar os filtros</button>`:''}${raw.length>=3?`<button type="button" class="btn sm" id="bdCreate" onclick="A.bdCreate()">Criar “${esc(raw.slice(0,40))}”</button>`:''}</div>${raw.length>=3&&!g?'<p class="mini mt1">Para criar, escolha antes o grupo muscular acima.</p>':''}`;}
 
 /* ---------- Pedir sugestão: questionário, ficha de saúde e resultado */
 function hfLast(){return tfList('saude')[0]||null;}
@@ -4267,7 +4272,7 @@ function hfFormHTML(hf){const any=hf.ans.some(x=>x===true);
   <div class="list mt2">${HF_Q.map((q,i)=>`<div class="hf-q"><span>${i+1}. ${esc(q)}</span><div class="opts" role="group" aria-label="Pergunta ${i+1}"><button type="button" class="${hf.ans[i]===true?'on':''}" aria-pressed="${hf.ans[i]===true}" onclick="A.hfAns(${i},true)">Sim</button><button type="button" class="${hf.ans[i]===false?'on':''}" aria-pressed="${hf.ans[i]===false}" onclick="A.hfAns(${i},false)">Não</button></div></div>`).join('')}</div>
   ${any?`<div class="note warn mt2">Com resposta “sim”, a recomendação é passar por avaliação médica antes de começar ou intensificar o treino.</div><label class="ck mt2"><input type="checkbox" id="hfAware" ${hf.aware?'checked':''} onchange="A.hfCk('aware',this.checked)"><span>${esc(HF_AWARE)}</span></label>`:''}
   <label class="ck mt2"><input type="checkbox" id="hfTruth" ${hf.truth?'checked':''} onchange="A.hfCk('truth',this.checked)"><span>${esc(HF_TRUE)}</span></label>
-  <p class="mini mt2">As respostas ficam gravadas no site com data e hora${hf.solo?'':' e são enviadas à inteligência artificial junto com o questionário para montar a sugestão'}.</p>`;}
+  <p class="mini mt2">As respostas ficam gravadas com data e hora${hf.solo?'':' e são enviadas à inteligência artificial junto com o questionário para montar a sugestão'}.</p>`;}
 function hfMissing(hf){const n=hf.ans.filter(x=>x===null).length;if(n)return `Falta responder ${plur(n,'pergunta','perguntas')}`;if(hf.ans.some(x=>x===true)&&!hf.aware)return 'Falta marcar a declaração de ciência da avaliação médica';if(!hf.truth)return 'Falta marcar que respondeu com a verdade';return '';}
 function hfStore(hf){const any=hf.ans.some(x=>x===true);const now=new Date().toISOString();return tfSave('saude',{version:HF_VER,questions:HF_Q,answers:hf.ans.slice(),anyYes:any,confirmTrue:true,confirmText:HF_TRUE,ackAware:any,ackText:any?HF_AWARE:null,ackAt:any?now:null,at:now});}
 function sgRender(){const g=A._sg;const an=g.an;const st=g.step;const head=g.solo?'':`<p class="mini">Passo ${st} de 4</p>`;let h='';
@@ -4302,7 +4307,7 @@ function sgClean(r){const L='ABCDEFGH';const ws=(Array.isArray(r&&r.workouts)?r.
   return {summary:String(r.summary||'').slice(0,600),ws,seq,cautions:(Array.isArray(r.cautions)?r.cautions:[]).filter(Boolean).map(x=>String(x).slice(0,240)).slice(0,6)};}
 function sgResult(){const g=A._sg,r=g.res,an=g.an;
   shSet('Sugestão de treino',`<div class="bd-root"><div class="note">Sugestão não é prescrição: é um ponto de partida que você pode aceitar, editar ou descartar.</div>
-  <p class="mini mt2">Feita para: ${esc(SG_GOAL[an.goal])} · ${esc(SG_LEVEL[an.level].split(' (')[0])} · ${an.days} dias por semana · ${an.minutes} min</p>
+  <p class="mini mt2">Feita para: ${esc(SG_GOAL[an.goal]||'')} · ${esc(String(SG_LEVEL[an.level]||'').split(' (')[0])} · ${esc(String(an.days||''))} dias por semana · ${esc(String(an.minutes||''))} min</p>
   ${r.summary?`<p class="mt2">${esc(r.summary)}</p>`:''}${r.cautions.length?`<div class="note warn mt2">${r.cautions.map(esc).join('<br>')}</div>`:''}
   ${r.seq?`<p class="mini mt2">Sequência sugerida:</p><div class="sqs mt1">${seqPreview(r.seq,todayISO(),r.seq.length)}</div>`:''}
   <div class="mt2">${r.ws.map((w,i)=>`<div class="wk-card"><details ${i===0?'open':''}><summary><span>Treino ${esc(w.v)} <small class="muted">· ${esc(w.title)}</small></span><span class="mini">${plur(w.ex.length,'exercício','exercícios')}</span></summary><div class="list mt2">${w.ex.map(e=>`<div class="ex"><span class="nm">${esc(e.name)}</span><span class="sch">${esc(e.sets+'×'+e.reps)} · ${e.rest} s</span>${e.note||e.src==='ia'?`<span class="ob">${esc(e.note||'')}${e.src==='ia'?' (fora do banco de exercícios)':''}</span>`:''}</div>`).join('')}</div></details></div>`).join('')}</div>
@@ -4310,10 +4315,10 @@ function sgResult(){const g=A._sg,r=g.res,an=g.an;
 
 /* ---------- o que aparece nas abas: sequência e aviso na aba Treino, ficha na aba Saúde */
 function renderTrainExtras(){try{const t=S.protoT;const sq=$('#trSeq');if(sq){sq.hidden=!(t&&t.workouts&&t.workouts.length);if(!sq.hidden)sq.innerHTML=`<span class="l">Sequência <small>${t.rotation&&t.rotation.length?esc(t.rotation.map(rotMini).join(' → ')):'sem rotação automática'}</small></span><span class="ctl"><button type="button" class="btn sm" id="trReorder" onclick="A.openRotation()">Reordenar</button></span>`;}
-  const ms=$('#trMiss');if(ms){const r=Store.ready?missRun():null;const pend=A._tp&&$('#sheet').hidden?`<div class="note warn">Treino ${A._tp.source==='arquivo'?'lido do arquivo':A._tp.source==='sugestao'?'da sugestão':'montado'} ainda não aplicado. <button type="button" class="btn xs" id="tpResume" onclick="tpRender()">Escolher o dia</button> <button type="button" class="btn xs ghost" onclick="A.tpDiscard()">Descartar</button></div>`:'';ms.innerHTML=pend+(r?`<div class="note warn">Treino não registrado ${r.days.length===1?'em '+esc(dtShort(r.days[0])):'de '+esc(dtShort(r.days[0]))+' a '+esc(dtShort(r.days[r.days.length-1]))}. <button type="button" class="btn xs" onclick="A.missOpen()">Responder</button></div>`:'');}
+  const ms=$('#trMiss');if(ms){const r=Store.ready?missRun():null;const pend=A._tp&&$('#sheet').hidden?`<div class="note warn">Treino ${A._tp.source==='arquivo'?'lido do arquivo':A._tp.source==='sugestao'?'da sugestão':'montado'} ainda não aplicado. <button type="button" class="btn xs" id="tpResume" onclick="tpRender()">Continuar</button> <button type="button" class="btn xs ghost" onclick="A.tpDiscard()">Descartar</button></div>`:'';ms.innerHTML=pend+(r?`<div class="note warn">Treino não registrado ${r.days.length===1?'em '+esc(dtShort(r.days[0])):'de '+esc(dtShort(r.days[0]))+' a '+esc(dtShort(r.days[r.days.length-1]))}. <button type="button" class="btn xs" onclick="A.missOpen()">Responder</button></div>`:'');}
   const hc=$('#hfCard');if(hc){const h=hfLast(),an=tfList('anamnese')[0];hc.innerHTML=(h?`<div class="line"><span class="l">Respondida em ${esc(dtBR(String(h.at).slice(0,10)))} às ${esc(new Date(h.at).toTimeString().slice(0,5))}<small>${hfYes(h)?plur(hfYes(h),'resposta “sim”','respostas “sim”')+' · declaração de ciência da avaliação médica registrada':'nenhuma resposta “sim”'}${hfFresh(h)?'':' · com mais de 12 meses: refaça'}</small></span><span class="ctl"><button type="button" class="btn sm" onclick="A.hfView()">Ver respostas</button><button type="button" class="btn sm" onclick="A.hfOpen()">Refazer</button></span></div>`:`<div class="empty">Nenhuma ficha respondida. Ela é pedida quando você pede uma sugestão de treino.</div><div class="row"><button type="button" class="btn sm" onclick="A.hfOpen()">Responder agora</button></div>`)
     +(an?`<div class="line"><span class="l">Questionário de treino<small>${esc(dtBR(String(an.at).slice(0,10)))} · ${esc(SG_GOAL[an.goal]||'')} · ${esc(String(an.days))} dias · ${esc(String(an.minutes))} min${(an.limits||[]).length?' · limitação: '+esc(an.limits.join(', ')):''}</small></span></div>`:'');}
-  clearTimeout(missAuto._t);missAuto._t=setTimeout(missAuto,400);}catch(e){console.warn('treino v50',e);}}
+  {const k=TAB+'|'+todayISO()+'|'+(Store.ready?1:0);if(missAuto._ctx!==k){missAuto._ctx=k;clearTimeout(missAuto._t);missAuto._t=setTimeout(missAuto,400);}}}catch(e){console.warn('treino v50',e);}}
 
 Object.assign(A,{
   missOpen(){missOpen();},
@@ -4355,11 +4360,17 @@ Object.assign(A,{
   bdBack(){const b=A._bd;b.open=b.ws[b.cur].ex.findIndex(bdBlank);bdRender();},
   bdApply(){const b=A._bd;if(!b.ws.length){toast('Monte ao menos um treino');return;}const vazio=b.ws.filter(w=>!w.ex.length).map(w=>w.v);if(vazio.length){toast((vazio.length>1?'Treinos ':'Treino ')+vazio.join(', ')+' sem exercício: adicione ou exclua');return;}{const f=b.ws.map((w,wi)=>({w,wi,i:w.ex.findIndex(bdBlank)})).find(x=>x.i>=0);if(f){b.cur=f.wi;b.open=f.i;bdRender();toast('Preencha séries e repetições de '+f.w.ex[f.i].name+' (treino '+f.w.v+')',5000);return;}}bdFlush();
     trainAsk({workouts:bdToWorkouts(b.ws),source:'montador',keep:false,rotation:b.seq||null,summary:b.sgId?'Sugestão editada no montador':null,after:()=>{Store.del('train_forms/rascunho');A._bd=null;}});},
-  async sgOpen(){if(A._sg&&A._sg.res&&!A._sg.solo){sgResult();return;}{let ok=false;try{ok=!!(await window.claude?.use?.('sample'));}catch(e){}if(!ok){toast(AI_COPY.unavailable,6000);return;}}const last=tfList('anamnese')[0];const s=settings();A._sg={step:1,an:last?{goal:SG_GOAL[last.goal]?last.goal:null,level:SG_LEVEL[last.level]?last.level:null,days:last.days,minutes:last.minutes,equip:(last.equip||[]).slice(),limits:(last.limits||[]).slice(),limitsNote:last.limitsNote||''}:{goal:(S.protoN&&SG_GOAL[S.protoN.goal]?S.protoN.goal:null),level:null,days:null,minutes:null,equip:[],limits:[],limitsNote:''},hf:{ans:HF_Q.map(()=>null),truth:false,aware:false},useHf:true};sgRender();},
+  async sgOpen(){if(A._sg&&A._sg.res&&!A._sg.solo){sgResult();return;}
+    /* I-07: questionário em andamento (janela fechada no ✕ ou com toque fora) volta onde parou */
+    if(A._sg&&!A._sg.solo){sgRender();if(A._sg.busy){const b=$('#sgNext');if(b)b.disabled=true;busy('sgStatus',true,'Montando a sugestão… as respostas já estão gravadas.');}return;}
+    /* I-06: sugestão pronta dos últimos 7 dias que ficou sem resposta (página recarregada) volta a aparecer */
+    {const lim=addDays(todayISO(),-7);const pr=tfList('sugestao').find(f=>f.status==='proposta'&&f.result&&Array.isArray(f.result.ws)&&f.result.ws.length&&String(f.at).slice(0,10)>=lim);
+     if(pr){const r=thaw(pr.result);if(!Array.isArray(r.cautions))r.cautions=[];A._sg={step:4,an:thaw((pr.sent&&pr.sent.anamnese)||{}),res:r,sid:pr.id,hf:{ans:HF_Q.map(()=>null),truth:false,aware:false},useHf:true};sgResult();return;}}
+    {let ok=false;try{ok=!!(await window.claude?.use?.('sample'));}catch(e){}if(!ok){toast('Esta cópia do app não tem IA. Abra pelo Claude ou pelo site para pedir sugestão.',6000);return;}}const last=tfList('anamnese')[0];const s=settings();A._sg={step:1,an:last?{goal:SG_GOAL[last.goal]?last.goal:null,level:SG_LEVEL[last.level]?last.level:null,days:last.days,minutes:last.minutes,equip:(last.equip||[]).slice(),limits:(last.limits||[]).slice(),limitsNote:last.limitsNote||''}:{goal:(S.protoN&&SG_GOAL[S.protoN.goal]?S.protoN.goal:null),level:null,days:null,minutes:null,equip:[],limits:[],limitsNote:''},hf:{ans:HF_Q.map(()=>null),truth:false,aware:false},useHf:true};sgRender();},
   sgPick(k,v,multi){const an=A._sg.an;if(k==='days'||k==='minutes')v=+v;if(multi){const a=an[k]||(an[k]=[]);const i=a.indexOf(v);if(i>=0)a.splice(i,1);else a.push(v);}else an[k]=v;sgRender();},
   sgAllEquip(){A._sg.an.equip=EQUIPS.slice();sgRender();},
   sgNote(v){A._sg.an.limitsNote=v;},
-  sgPrev(){const g=A._sg;if(g.step===1){if(A._bd)bdRender();else closeSheet();return;}g.step--;sgRender();},
+  sgPrev(){const g=A._sg;if(g.step===1){A._sg=null;if(A._bd)bdRender();else closeSheet();return;}g.step--;sgRender();},
   hfAns(i,v){A._sg.hf.ans[i]=v;const y=($('#sheet .panel')||{}).scrollTop;sgRender();const pn=$('#sheet .panel');if(pn)pn.scrollTop=y||0;},
   hfCk(k,v){A._sg.hf[k]=!!v;},
   hfRedo(){A._sg.useHf=false;sgRender();},
@@ -4371,7 +4382,7 @@ Object.assign(A,{
     const last=hfLast();let hf=g.useHf&&last&&hfFresh(last)?last:null;if(!hf){const m=hfMissing(g.hf);if(m){toast(m,4000);return;}}
     const btn=$('#sgNext');if(btn)btn.disabled=true;if(!hf){hf=hfStore(g.hf);g.useHf=true;}const ad=g.ad||(g.ad=tfSave('anamnese',Object.assign({},thaw(an))));
     busy('sgStatus',true,'Montando a sugestão… as respostas já estão gravadas.');
-    try{const raw=await aiJSON(sgPrompt(an,hf),{tier:'default'});const res=sgClean(raw);g.res=res;const sd=tfSave('sugestao',{anamneseId:ad.id,saudeId:hf.id,sent:{anamnese:thaw(an),saude:{version:hf.version,answers:hf.answers,anyYes:hf.anyYes}},result:thaw(res),status:'proposta'});g.sid=sd.id;if(A._sg!==g)return;if($('#sheet').hidden||!$('#sgStatus')){toast('Sugestão pronta: abra Montar meu treino › Pedir sugestão para ver.',7000);return;}sgResult();}
+    g.busy=true;try{let raw;try{raw=await aiJSON(sgPrompt(an,hf),{tier:'default'});}finally{g.busy=false;}const res=sgClean(raw);g.res=res;const sd=tfSave('sugestao',{anamneseId:ad.id,saudeId:hf.id,sent:{anamnese:thaw(an),saude:{version:hf.version,answers:hf.answers,anyYes:hf.anyYes}},result:thaw(res),status:'proposta'});g.sid=sd.id;if(A._sg!==g)return;if($('#sheet').hidden||!$('#sgStatus')){toast('Sugestão pronta: abra Montar meu treino › Pedir sugestão para ver.',7000);return;}sgResult();}
     catch(e){if(!$('#sgStatus'))toast('Sugestão de treino: '+aiErr(e),6000);busy('sgStatus',false,aiErr(e)+' As respostas ficaram gravadas; toque em “Gerar sugestão” para tentar de novo.');const b2=$('#sgNext');if(b2)b2.disabled=false;}},
   sgStatus(st){const g=A._sg;const d=g&&g.sid&&(S.tforms||{})[g.sid];if(d)Store.set('train_forms/'+d.id,Object.assign({},thaw(d),{status:st,statusAt:new Date().toISOString()}));},
   sgDiscard(){A.sgStatus('descartada');A._sg=null;if(A._bd)bdRender();else closeSheet();toast('Sugestão descartada: nada mudou');},
