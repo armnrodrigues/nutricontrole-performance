@@ -44,6 +44,8 @@
   --font-body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
   /* raio, linha, altura de controle */
   --r-sm:8px; --r:14px; --r-full:999px; --h:44px; --h-sm:44px; --h-check:20px; --nav-h:58px;
+  /* gráfico: três alturas com nome (faixa, normal, alto), piso e folga para título e legenda caberem na janela; largura mínima de uma coluna */
+  --g-faixa:150px; --g:240px; --g-alto:300px; --g-min:160px; --g-fora:96px; --col-min:300px;
   /* camadas */
   --z-topo:20; --z-nav:25; --z-lista:30; --z-relatorio:60; --z-folha:80; --z-job:85; --z-toast:90;
   color-scheme:light;
@@ -219,10 +221,10 @@ div.line .l small{display:block}
 .v.neg{color:var(--good-text)}.v.pos{color:var(--bad-text)}
 div.line .ctl{display:flex;gap:var(--s2);align-items:center;flex:none}
 div.line .ctl input{width:112px;text-align:center}
-.macro{display:grid;grid-template-columns:1fr auto;gap:var(--s1) var(--s3);align-items:baseline}
-.macro .n{font-weight:600;font-size:var(--f-sm);display:flex;align-items:center;gap:var(--s2)}
+.macro{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:var(--s1) var(--s3);align-items:baseline}
+.macro .n{font-weight:600;font-size:var(--f-sm);display:flex;align-items:center;gap:var(--s2);min-width:0;white-space:nowrap}
 .macro .n i{width:10px;height:10px;border-radius:2px;display:inline-block}
-.macro .val{font-variant-numeric:tabular-nums;font-size:var(--f-xs);color:var(--ink-2)}
+.macro .val{font-variant-numeric:tabular-nums;font-size:var(--f-xs);color:var(--ink-2);white-space:nowrap}
 .macro .bar{grid-column:1/-1}
 .micro b{font-size:var(--f-sm)}
 /* indicadores: lista de rótulo e número, sem bloco */
@@ -315,7 +317,7 @@ table.es input[type=number]{width:88px}table.es td,table.es th{padding:var(--s1)
 .ac .m{flex:1 1 100%;font-size:var(--f-xs);color:var(--ink-2);font-variant-numeric:tabular-nums;white-space:normal}
 
 /* ---------- Gráficos */
-.chart{position:relative;height:240px;width:100%;max-width:100%}
+.chart{position:relative;height:var(--g);max-height:max(var(--g-min),calc(100dvh - var(--nav-h) - var(--g-fora)));width:100%;max-width:100%}
 .ck{display:flex;gap:var(--s2);align-items:flex-start;font-size:var(--f-sm);cursor:pointer;min-height:var(--h-sm)}.ck input{width:20px;height:20px;min-height:20px;margin:2px 0 0;flex:none}
 .tp-l{display:grid;grid-template-columns:auto 1fr;gap:var(--s3);padding:var(--s2) 0;border-top:1px solid var(--line);font-size:var(--f-sm)}.tp-l:first-child{border-top:0}.tp-l span{color:var(--ink-2)}
 .sqs{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:var(--s1)}.sq{border:1px solid var(--line);border-radius:var(--r-sm);padding:var(--s1) var(--s2);display:flex;flex-direction:column;min-width:0}.sq small{color:var(--ink-2);font-size:var(--f-xs);white-space:nowrap}.sq b{font-size:var(--f-sm);overflow:hidden;text-overflow:ellipsis}
@@ -328,17 +330,23 @@ table.es input[type=number]{width:88px}table.es td,table.es th{padding:var(--s1)
 .hf-q{display:flex;flex-direction:column;gap:var(--s2);padding:var(--s3) 0;border-top:1px solid var(--line)}.hf-q:first-child{border-top:0}
 .tpg tbody th,.tpg thead th:first-child{position:sticky;left:0;z-index:1;background:var(--surface)}
 @media (min-width:641px){#sheet .panel:has(.bd-root),#sheet .panel:has(.tpg){max-width:760px}}
-.chart.tall{height:300px}.chart.sm{height:150px}.chart.band{height:150px}
-.mband{border-top:1px solid var(--line);padding:var(--s3) 0 var(--s1)}.mband:first-of-type{border-top:0;padding-top:0}.mband-h{display:flex;justify-content:space-between;align-items:baseline;gap:var(--s2);flex-wrap:wrap;margin-bottom:var(--s1)}.mband-h b i{width:10px;height:10px;border-radius:2px;display:inline-block;margin-right:var(--s2)}
+.chart.tall{height:var(--g-alto)}.chart.sm,.chart.band{height:var(--g-faixa)}
+.mband{border-top:1px solid var(--line);padding:var(--s3) 0 var(--s1)}.mband:first-of-type{border-top:0;padding-top:0}.mband-h{display:flex;justify-content:space-between;align-items:baseline;gap:var(--s2);margin-bottom:var(--s1)}.mband-h b{flex:none}.mband-h .mini{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:right}.mband-h b i{width:10px;height:10px;border-radius:2px;display:inline-block;margin-right:var(--s2)}
 .chart canvas{max-width:100%}
 .legend{display:flex;gap:var(--s3);flex-wrap:wrap;font-size:var(--f-xs);color:var(--ink-2);margin-top:var(--s2)}
 .legend i{width:10px;height:10px;border-radius:2px;display:inline-block;margin-right:var(--s1);vertical-align:-1px}
 .legend i.line{height:2px;border-radius:0;vertical-align:3px}
 .legend i.dot{border-radius:50%}
+.legend:empty{display:none}
 .semdado .chart,.semdado .legend{display:none}
-.labgrid{gap:var(--s3)}.labcell{border-top:1px solid var(--line);padding:var(--s2) 0;min-width:0}
-@media (max-width:600px){.labgrid{grid-template-columns:1fr}}
-@media (min-width:901px){.chart{height:280px}.chart.band{height:150px}}
+/* grade de exames pela largura que sobra: uma coluna a cada 300 px */
+.grid.labgrid{grid-template-columns:repeat(auto-fill,minmax(min(var(--col-min),100%),1fr));gap:var(--s3) var(--s5)}.labcell{border-top:1px solid var(--line);padding:var(--s2) 0;min-width:0}
+/* par de blocos com gráfico: lado a lado só quando cada um tiver a largura mínima; senão, um embaixo do outro */
+.grid.g2:has(>.card){grid-template-columns:repeat(auto-fit,minmax(max(min(var(--col-min),100%),calc(50% - var(--s5)/2)),1fr));gap:var(--s4) var(--s5);align-items:start}
+/* bloco com gráfico: título numa linha e a nota embaixo, numa linha só (vizinhos começam o gráfico na mesma altura) */
+.card:has(>.chart,>.mband)>.card-h:has(>.mini){display:grid;grid-template-columns:minmax(0,1fr);gap:0}
+.card:has(>.chart,>.mband)>.card-h>.mini{text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:500px){.mband-h{flex-direction:column;align-items:stretch;gap:0}.mband-h .mini{text-align:left}}
 
 /* ---------- Treino */
 .sess{margin-bottom:var(--s2);display:flex;flex-wrap:wrap;align-items:baseline;gap:0 var(--s2)}
@@ -516,14 +524,15 @@ table.es input[type=number]{width:88px}table.es td,table.es th{padding:var(--s1)
 @media (max-width:500px){.g2,.g3{grid-template-columns:1fr}.g2.duo,.g3.duo{grid-template-columns:repeat(2,minmax(0,1fr))}.g3.trio{grid-template-columns:repeat(3,minmax(0,1fr))}.g4{grid-template-columns:1fr 1fr}input[type=date]{white-space:nowrap}}
 @media (min-width:501px){
   main{max-width:1100px}
-  .tab:not([hidden]){display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s4) var(--s5);align-items:start}
+  /* duas colunas só quando cada uma tiver a largura mínima (--col-min); abaixo disso, uma. Nunca mais de duas. */
+  .tab:not([hidden]){display:grid;grid-template-columns:repeat(auto-fit,minmax(max(min(var(--col-min),100%),calc(50% - var(--s5)/2)),1fr));gap:var(--s4) var(--s5);align-items:start}
   .tab>#alerts,.tab>#trLogCard,.tab>#mealsCard,.tab>.stack,.tab>#cmpCard,.tab>.wide,.tab>:not(.card){grid-column:1/-1}
-  .tab>.stack:not(#alerts){display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s4) var(--s5);align-items:start}
+  .tab>.stack:not(#alerts){display:grid;grid-template-columns:repeat(auto-fit,minmax(max(min(var(--col-min),100%),calc(50% - var(--s5)/2)),1fr));gap:var(--s4) var(--s5);align-items:start}
   .tab>.stack:not(#alerts)>.card:first-child,.tab>.stack>.wide{grid-column:1/-1}
   #tab-treino>#trMiss{order:-3}#tab-treino>#trLogCard{order:-2}#tab-treino>#actCard{order:-1}
   #tab-hoje>#alerts{order:-5}#tab-hoje>.dayhero{order:-4}#tab-hoje>.dayhero+.card{order:-3}
 }
-@media (min-width:501px) and (max-width:899px){main{max-width:none}.tab>.dayhero{grid-column:1/-1}}
+@media (min-width:501px) and (max-width:899px){main{max-width:none}.tab>.dayhero,.tab>.dayhero+.card{grid-column:1/-1}}
 
 /* ---------- QA 6 (v43) · Alimentos: itens do plano recolhidos, linha lançada com medida, sem tabela vazia */
 .meal-b>:empty{display:none}
@@ -661,7 +670,8 @@ body.job-on.has-trfoot #toast{bottom:calc(var(--nav-h) + var(--trfoot-h,68px) + 
 .bar.meta{overflow:visible}
 .bar.meta::after{content:"";position:absolute;left:83.333%;top:-3px;bottom:-3px;width:2px;margin-left:-1px;background:var(--ink);border-radius:1px}
 .macro .val .over{color:var(--bad-text)}
-.macro .msub{grid-column:1/-1;font-size:var(--f-xs);color:var(--muted)}
+.macro .msub{grid-column:1/-1;font-size:var(--f-xs);color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums}
+.macro .msub .over{color:var(--bad-text)}
 .mrow.todo{min-height:0;padding:0}
 .mrow.todo .t{display:flex;flex-wrap:wrap;align-items:baseline;align-content:center;column-gap:var(--s2)}
 .mrow.todo .t b,.mrow.todo .t small{display:inline}
@@ -675,6 +685,9 @@ body.job-on.has-trfoot #toast{bottom:calc(var(--nav-h) + var(--trfoot-h,68px) + 
 #coachBox .note,#coachBox .note.bad{border:0;border-top:1px solid var(--line);border-radius:0;padding:var(--s2) 0;background:transparent}
 #coachBox .note:first-child{border-top:0}
 .legend i.dash{height:0;border-top:2px dashed currentColor;border-radius:0;vertical-align:3px;background:none}
+.legend i.dots{height:0;border-top:2px dotted currentColor;border-radius:0;vertical-align:3px;background:none}
+.legend i.ring{border:2px solid currentColor;border-radius:50%;background:none}
+.legend i.line,.legend i.dash,.legend i.dots{width:var(--s4)}
 .legend i.diam{width:8px;height:8px;border:2px solid currentColor;border-radius:0;background:none;transform:rotate(45deg);vertical-align:0}
 </style>
 <header id="topbar">
@@ -723,7 +736,7 @@ body.job-on.has-trfoot #toast{bottom:calc(var(--nav-h) + var(--trfoot-h,68px) + 
     <div class="tbl-wrap" id="mealSummary"></div>
   </div>
 
-  <div class="card" id="medsTodayCard">
+  <div class="card wide" id="medsTodayCard">
     <div class="card-h"><h3>Medicamentos de hoje</h3><span class="mini" id="medsTodayHint"></span></div>
     <div class="list" id="medsToday"></div>
   </div>
@@ -795,11 +808,11 @@ body.job-on.has-trfoot #toast{bottom:calc(var(--nav-h) + var(--trfoot-h,68px) + 
     <div class="mini mt2" id="covStats"></div>
   </div>
 
-  <div class="card" id="pgCard">
+  <div class="card wide" id="pgCard">
     <div class="card-h"><h3>Progressão de carga</h3>
       <select id="pgEx" class="sel-inline" aria-label="Exercício"></select></div>
     <div class="chart"><canvas id="chProg"></canvas></div>
-    <div class="legend"><span><i class="line" style="background:var(--serie)"></i>carga máxima (kg)</span><span><i class="dash" style="color:var(--serie-2)"></i>tonelagem (kg × reps ÷ 100)</span></div>
+    <div class="legend"></div>
     <div id="pgSummary" class="mini mt2"></div>
   </div>
 
@@ -835,7 +848,7 @@ body.job-on.has-trfoot #toast{bottom:calc(var(--nav-h) + var(--trfoot-h,68px) + 
   <div class="card wide">
     <div class="card-h"><h3>Consumo × meta × gasto</h3><span class="mini" id="enNote">kcal por dia</span></div>
     <div class="chart tall"><canvas id="chEnergy"></canvas></div>
-    <div class="legend"><span><i style="background:var(--serie)"></i>consumido</span><span><i class="dash" style="color:var(--meta)"></i>meta do dia</span><span><i class="line" style="background:var(--serie-2)"></i>gasto (TMB + ativas)</span></div>
+    <div class="legend"></div>
   </div>
 
   <div class="grid g2">
@@ -848,31 +861,31 @@ body.job-on.has-trfoot #toast{bottom:calc(var(--nav-h) + var(--trfoot-h,68px) + 
     <div class="card">
       <div class="card-h"><h3>Peso: esperado pelo saldo × medido</h3><span class="mini">kg no período · 7.700 kcal ≈ 1 kg</span></div>
       <div class="chart"><canvas id="chBalance"></canvas></div>
-      <div class="legend"><span><i class="dash" style="color:var(--serie-2)"></i>variação esperada pelo saldo (kg)</span><span><i class="line" style="background:var(--serie)"></i>variação medida na balança (kg)</span></div>
+      <div class="legend"></div>
     </div>
   </div>
 
-  <div class="grid g2">
-    <div class="card">
-      <div class="card-h"><h3>Macros e água por dia</h3><span class="mini">uma linha por faixa, cada uma na sua escala</span></div>
+  <div class="card wide">
+      <div class="card-h"><h3>Macros e água por dia</h3><span class="mini">g e L por dia, cada faixa na sua escala · dia sem registro interrompe a linha</span></div>
       <div class="mband"><div class="mband-h"><b><i style="background:var(--prot)"></i>Proteína</b><span class="mini" id="mbNoteP"></span></div><div class="chart band"><canvas id="chMacros"></canvas></div></div>
       <div class="mband"><div class="mband-h"><b><i style="background:var(--carb)"></i>Carboidrato</b><span class="mini" id="mbNoteC"></span></div><div class="chart band"><canvas id="chMacC"></canvas></div></div>
       <div class="mband"><div class="mband-h"><b><i style="background:var(--fat)"></i>Gordura</b><span class="mini" id="mbNoteF"></span></div><div class="chart band"><canvas id="chMacF"></canvas></div></div>
       <div class="mband"><div class="mband-h"><b><i style="background:var(--water)"></i>Água</b><span class="mini" id="mbNoteW"></span></div><div class="chart band"><canvas id="chWater"></canvas></div></div>
-      <p class="mini" id="mbLegend">Ponto cheio = dia na meta (95 % ou mais) · ponto vazado = abaixo da meta · tracejado = meta do dia · hoje (parcial) em pontilhado · a linha se interrompe em dia sem registro.</p>
-    </div>
-    <div class="card">
-      <div class="card-h"><h3>Volume de treino</h3><span class="mini">min · linha = alvo de cárdio</span></div>
-      <div class="chart"><canvas id="chVolume"></canvas></div>
-      <div class="legend"><span><i style="background:var(--serie)"></i>musculação</span><span><i style="background:var(--serie-2)"></i>cárdio</span><span><i class="dash" style="color:var(--meta)"></i>alvo de cárdio</span></div>
-    </div>
+      <div class="legend" id="mbLegend"></div>
   </div>
 
-  <div class="card">
-    <div class="card-h"><h3>Leitura do treinador</h3>
-      <div class="row"><button class="btn sm ai" id="coachAI" onclick="A.coachAI()">Análise aprofundada</button></div></div>
-    <div class="stack" id="coachBox"></div>
-    <div id="coachAIBox" class="prose mt2" hidden></div>
+  <div class="grid g2">
+    <div class="card">
+      <div class="card-h"><h3>Volume de treino</h3><span class="mini">min por dia</span></div>
+      <div class="chart"><canvas id="chVolume"></canvas></div>
+      <div class="legend"></div>
+    </div>
+    <div class="card">
+      <div class="card-h"><h3>Leitura do treinador</h3>
+        <div class="row"><button class="btn sm ai" id="coachAI" onclick="A.coachAI()">Análise aprofundada</button></div></div>
+      <div class="stack" id="coachBox"></div>
+      <div id="coachAIBox" class="prose mt2" hidden></div>
+    </div>
   </div>
 
   <div class="card wide" id="dataTableCard">
@@ -891,13 +904,13 @@ body.job-on.has-trfoot #toast{bottom:calc(var(--nav-h) + var(--trfoot-h,68px) + 
         <div class="row"><button class="btn sm ai" onclick="A.openLabImport()" aria-label="Ler arquivo de exame laboratorial">Ler arquivo</button><button class="btn sm primary" onclick="A.openLabForm()" aria-label="Novo exame laboratorial">Novo</button><button class="btn sm" onclick="A.labReportPDF()">Relatório PDF</button></div></div>
       <div class="stack" id="labAlerts"></div>
     </div>
-    <div class="card">
+    <div class="card wide">
       <div class="card-h"><h3>Evolução por marcador</h3><div class="row"><select id="labSel" class="sel-inline" aria-label="Marcador" onchange="renderLabs()"></select></div></div>
       
       <div id="labCharts"><div class="chart"><canvas id="chLab"></canvas></div></div>
       <div class="mini mt2" id="labRangeTxt"></div>
     </div>
-    <div class="card">
+    <div class="card wide">
       <div class="card-h"><h3>Histórico</h3><span class="mini" id="labCount"></span></div>
       <div class="tbl-wrap" id="labTable"></div>
     </div>
@@ -909,14 +922,14 @@ body.job-on.has-trfoot #toast{bottom:calc(var(--nav-h) + var(--trfoot-h,68px) + 
         <div class="row"><button class="btn sm ai" onclick="A.openMedPhoto()" aria-label="Ler arquivo de caixa, bula ou receita">Ler arquivo</button><button class="btn sm primary" onclick="A.openMedForm()" aria-label="Novo medicamento">Novo</button><button class="btn sm" onclick="A.medReportPDF()">Relatório PDF</button></div></div>
       <div class="stack" id="medList"></div>
     </div>
-    <div class="card">
+    <div class="card wide">
       <div class="card-h"><h2>Receitas e ciclos</h2>
         <div class="row"><button class="btn sm ai" onclick="A.openRxPhoto()" aria-label="Ler arquivo de receita">Ler arquivo</button><button class="btn sm primary" onclick="A.openRxForm()" aria-label="Novo ciclo ou receita">Novo</button></div></div>
       
       <div class="row between mt2"><span class="mini" id="rxCount"></span><select id="rxSel" class="sel-inline" aria-label="Ciclo" onchange="A.rxFilter()"></select></div>
       <div class="stack mt2" id="rxList"></div>
     </div>
-    <div class="card">
+    <div class="card wide">
       <div class="card-h"><h3>Adesão no período</h3><div class="row"><select id="medSel" class="sel-inline" aria-label="Medicamento" onchange="A.medFilter()"></select></div></div>
       <p class="mini mb2" id="medAdhHint"></p>
       <div class="chart"><canvas id="chMeds"></canvas></div>
@@ -945,6 +958,7 @@ body.job-on.has-trfoot #toast{bottom:calc(var(--nav-h) + var(--trfoot-h,68px) + 
     <div class="card-h"><h3>Evolução</h3>
       <div class="row"><div class="seg" id="bioSeg"><button data-k="peso" class="on">Peso</button><button data-k="mme">Massa musc.</button><button data-k="pgc">% Gordura</button><button data-k="gord">Gordura kg</button><button data-k="tmb">TMB</button></div><button class="btn sm" id="bioCmpBtn" onclick="A.openBioCompare()">Comparar</button></div></div>
     <div class="chart"><canvas id="chBio"></canvas></div>
+    <div class="legend"></div>
     <div class="mini mt2" id="bioRange"></div>
   </div>
   <div class="card">
@@ -952,7 +966,7 @@ body.job-on.has-trfoot #toast{bottom:calc(var(--nav-h) + var(--trfoot-h,68px) + 
     <div class="tbl-wrap" id="examTable"></div>
   </div>
   </div>
-  <div class="card">
+  <div class="card wide">
     <div class="card-h"><h3>Ficha de saúde para treino</h3></div>
     <div id="hfCard"></div>
   </div>
@@ -1036,7 +1050,7 @@ body.job-on.has-trfoot #toast{bottom:calc(var(--nav-h) + var(--trfoot-h,68px) + 
     </div>
     <div class="card">
       <div class="card-h"><h3>Dados</h3><span class="mini" id="dataStats"></span></div>
-      <p class="mini mb2" id="appVersion">Versão 53 · 25/11/2026</p><p class="mini mb2" id="lastAiErr" hidden></p>
+      <p class="mini mb2" id="appVersion">Versão 54 · 25/11/2026</p><p class="mini mb2" id="lastAiErr" hidden></p>
       <div class="row">
         <button class="btn sm" onclick="A.exportAll()">Exportar backup (JSON)</button>
         <button class="btn sm" onclick="A.exportCSV()">Exportar diário (CSV)</button>
@@ -1366,7 +1380,14 @@ function applyLayout(l){l=layoutOf(l);document.documentElement.dataset.layout=l;
 function applyTheme(t){t=t==='dark'?'dark':'light';document.documentElement.dataset.theme=t;try{localStorage.setItem('ncperf_theme',t);}catch(e){}const m=document.getElementById('metaTheme');if(m)m.content=t==='dark'?'#0a0a0a':'#ffffff';}
 function appScrollTop(){const m=document.documentElement.classList.contains('embedded')?$('main'):window;try{m.scrollTo({top:0});}catch(e){}}
 /* Redimensionamento tardio (quadro do app do Claude, dobra do aparelho, rotação): refaz gráficos e tela */
-let _rlT=null;function relayout(){clearTimeout(_rlT);_rlT=setTimeout(()=>{Object.values(CH).forEach(c=>{try{c.resize();}catch(e){}});renderAll();},120);}
+let _rlT=null,_rlWait=false;
+/* campo em uso (digitando, seletor aberto): refazer a tela agora trocaria o campo e levaria o foco e o texto */
+function typingEl(){const a=document.activeElement;return !!(a&&a!==document.body&&a.matches&&a.matches('input:not([type=checkbox]):not([type=radio]):not([type=button]):not([type=file]):not([type=range]),textarea,select,[contenteditable=""],[contenteditable="true"]'));}
+/* girar, abrir o aparelho, teclado: os gráficos e o relatório acompanham a largura na hora; a tela só é refeita se nenhum campo estiver em uso
+   (com campo em uso fica para quando ele for solto) */
+function relayout(){clearTimeout(_rlT);_rlT=setTimeout(()=>{Object.values(CH).forEach(c=>{try{c.resize();}catch(e){}});try{repFit();}catch(e){}
+  if(typingEl()){if(!_rlWait){_rlWait=true;document.addEventListener('focusout',()=>{_rlWait=false;setTimeout(()=>{if(!typingEl())relayout();},80);},{once:true});}return;}
+  renderAll();},120);}
 ['resize','orientationchange','pageshow'].forEach(ev=>window.addEventListener(ev,relayout));if(window.visualViewport)window.visualViewport.addEventListener('resize',relayout);
 try{if(window.self!==window.top)document.documentElement.classList.add('embedded');}catch(e){document.documentElement.classList.add('embedded');}
 function syncBarOff(){const b=$('#syncBar');if(!b||b.hidden)return;const r=b.getBoundingClientRect();const vis=r.height>0&&r.bottom>0;b.hidden=true;if(vis)b.classList.add('hold');}
@@ -1770,7 +1791,7 @@ let REP=null;
 function repNextN(y){const st=settings();const logMax=(st.repLog||[]).filter(x=>x.year===y).reduce((a,x)=>Math.max(a,x.n||0),0);return Math.max(st.repSeq&&st.repSeq.year===y?(st.repSeq.n||0):0,logMax)+1;}
 function repNumFmt(n,y){return String(n).padStart(3,'0')+'/'+y;}
 function repMark(){const el=$('#repBody .repno');if(!el||!REP)return;let m=$('#repProv');if(REP.saved){if(m)m.remove();return;}if(!m){m=document.createElement('span');m.id='repProv';m.className='repprov';el.appendChild(m);}m.hidden=false;m.textContent=' · número provisório: só é gravado ao salvar, imprimir ou compartilhar';}
-function repFresh(){if(!REP||REP.saved||!REP.n)return;const n=repNextN(REP.year);if(n===REP.n)return;REP.n=n;REP.num=repNumFmt(n,REP.year);try{REP.html=reportHTML(REP.data,REP);REP.text=reportText(REP.data,REP);const rp=$('#report');if(rp&&!rp.hidden){$('#repBody').innerHTML=REP.html;repMark();}}catch(e){console.error(e);}}
+function repFresh(){if(!REP||REP.saved||!REP.n)return;const n=repNextN(REP.year);if(n===REP.n)return;REP.n=n;REP.num=repNumFmt(n,REP.year);try{REP.html=reportHTML(REP.data,REP);REP.text=reportText(REP.data,REP);const rp=$('#report');if(rp&&!rp.hidden){$('#repBody').innerHTML=REP.html;repMark();repFit();}}catch(e){console.error(e);}}
 function repCommit(via,R){R=R||REP;if(!R||!R.n)return false;if(R.saved){if(R.vias&&!R.vias.includes(via))R.vias.push(via);return false;}if(Store.mode==='cloud'&&!Store.ready)return false;
   const st=settings();const y=R.year;const next=repNextN(y);const taken=R.n<next;st.repSeq={year:y,n:Math.max(R.n,next-1)};
   st.repLog=(st.repLog||[]).concat([{n:R.n,year:y,at:(R.emitted||new Date()).toISOString(),savedAt:new Date().toISOString(),from:R.from,to:R.to,via}]).slice(-200);
@@ -1862,12 +1883,12 @@ function svgLine(pts,opt={}){ // pts: [{x:label,y:number}] — linha fina, marca
   const w=opt.w||640,h=opt.h||150,pl=44,pr=16,pt=14,pb=26;if(!pts.length)return '';const ys=pts.map(p=>p.y);let lo=Math.min(...ys),hi=Math.max(...ys);if(hi-lo<1){lo-=0.5;hi+=0.5;}const pad=(hi-lo)*0.12;lo-=pad;hi+=pad;
   const X=i=>pl+(pts.length===1?0:(w-pl-pr)*i/(pts.length-1)),Y=v=>pt+(h-pt-pb)*(1-(v-lo)/(hi-lo));
   const path=pts.map((p,i)=>(i?'L':'M')+X(i).toFixed(1)+' '+Y(p.y).toFixed(1)).join(' ');const ticks=[lo+pad,(lo+hi)/2,hi-pad];
-  const step=Math.max(1,Math.ceil(pts.length/8));
-  return `<svg viewBox="0 0 ${w} ${h}" width="100%" role="img" aria-label="${esc(opt.label||'')}" style="display:block;max-width:${w}px"><g font-family="system-ui,sans-serif" font-size="11" fill="#666">${ticks.map(t=>`<line x1="${pl}" x2="${w-pr}" y1="${Y(t).toFixed(1)}" y2="${Y(t).toFixed(1)}" stroke="#e6e6e6"/><text x="${pl-6}" y="${(Y(t)+4).toFixed(1)}" text-anchor="end">${fmt(t,opt.dec??1)}</text>`).join('')}${pts.map((p,i)=>i%step===0||i===pts.length-1?`<text x="${X(i).toFixed(1)}" y="${h-8}" text-anchor="middle">${esc(p.x)}</text>`:'').join('')}</g><path d="${path}" fill="none" stroke="${opt.color||'#111114'}" stroke-width="2" stroke-linejoin="round"/>${pts.map((p,i)=>`<circle cx="${X(i).toFixed(1)}" cy="${Y(p.y).toFixed(1)}" r="3.5" fill="#fff" stroke="${opt.color||'#111114'}" stroke-width="2"/>`).join('')}<g font-family="system-ui,sans-serif" font-size="11" font-weight="600" fill="#222"><text x="${X(0).toFixed(1)}" y="${(Y(pts[0].y)-8).toFixed(1)}" text-anchor="start">${fmt(pts[0].y,opt.dec??1)}</text>${pts.length>1?`<text x="${X(pts.length-1).toFixed(1)}" y="${(Y(pts[pts.length-1].y)-8).toFixed(1)}" text-anchor="end">${fmt(pts[pts.length-1].y,opt.dec??1)}</text>`:''}</g></svg>`;}
+  const step=Math.max(1,Math.ceil(pts.length/(opt.maxLab||8)));
+  return `<svg viewBox="0 0 ${w} ${h}" width="100%" role="img" aria-label="${esc(opt.label||'')}" style="display:block;max-width:${w}px"><g font-family="system-ui,sans-serif" font-size="11" fill="#666">${ticks.map(t=>`<line x1="${pl}" x2="${w-pr}" y1="${Y(t).toFixed(1)}" y2="${Y(t).toFixed(1)}" stroke="#e6e6e6"/><text x="${pl-6}" y="${(Y(t)+4).toFixed(1)}" text-anchor="end">${fmt(t,opt.dec??1)}</text>`).join('')}${pts.map((p,i)=>(opt.maxLab?(pts.length-1-i)%step===0:(i%step===0||i===pts.length-1))?`<text x="${X(i).toFixed(1)}" y="${h-8}" text-anchor="middle">${esc(p.x)}</text>`:'').join('')}</g><path d="${path}" fill="none" stroke="${opt.color||'#111114'}" stroke-width="2" stroke-linejoin="round"/>${pts.map((p,i)=>`<circle cx="${X(i).toFixed(1)}" cy="${Y(p.y).toFixed(1)}" r="3.5" fill="#fff" stroke="${opt.color||'#111114'}" stroke-width="2"/>`).join('')}<g font-family="system-ui,sans-serif" font-size="11" font-weight="600" fill="#222"><text x="${X(0).toFixed(1)}" y="${(Y(pts[0].y)-8).toFixed(1)}" text-anchor="start">${fmt(pts[0].y,opt.dec??1)}</text>${pts.length>1?`<text x="${X(pts.length-1).toFixed(1)}" y="${(Y(pts[pts.length-1].y)-8).toFixed(1)}" text-anchor="end">${fmt(pts[pts.length-1].y,opt.dec??1)}</text>`:''}</g></svg>`;}
 function svgBars(rows,opt={}){ // rows: [{x,v,meta}] — barras finas do consumido com a meta em traço
-  const w=opt.w||640,h=opt.h||170,pl=44,pr=16,pt=14,pb=26;if(!rows.length)return '';const hi=Math.max(...rows.map(r=>Math.max(r.v||0,r.meta||0)))*1.1||1;const Y=v=>pt+(h-pt-pb)*(1-v/hi);const bw=(w-pl-pr)/rows.length;const step=Math.max(1,Math.ceil(rows.length/10));
-  return `<svg viewBox="0 0 ${w} ${h}" width="100%" role="img" aria-label="${esc(opt.label||'')}" style="display:block;max-width:${w}px"><g font-family="system-ui,sans-serif" font-size="11" fill="#666">${[0,hi/2,hi/1.1].map(t=>`<line x1="${pl}" x2="${w-pr}" y1="${Y(t).toFixed(1)}" y2="${Y(t).toFixed(1)}" stroke="#e6e6e6"/><text x="${pl-6}" y="${(Y(t)+4).toFixed(1)}" text-anchor="end">${fmt(t)}</text>`).join('')}${rows.map((r,i)=>i%step===0?`<text x="${(pl+bw*i+bw/2).toFixed(1)}" y="${h-8}" text-anchor="middle">${esc(r.x)}</text>`:'').join('')}</g>${rows.map((r,i)=>{const x=pl+bw*i+bw*0.2,bwi=bw*0.6;const ok=r.meta&&Math.abs(r.v-r.meta)<=r.meta*0.1;return `<rect x="${x.toFixed(1)}" y="${Y(r.v||0).toFixed(1)}" width="${bwi.toFixed(1)}" height="${(Y(0)-Y(r.v||0)).toFixed(1)}" rx="3" fill="${ok?'#111114':r.v>r.meta?'#8a5a00':'#9a9aa5'}"/>${r.meta?`<line x1="${(x-bw*0.1).toFixed(1)}" x2="${(x+bwi+bw*0.1).toFixed(1)}" y1="${Y(r.meta).toFixed(1)}" y2="${Y(r.meta).toFixed(1)}" stroke="#222" stroke-width="1.5"/>`:''}`;}).join('')}</svg>`;}
-const REP_CSS=`.rep table,.rep th,.rep td{color:#111114}.rep{font:13.5px/1.45 Inter,-apple-system,system-ui,"Segoe UI",Roboto,sans-serif;color:#111114;background:#fff;max-width:900px;margin:0 auto;padding:28px 24px 48px;overflow-x:hidden}.rep h1{font:700 22px "Inter Tight",Inter,system-ui,sans-serif;margin:0 0 2px}.rep h2{font:700 15px "Inter Tight",Inter,system-ui,sans-serif;margin:24px 0 6px;padding-bottom:4px;border-bottom:1.5px solid #111114;color:#111114}.rep h3{font:700 14px "Inter Tight",Inter,system-ui,sans-serif;margin:14px 0 6px}.rep .sub{color:#4b4b55;font-size:12.5px}.rep .meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:6px 18px;margin:12px 0 4px;font-size:13px}.rep .meta b{display:block;color:#4b4b55;font-weight:400;font-size:12.5px}.rep table{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:6px;table-layout:auto}.rep th{text-align:left;font-weight:600;color:#4b4b55;border-bottom:1px solid #cfcfd6;padding:6px;font-size:12px;white-space:normal}.rep td{padding:6px;border-bottom:1px solid #e4e4e9;vertical-align:top;overflow-wrap:anywhere;white-space:normal}.rep th:first-child,.rep td:first-child{padding-left:0}.rep th:last-child,.rep td:last-child{padding-right:0}.rep td.n,.rep th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}.rep table.kt td.n small{font-weight:400;color:#4b4b55;font-size:12px}.rep .tag{font-size:12px;font-weight:600;color:#111114;white-space:nowrap}.rep .tag.warn{color:#92400e}.rep .tag.bad{color:#b91c1c}.rep .tag+.tag::before{content:"· ";color:#6b6b76;font-weight:400}.rep .note{border:1px solid #cfcfd6;background:none;padding:10px 12px;border-radius:8px;white-space:pre-wrap;font-size:13.5px}.rep .foot{margin-top:28px;color:#4b4b55;font-size:11.5px;border-top:1px solid #e4e4e9;padding-top:8px}.rep .chart{margin:8px 0 4px;height:auto}.rep .legend{display:block;font-size:12px;color:#4b4b55;margin-top:4px}.rep .repno{font-size:12.5px;color:#4b4b55;margin-bottom:6px}.rep .repno b{color:#111114}.rep .period{margin:10px 0 2px;font-size:13px}.rep .period b{display:block;font-size:12.5px;font-weight:400;color:#4b4b55}.rep .sess-b{border-top:1px solid #111114;padding:10px 0 4px;margin:16px 0 0}.rep .sess-h{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:baseline}.rep .sess-h .day{font-size:15px;font-weight:700}.rep .sess-h .day small{font-weight:400;color:#4b4b55;font-size:13px;margin-left:4px}.rep .sess-k{display:flex;flex-wrap:wrap;gap:2px 16px;font-size:12.5px;color:#4b4b55;margin:4px 0 2px}.rep .sess-k b{color:#111114}.rep .sets{display:flex;flex-wrap:wrap;gap:2px 10px}.rep .set{font-size:12px;white-space:nowrap;font-variant-numeric:tabular-nums;color:#111114;font-weight:400}.rep .set b{font-weight:600;color:#4b4b55}.rep .set.f{color:#92400e}.rep .set.f::after{content:none}.rep .schart{margin:10px 0 2px}.rep .fig-musc{--m-principal:#111114;--m-estab:#111114;--m-base:#d9d9df;--m-corpo:#f1f1f4;--m-traco:#fff;--m-rotulo:#4b4b55;--m-sec-op:.45}.rep .sess-m{display:flex;gap:14px;align-items:flex-start;margin:10px 0 2px;page-break-inside:avoid;break-inside:avoid}.rep .sess-fig{flex:none;width:132px}.rep .sess-fig svg{display:block;width:100%;height:auto}.rep .sess-fig [data-m].m-e{stroke-width:.8;stroke:#4b4b55}.rep .sess-fig .m-prof.m-e,.rep .sess-fig .m-prof.m-s,.rep .sess-fig .m-prof.m-p{stroke-width:.8}.rep .sess-fig text{display:none}@media (max-width:520px){.rep .sess-m{flex-direction:column}.rep .sess-fig{width:230px;max-width:100%}.rep .sess-fig text{display:inline}}.rep .sess-x{display:grid;grid-template-columns:minmax(0,58fr) minmax(0,42fr);gap:18px;align-items:start;margin:10px 0 2px;page-break-inside:avoid;break-inside:avoid}.rep .sess-x.one{display:block}.rep .sess-x .schart{margin:0 0 2px}.rep .sess-x:not(.one) .sess-m{flex-direction:column;gap:8px;margin:0}@media (max-width:640px){.rep .sess-x{display:block}.rep .sess-x:not(.one) .sess-m{margin:10px 0 2px}}@media (min-width:521px) and (max-width:640px){.rep .sess-x:not(.one) .sess-m{flex-direction:row;gap:14px}}.rep .sess-ml{flex:1;min-width:0;font-size:12px}.rep .sess-ml p{margin:3px 0 0}.rep .ph{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}.rep .ph img{width:72px;height:72px;object-fit:cover;border-radius:6px;border:1px solid #cfcfd6}.rep .ph .vid{font-size:12px;color:#4b4b55}.rep td .sub{font-size:12px}.rep .attn{margin:0;padding:0;list-style:none}.rep .attn li{padding:6px 0;border-bottom:1px solid #e4e4e9}.rep .attn li.bad::before{content:"Alerta: ";font-weight:600;color:#b91c1c}.rep .attn li.warn::before{content:"Atenção: ";font-weight:600;color:#92400e}.repprov{color:#92400e}@media(max-width:640px){.rep{padding:18px 14px}.rep table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch}.rep table.kt{display:table}}@media print{@page{size:A4;margin:14mm}.rep{max-width:none;padding:0}.rep h2,.rep h3{page-break-after:avoid;break-after:avoid}.rep .meta,.rep .note,.rep .chart,.rep tr,.rep .sess-h,.rep .sess-k{page-break-inside:avoid;break-inside:avoid}.rep table{page-break-inside:auto}.rep thead{display:table-header-group}.rep tfoot{display:table-footer-group}}.rep .proto-ch{margin:16px 0 0;padding:6px 0;border-top:1px dashed #6b6b76;border-bottom:1px dashed #6b6b76;font-size:12.5px;color:#111114}.rep .proto-ch b{font-weight:600}.rep .ao-msg{font-size:12.5px;color:#111114;margin:4px 0 2px}.rep .sess-obs{margin:8px 0 2px;font-size:12.5px;white-space:pre-wrap;overflow-wrap:anywhere}.rep .ex-obs{font-size:12px;color:#4b4b55;margin-top:2px;white-space:pre-wrap}.rep .rep-share{display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap;border:1px solid #cfcfd6;border-radius:8px;padding:10px 12px;margin:8px 0 4px;font-size:12.5px}.rep .rep-share .qr{flex:none;width:112px;height:112px}.rep .rep-share .qr svg{display:block;width:100%;height:100%}.rep .rep-share a{color:#111114;overflow-wrap:anywhere}.rep .rep-share .btn{margin-top:6px}.rep td.n.cg{white-space:normal;min-width:84px}`;
+  const w=opt.w||640,h=opt.h||170,pl=44,pr=16,pt=14,pb=26;if(!rows.length)return '';const hi=Math.max(...rows.map(r=>Math.max(r.v||0,r.meta||0)))*1.1||1;const Y=v=>pt+(h-pt-pb)*(1-v/hi);const bw=(w-pl-pr)/rows.length;const step=Math.max(1,Math.ceil(rows.length/(opt.maxLab||10)));
+  return `<svg viewBox="0 0 ${w} ${h}" width="100%" role="img" aria-label="${esc(opt.label||'')}" style="display:block;max-width:${w}px"><g font-family="system-ui,sans-serif" font-size="11" fill="#666">${[0,hi/2,hi/1.1].map(t=>`<line x1="${pl}" x2="${w-pr}" y1="${Y(t).toFixed(1)}" y2="${Y(t).toFixed(1)}" stroke="#e6e6e6"/><text x="${pl-6}" y="${(Y(t)+4).toFixed(1)}" text-anchor="end">${fmt(t)}</text>`).join('')}${rows.map((r,i)=>(opt.maxLab?(rows.length-1-i)%step===0:i%step===0)?`<text x="${(pl+bw*i+bw/2).toFixed(1)}" y="${h-8}" text-anchor="middle">${esc(r.x)}</text>`:'').join('')}</g>${rows.map((r,i)=>{const x=pl+bw*i+bw*0.2,bwi=bw*0.6;const ok=r.meta&&Math.abs(r.v-r.meta)<=r.meta*0.1;return `<rect x="${x.toFixed(1)}" y="${Y(r.v||0).toFixed(1)}" width="${bwi.toFixed(1)}" height="${(Y(0)-Y(r.v||0)).toFixed(1)}" rx="3" fill="${ok?'#111114':r.v>r.meta?'#8a5a00':'#9a9aa5'}"/>${r.meta?`<line x1="${(x-bw*0.1).toFixed(1)}" x2="${(x+bwi+bw*0.1).toFixed(1)}" y1="${Y(r.meta).toFixed(1)}" y2="${Y(r.meta).toFixed(1)}" stroke="#222" stroke-width="1.5"/>`:''}`;}).join('')}</svg>`;}
+const REP_CSS=`.rep table,.rep th,.rep td{color:#111114}.rep{font:13.5px/1.45 Inter,-apple-system,system-ui,"Segoe UI",Roboto,sans-serif;color:#111114;background:#fff;max-width:900px;margin:0 auto;padding:28px 24px 48px;overflow-x:hidden}.rep h1{font:700 22px "Inter Tight",Inter,system-ui,sans-serif;margin:0 0 2px}.rep h2{font:700 15px "Inter Tight",Inter,system-ui,sans-serif;margin:24px 0 6px;padding-bottom:4px;border-bottom:1.5px solid #111114;color:#111114}.rep h3{font:700 14px "Inter Tight",Inter,system-ui,sans-serif;margin:14px 0 6px}.rep .sub{color:#4b4b55;font-size:12.5px}.rep .meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:6px 18px;margin:12px 0 4px;font-size:13px}.rep .meta b{display:block;color:#4b4b55;font-weight:400;font-size:12.5px}.rep table{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:6px;table-layout:auto}.rep th{text-align:left;font-weight:600;color:#4b4b55;border-bottom:1px solid #cfcfd6;padding:6px;font-size:12px;white-space:normal}.rep td{padding:6px;border-bottom:1px solid #e4e4e9;vertical-align:top;overflow-wrap:anywhere;white-space:normal}.rep th:first-child,.rep td:first-child{padding-left:0}.rep th:last-child,.rep td:last-child{padding-right:0}.rep td.n,.rep th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}.rep table.kt td.n small{font-weight:400;color:#4b4b55;font-size:12px}.rep .tag{font-size:12px;font-weight:600;color:#111114;white-space:nowrap}.rep .tag.warn{color:#92400e}.rep .tag.bad{color:#b91c1c}.rep .tag+.tag::before{content:"· ";color:#6b6b76;font-weight:400}.rep .note{border:1px solid #cfcfd6;background:none;padding:10px 12px;border-radius:8px;white-space:pre-wrap;font-size:13.5px}.rep .foot{margin-top:28px;color:#4b4b55;font-size:11.5px;border-top:1px solid #e4e4e9;padding-top:8px}.rep .chart{margin:8px 0 4px;height:auto;max-height:none}.rep .lgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}.rep .lgrid svg{max-width:none!important}.rep .legend{display:block;font-size:12px;color:#4b4b55;margin-top:4px}.rep .repno{font-size:12.5px;color:#4b4b55;margin-bottom:6px}.rep .repno b{color:#111114}.rep .period{margin:10px 0 2px;font-size:13px}.rep .period b{display:block;font-size:12.5px;font-weight:400;color:#4b4b55}.rep .sess-b{border-top:1px solid #111114;padding:10px 0 4px;margin:16px 0 0}.rep .sess-h{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:baseline}.rep .sess-h .day{font-size:15px;font-weight:700}.rep .sess-h .day small{font-weight:400;color:#4b4b55;font-size:13px;margin-left:4px}.rep .sess-k{display:flex;flex-wrap:wrap;gap:2px 16px;font-size:12.5px;color:#4b4b55;margin:4px 0 2px}.rep .sess-k b{color:#111114}.rep .sets{display:flex;flex-wrap:wrap;gap:2px 10px}.rep .set{font-size:12px;white-space:nowrap;font-variant-numeric:tabular-nums;color:#111114;font-weight:400}.rep .set b{font-weight:600;color:#4b4b55}.rep .set.f{color:#92400e}.rep .set.f::after{content:none}.rep .schart{margin:10px 0 2px}.rep .fig-musc{--m-principal:#111114;--m-estab:#111114;--m-base:#d9d9df;--m-corpo:#f1f1f4;--m-traco:#fff;--m-rotulo:#4b4b55;--m-sec-op:.45}.rep .sess-m{display:flex;gap:14px;align-items:flex-start;margin:10px 0 2px;page-break-inside:avoid;break-inside:avoid}.rep .sess-fig{flex:none;width:132px}.rep .sess-fig svg{display:block;width:100%;height:auto}.rep .sess-fig [data-m].m-e{stroke-width:.8;stroke:#4b4b55}.rep .sess-fig .m-prof.m-e,.rep .sess-fig .m-prof.m-s,.rep .sess-fig .m-prof.m-p{stroke-width:.8}.rep .sess-fig text{display:none}@media (max-width:520px){.rep .sess-m{flex-direction:column}.rep .sess-fig{width:230px;max-width:100%}.rep .sess-fig text{display:inline}}.rep .sess-x{display:grid;grid-template-columns:minmax(0,58fr) minmax(0,42fr);gap:18px;align-items:start;margin:10px 0 2px;page-break-inside:avoid;break-inside:avoid}.rep .sess-x.one{display:block}.rep .sess-x .schart{margin:0 0 2px}.rep .sess-x:not(.one) .sess-m{flex-direction:column;gap:8px;margin:0}@media (max-width:640px){.rep .sess-x{display:block}.rep .sess-x:not(.one) .sess-m{margin:10px 0 2px}}@media (min-width:521px) and (max-width:640px){.rep .sess-x:not(.one) .sess-m{flex-direction:row;gap:14px}}.rep .sess-ml{flex:1;min-width:0;font-size:12px}.rep .sess-ml p{margin:3px 0 0}.rep .ph{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}.rep .ph img{width:72px;height:72px;object-fit:cover;border-radius:6px;border:1px solid #cfcfd6}.rep .ph .vid{font-size:12px;color:#4b4b55}.rep td .sub{font-size:12px}.rep .attn{margin:0;padding:0;list-style:none}.rep .attn li{padding:6px 0;border-bottom:1px solid #e4e4e9}.rep .attn li.bad::before{content:"Alerta: ";font-weight:600;color:#b91c1c}.rep .attn li.warn::before{content:"Atenção: ";font-weight:600;color:#92400e}.repprov{color:#92400e}@media(max-width:640px){.rep{padding:18px 14px}.rep table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch}.rep table.kt{display:table}}@media print{@page{size:A4;margin:14mm}.rep{max-width:none;padding:0}.rep h2,.rep h3{page-break-after:avoid;break-after:avoid}.rep .meta,.rep .note,.rep .chart,.rep tr,.rep .sess-h,.rep .sess-k{page-break-inside:avoid;break-inside:avoid}.rep table{page-break-inside:auto}.rep thead{display:table-header-group}.rep tfoot{display:table-footer-group}}.rep .proto-ch{margin:16px 0 0;padding:6px 0;border-top:1px dashed #6b6b76;border-bottom:1px dashed #6b6b76;font-size:12.5px;color:#111114}.rep .proto-ch b{font-weight:600}.rep .ao-msg{font-size:12.5px;color:#111114;margin:4px 0 2px}.rep .sess-obs{margin:8px 0 2px;font-size:12.5px;white-space:pre-wrap;overflow-wrap:anywhere}.rep .ex-obs{font-size:12px;color:#4b4b55;margin-top:2px;white-space:pre-wrap}.rep .rep-share{display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap;border:1px solid #cfcfd6;border-radius:8px;padding:10px 12px;margin:8px 0 4px;font-size:12.5px}.rep .rep-share .qr{flex:none;width:112px;height:112px}.rep .rep-share .qr svg{display:block;width:100%;height:100%}.rep .rep-share a{color:#111114;overflow-wrap:anywhere}.rep .rep-share .btn{margin-top:6px}.rep td.n.cg{white-space:normal;min-width:84px}`;
 function plur(n,a,b){return fmt(n)+' '+(n===1?a:b);}
 /* C-08 do QA 8 (DECISÃO, um corte só): proteína "na meta" = pelo menos 95 % da meta do dia, em Painéis, Leitura do treinador e relatório */
 const PROT_OK=0.95;
@@ -1966,7 +1987,16 @@ const REP_LEG_SERIES='Um bloco por exercício, cada um na própria escala · cad
    Sem gráfico ou sem figura, o que existir ocupa a largura toda (classe "one"). */
 function repStripHTML(x){const tem=x.ex.some(e=>(e.sets||[]).some(s=>s.kg>0));const gm=gmSessHTML(x);if(!tem&&!gm)return '';
   const col=svg=>`<div class="sess-c"><div class="schart">${svg}</div><div class="legend">${REP_LEG_SERIES}</div></div>`;
-  return `${tem?`<div class="sess-x one"><div class="sess-c"><div class="legend"><b>Evolução da carga na sessão (kg por série)</b></div><div class="schart">${svgLoadBlocks(x.ex,innerWidth<640?{w:340,cols:2}:{})}</div><div class="legend">${REP_LEG_SERIES}</div></div></div>`:''}${gm?`<div class="sess-x one">${gm}</div>`:''}`;}
+  return `${tem?`<div class="sess-x one"><div class="sess-c"><div class="legend"><b>Evolução da carga na sessão (kg por série)</b></div><div class="schart lgrid">${x.ex.filter(e=>(e.sets||[]).some(s=>s.kg>0)).map(e=>svgLoadBlocks([e],{w:140,cols:1,label:'evolução da carga: '+e.name})).join('')}</div><div class="legend">${REP_LEG_SERIES}</div></div></div>`:''}${gm?`<div class="sess-x one">${gm}</div>`:''}`;}
+/* relatório na tela: os gráficos de peso e de kcal são desenhados na largura real do espaço (a letra não encolhe no celular e o desenho
+   ocupa a tela larga) e refeitos ao girar; a evolução da carga é um desenho por exercício numa grade que se rearruma sozinha.
+   Para imprimir pela tela voltam ao desenho de 640. O PDF e o HTML baixado não mudam. */
+function repFit(force){const rp=document.getElementById('report');if(!rp||rp.hidden||typeof REP==='undefined'||!REP||!REP.data)return;const d=REP.data;
+  rp.querySelectorAll('#repBody [data-rg]').forEach(el=>{const w=force||Math.round(el.clientWidth);if(!(w>0)||+el.dataset.w===w)return;const n=Math.max(2,Math.floor((w-60)/G.tickPx));let svg='';
+    if(el.dataset.rg==='peso'&&d.wCtx&&d.wCtx.length>=2)svg=svgLine(d.wCtx.map(x=>({x:dtShort(x.d),y:x.w})),{label:'peso por pesagem',dec:1,w,maxLab:n});
+    else if(el.dataset.rg==='kcal'&&d.nutriRows&&d.nutriRows.length)svg=svgBars(d.nutriRows.map(r=>({x:dtShort(r.d),v:r.t.k,meta:r.m.k})),{label:'kcal consumidas por dia versus meta',w,maxLab:n});
+    if(svg){el.innerHTML=svg;el.dataset.w=w;}});}
+window.addEventListener('beforeprint',()=>{try{repFit(640);}catch(e){}});window.addEventListener('afterprint',()=>{try{repFit();}catch(e){}});
 function repSetChips(sets){return `<div class="sets">${(sets||[]).map((st,k)=>`<span class="set${st.fail?' f':''}"><b>S${k+1}</b> ${st.reps??'?'}×${st.kg!=null?fmt(st.kg,kgDec(st.kg))+' kg':'—'}${st.fail?' F':''}</span>`).join('')}</div>`;}
 /* v46 · link das fotos e vídeos no relatório em tela (só no site). O link só é criado quando pedido aqui ou ao gerar o PDF. */
 function repShareOk(sh){return !!sh&&/^https?:\/\//.test(sh.url||'')&&sh.expiresAt>Date.now();}
@@ -2008,7 +2038,7 @@ function reportHTML(d,o){
     </div><div class="legend">Indicadores por exercício no período: ${IND_KEYS.some(k=>d.ind[k])?IND_KEYS.map(k=>tag(IND_CLS[k]||'',`${d.ind[k]} ${IND_LABEL[k]}`)).join(' '):'nenhum exercício com séries no período'}</div>`;}
   {let hPeso='';if(sec('peso')){
     hPeso+=`<h2>Evolução do peso</h2>`;
-    const chartP=(d.wCtx.length>=2)?`<div class="chart">${svgLine(d.wCtx.map(x=>({x:dtShort(x.d),y:x.w})),{label:'peso por pesagem',dec:1})}</div>${d.wCtxTxt?`<div class="legend">${d.wCtxTxt}</div>`:''}`:'';
+    const chartP=(d.wCtx.length>=2)?`<div class="chart" data-rg="peso">${svgLine(d.wCtx.map(x=>({x:dtShort(x.d),y:x.w})),{label:'peso por pesagem',dec:1})}</div>${d.wCtxTxt?`<div class="legend">${d.wCtxTxt}</div>`:''}`:'';
     if(d.wts.length){const mn=Math.min(...d.wts.map(x=>x.w)),mx=Math.max(...d.wts.map(x=>x.w));hPeso+=`<div class="kpis"><div class="kpi"><span class="v">${d.w0.d!==d.w1.d?fmt(d.w0.w,1)+' → '+fmt(d.w1.w,1):fmt(d.w1.w,1)}<small> kg</small></span><span class="l">Primeira → última pesagem</span><span class="d">${d.w0.d!==d.w1.d?sgn(d.w1.w-d.w0.w,1)+' kg':'—'} · ${plur(d.wts.length,'pesagem','pesagens')}</span></div><div class="kpi"><span class="v">${fmt(mn,1)} – ${fmt(mx,1)}<small> kg</small></span><span class="l">Mínimo – máximo</span><span class="d">início do protocolo: ${cfg.protocolStartWeight&&(!cfg.protocolStart||cfg.protocolStart<=d.to)?fmt(cfg.protocolStartWeight,1)+' kg em '+dtBR(cfg.protocolStart):'—'}</span></div></div>`;}
     else hPeso+=`<div class="legend">Sem pesagens no período.</div>`;hPeso+=chartP;
 }
@@ -2025,7 +2055,7 @@ function reportHTML(d,o){
     <div class="kpi"><span class="v">${fmt(d.cAvg)}<small> g</small></span><span class="l">Carboidrato médio/dia</span><span class="d">meta ${fmt(d.mAvg.c)} g · ${pc(d.cAvg,d.mAvg.c)}</span></div>
     <div class="kpi"><span class="v">${fmt(d.fAvg)}<small> g</small></span><span class="l">Gordura média/dia</span><span class="d">meta ${fmt(d.mAvg.f)} g · ${pc(d.fAvg,d.mAvg.f)}</span></div>
     <div class="kpi"><span class="v">${fmt(d.fibAvg)}<small> g</small></span><span class="l">Fibras média/dia</span><span class="d">meta ${fmt(cfg.fiberGoal)} g</span></div></div>`;
-    if(d.nutriRows.length){h+=`<div class="chart">${svgBars(d.nutriRows.map(r=>({x:dtShort(r.d),v:r.t.k,meta:r.m.k})),{label:'kcal consumidas por dia versus meta'})}</div><div class="legend">Barras = kcal consumidas (preto: dentro de ±10 % da meta · âmbar: acima · cinza: abaixo) · traço = meta do dia.</div>`;
+    if(d.nutriRows.length){h+=`<div class="chart" data-rg="kcal">${svgBars(d.nutriRows.map(r=>({x:dtShort(r.d),v:r.t.k,meta:r.m.k})),{label:'kcal consumidas por dia versus meta'})}</div><div class="legend">Barras = kcal consumidas (preto: dentro de ±10 % da meta · âmbar: acima · cinza: abaixo) · traço = meta do dia.</div>`;
       if(o.detail==='detalhado')h+=`<table><thead><tr><th>Dia</th><th class="n">kcal</th><th class="n">meta</th><th class="n">%</th><th class="n">P</th><th class="n">C</th><th class="n">G</th><th class="n">gasto</th><th class="n">saldo</th></tr></thead><tbody>${d.nutriRows.map(r=>`<tr><td>${dtShort(r.d)} ${WDS[weekdayIdx(r.d)]}</td><td class="n">${fmt(r.t.k)}</td><td class="n">${fmt(r.m.k)}</td><td class="n">${pct(r.t.k,r.m.k)} %</td><td class="n">${fmt(r.t.p)}</td><td class="n">${fmt(r.t.c)}</td><td class="n">${fmt(r.t.f)}</td><td class="n">${r.exp!=null?fmt(r.exp):'—'}</td><td class="n">${r.exp!=null?sgn(r.t.k-r.exp):'—'}</td></tr>`).join('')}</tbody></table>`;}
     else h+=`<div class="legend">Nenhum dia com alimentação registrada no período.</div>`;}
   if(sec('treino')){
@@ -2361,21 +2391,45 @@ function closeSheet(){$('#sheet').hidden=true;$('#sheetBody').innerHTML='';if(A.
 
 /* ============================================================ GRÁFICOS */
 const CH={};
+/* designer 25/11/2026 · um padrão para todos os gráficos, por papel:
+   série = linha de 2 px com ponto de raio 3 (2 acima de 45 pontos); meta, alvo, esperado e limite = tracejado [5,4] de 1,5 px;
+   tendência, hoje (parcial) e série de apoio = pontilhado [3,3]; exame de bioimpedância = losango.
+   Eixo Y com largura fixa (44 px; 56 quando o número não cabe) e a mesma folga à direita, para vizinhos começarem e acabarem na mesma vertical.
+   Eixo de datas: uma função (dateAxis), cerca de 44 px por rótulo, passo de lista fixa, contado de hoje para trás; rótulo nunca gira. */
+const G={yW:44,yW2:56,padR:20,tickPx:44,passos:[1,2,3,7,14,30,60,90,180,365],lw:2,lwRef:1.5,pt:3,ptDenso:2,ptHover:5,ptMarca:6,denso:45,meta:[5,4],aux:[3,3]};
+const gPx=n=>parseFloat(cssVar(n))||0;
+const gPt=n=>n>G.denso?G.ptDenso:G.pt;
+/* eixo X de datas, o mesmo para todos. isos = data (AAAA-MM-DD) de cada ponto. Com {diario:true} os pontos são dias corridos: o passo sai da lista fixa
+   e a contagem parte de hoje (hoje sempre tem rótulo). Sem isso (sessões, coletas, exames) é de n em n pontos, a partir do último.
+   A largura usada é a do quadro menos o eixo Y e a folga padrão: dois gráficos da mesma largura e do mesmo período têm as mesmas marcas.
+   Quando o período cruza o ano, a primeira marca de cada ano leva o ano (06/01/27). */
+function dateAxis(isos,o){o=o||{};const n=isos.length;const yr=d=>String(d).slice(0,4);const cross=n>1&&yr(isos[0])!==yr(isos[n-1]);let anc=o.diario?isos.lastIndexOf(todayISO()):-1;if(anc<0)anc=n-1;
+  return {grid:{display:false},
+    afterBuildTicks(ax){if(n<1)return;const W=Math.max(1,ax.chart.width-G.yW-G.padR);const px=W/n;let st;
+      if(o.diario){st=G.passos.find(p=>p*px>=G.tickPx)||G.passos[G.passos.length-1];}else st=Math.max(1,Math.ceil(G.tickPx/px));
+      const t=[];for(let i=anc;i>=0;i-=st)t.unshift({value:i});for(let i=anc+st;i<n;i+=st)t.push({value:i});ax.ticks=t;},
+    ticks:{autoSkip:false,maxRotation:0,minRotation:0,callback(v,i,t){const d=isos[v];if(!d)return '';const p=i>0&&t[i-1]?isos[t[i-1].value]:null;return dtShort(d)+(cross&&(!p||yr(p)!==yr(d))?'/'+String(d).slice(2,4):'');}}};}
 function mkChart(id,cfg){if(typeof Chart==='undefined'){const el=document.getElementById(id);if(el&&el.parentElement&&!el.parentElement.querySelector('.nochart'))el.parentElement.insertAdjacentHTML('beforeend','<div class="mini nochart">Gráficos indisponíveis sem conexão (biblioteca não carregou).</div>');return null;}const el=document.getElementById(id);if(!el)return;if(CH[id]){CH[id].destroy();}
   const ink=cssVar('--ink-2'),grid=cssVar('--grid'),font=cssVar('--font-body');
-  Chart.defaults.color=ink;Chart.defaults.font.family=font;Chart.defaults.font.size=11.5;
+  Chart.defaults.color=ink;Chart.defaults.font.family=font;Chart.defaults.font.size=gPx('--f-xs')||12;
   cfg.options=cfg.options||{};cfg.options.responsive=true;cfg.options.maintainAspectRatio=false;cfg.options.animation=false;
-  cfg.options.plugins=Object.assign({legend:{display:false},tooltip:{mode:'index',intersect:false,filter:i=>!(i.dataset&&i.dataset._halo),backgroundColor:cssVar('--ink'),titleColor:cssVar('--bg'),bodyColor:cssVar('--bg'),padding:10,cornerRadius:8}},cfg.options.plugins||{});
+  cfg.options.plugins=Object.assign({legend:{display:false},tooltip:{mode:'index',intersect:false,filter:i=>!(i.dataset&&i.dataset._halo),backgroundColor:cssVar('--ink'),titleColor:cssVar('--bg'),bodyColor:cssVar('--bg'),padding:gPx('--s2'),cornerRadius:gPx('--r-sm')}},cfg.options.plugins||{});
   cfg.options.interaction={mode:'index',intersect:false};
-  const sc=cfg.options.scales||{};Object.values(sc).forEach(s=>{s.grid=Object.assign({color:grid,drawBorder:false},s.grid||{});s.ticks=Object.assign({color:cssVar('--muted')},s.ticks||{});s.border=Object.assign({color:cssVar('--axis')},s.border||{});});
+  const sc=cfg.options.scales=cfg.options.scales||{};['x','y'].forEach(k=>{sc[k]=sc[k]||{};});const deitado=cfg.options.indexAxis==='y';
+  Object.entries(sc).forEach(([k,s])=>{s.grid=Object.assign({color:grid,drawBorder:false},s.grid||{});s.ticks=Object.assign({color:cssVar('--muted')},s.ticks||{});s.border=Object.assign({color:cssVar('--axis')},s.border||{});const af=s.afterFit;
+    if(k==='x'){/* rótulo nunca gira; mesma folga à direita em todos */s.ticks.maxRotation=0;s.ticks.minRotation=0;if(!deitado&&s.ticks.autoSkip!==false&&s.ticks.autoSkipPadding==null)s.ticks.autoSkipPadding=gPx('--s3');s.afterFit=ax=>{if(af)af(ax);ax.paddingRight=Math.max(ax.paddingRight||0,G.padR);};}
+    else if(k==='y'&&!deitado){/* eixo Y de largura fixa; sem o tracinho da marca, para o número caber nos 44 px */s.grid.drawTicks=false;if(s.ticks.padding==null)s.ticks.padding=gPx('--s1');s.afterFit=ax=>{if(af)af(ax);const w=ax.width;ax.width=w<=G.yW?G.yW:w<=G.yW2?G.yW2:w;};}});
   CH[id]=new Chart(el,cfg);
   /* texto alternativo do gráfico: título do bloco + séries */
   try{const cd=el.closest('.card');const h=cd&&cd.querySelector('.card-h h3,.card-h h2');el.setAttribute('role','img');el.setAttribute('aria-label',((h&&h.textContent.trim())||'Gráfico')+': '+(cfg.data.datasets||[]).map(d=>d.label).filter(Boolean).join(', '));}catch(e){}}
 /* contorno na cor do fundo para uma linha continuar visível quando passa por cima das barras */
 function haloDs(d){return Object.assign({},d,{label:'',_halo:true,borderColor:cssVar('--bg'),backgroundColor:cssVar('--bg'),borderWidth:(d.borderWidth||2)+3,borderDash:[],order:(d.order||0)+1,pointRadius:0,pointHoverRadius:0});}
 /* legenda montada a partir do que está desenhado: [tipo ('' caixa, line, dash, dot, diam), cor, texto, mostrar?] */
-function setLegend(id,items){const c=document.getElementById(id);const cd=c&&c.closest('.card');const lg=cd&&cd.querySelector('.legend');if(!lg)return;lg.innerHTML=items.filter(x=>x&&x[3]!==false).map(([k,cor,t])=>`<span><i${k?` class="${k}"`:''} style="${k==='dash'||k==='diam'?'color':'background'}:${cor}"></i>${t}</span>`).join('');}
-const dsLine=(label,data,color,extra={})=>Object.assign({type:'line',label,data,borderColor:color,backgroundColor:color,borderWidth:2,pointRadius:0,pointHoverRadius:4,tension:0,spanGaps:true},extra);
+/* tipos: '' caixa (barra), line, dash (meta, alvo), dots (pontilhado), dot (ponto cheio), ring (ponto vazado), diam (losango) */
+function setLegend(id,items){const c=document.getElementById(id);const cd=c&&c.closest('.card');const lg=cd&&cd.querySelector('.legend');if(!lg)return;lg.innerHTML=items.filter(x=>x&&x[3]!==false).map(([k,cor,t])=>`<span><i${k?` class="${k}"`:''} style="${['dash','dots','ring','diam'].includes(k)?'color':'background'}:${cor}"></i>${t}</span>`).join('');}
+const dsLine=(label,data,color,extra={})=>Object.assign({type:'line',label,data,borderColor:color,backgroundColor:color,borderWidth:G.lw,pointRadius:0,pointHoverRadius:G.ptHover,tension:0,spanGaps:true},extra);
+/* linha de referência (meta, alvo, esperado, limite): tracejada e mais fina que a série */
+const dsRef=(label,data,color,extra={})=>dsLine(label,data,color,Object.assign({borderWidth:G.lwRef,borderDash:G.meta},extra));
 const dsBar=(label,data,color,extra={})=>Object.assign({type:'bar',label,data,backgroundColor:color,borderRadius:2,maxBarThickness:28},extra);
 
 /* ============================================================ RENDER GERAL */
@@ -2420,8 +2474,9 @@ function renderHoje(){
   $('#macMeta').textContent=`meta ${m.label}: ${fmt(m.k)} kcal`;
   const mac=[['Proteína',t.p,m.p,'--prot',w?'meta '+fmt(m.p/w,1)+' g/kg · consumido '+fmt(t.p/w,2)+' g/kg':''],['Carboidrato',t.c,m.c,'--carb',''],['Gordura',t.f,m.f,'--fat',w?'meta '+fmt(m.f/w,2)+' g/kg':'']];
   /* designer 24/11/2026: um formato só ("123 de 259 g · faltam 136 g"); o trilho vai de 0 a 120 % da meta, com um traço na meta; acima da meta é dito em texto, a cor da barra não muda */
-  const falta=(v0,g0,u,lim)=>{const v=Math.round(v0),g=Math.round(g0);return g-v>=0?(lim?'limite':`faltam ${fmt(g-v)} ${u}`):`${fmt(v-g)} ${u} acima${lim?' do limite':''}`;};
-  const linha=(n,v,g,u,c,sub,over,lim)=>`<div class="macro"><span class="n"><i style="background:var(${c})"></i>${n}</span><span class="val">${fmt(v)} de ${fmt(g)} ${u} · <span class="${over?'over':''}">${falta(v,g,u,lim)}</span></span><div class="bar meta" role="img" aria-label="${n}: ${g?fmt(v/g*100,0):0} % ${lim?'do limite':'da meta'}"><i style="width:${g?Math.min(v/g*100,120)/1.2:0}%;background:var(${c})"></i></div>${sub?`<small class="msub">${sub}</small>`:''}</div>`;
+  const falta=(v0,g0,u,lim)=>{const v=Math.round(v0),g=Math.round(g0);return g-v>=0?(lim?'dentro do limite':`faltam ${fmt(g-v)} ${u}`):`${fmt(v-g)} ${u} acima${lim?' do limite':''}`;};
+  /* designer 25/11/2026: todo item em três linhas iguais: nome e valor; barra; "faltam…" com a nota quando houver. Nada quebra, todos com a mesma altura */
+  const linha=(n,v,g,u,c,sub,over,lim)=>{const ft=falta(v,g,u,lim);return `<div class="macro"><span class="n"><i style="background:var(${c})"></i>${n}</span><span class="val">${fmt(v)} de ${fmt(g)} ${u}</span><div class="bar meta" role="img" aria-label="${n}: ${g?fmt(v/g*100,0):0} % ${lim?'do limite':'da meta'}"><i style="width:${g?Math.min(v/g*100,120)/1.2:0}%;background:var(${c})"></i></div><small class="msub" title="${esc(ft+(sub?' · '+sub:''))}"><span class="${over?'over':''}">${ft}</span>${sub?' · '+sub:''}</small></div>`;};
   $('#macroRows').innerHTML=mac.map(([n,v,g,c,sub])=>linha(n,v,g,'g',c,sub,g&&v>g*1.1)).join('');
   const water=d.water||0;
   $('#microRow').innerHTML=linha('Água',water,cfg.waterGoal,'mL','--water','',false)+linha('Fibras',t.fib,cfg.fiberGoal,'g','--serie-2','',false)+linha('Sódio',t.sod,cfg.sodiumGoal,'mg','--serie-2','',t.sod>cfg.sodiumGoal,true);
@@ -2561,7 +2616,8 @@ function renderProgress(){const sel=$('#pgEx');const names=exerciseNames();const
   const name=sel.value;const pts=[];const PB=periodBounds(RANGES.treino);workoutsSorted().filter(w=>w.date>=PB.from&&w.date<=PB.to).forEach(w=>{const e=(w.exercises||[]).find(x=>norm(x.protoName||x.name)===norm(name));if(e&&(e.sets||[]).length)pts.push({d:w.date,max:maxLoad(e.sets),ton:tonnage(e.sets),sets:e.sets});});
   {const pc=$('#pgCard');if(pc)pc.classList.toggle('semdado',!pts.length);}
   if(!pts.length){if(CH.chProg){CH.chProg.destroy();delete CH.chProg;}$('#pgSummary').textContent=name?'Sem registros deste exercício ainda.':'Cadastre um treino para ver a progressão.';return;}
-  mkChart('chProg',{data:{labels:pts.map(p=>dtShort(p.d)),datasets:[dsLine('carga máx (kg)',pts.map(p=>p.max),cssVar('--serie'),{pointRadius:4}),dsLine('tonelagem/100',pts.map(p=>+(p.ton/100).toFixed(1)),cssVar('--serie-2'),{borderDash:[4,3],pointRadius:3})]},options:{scales:{y:{beginAtZero:true}}}});
+  mkChart('chProg',{data:{labels:pts.map(p=>dtShort(p.d)),datasets:[dsLine('carga máx (kg)',pts.map(p=>p.max),cssVar('--serie'),{pointRadius:gPt(pts.length)}),dsLine('tonelagem/100',pts.map(p=>+(p.ton/100).toFixed(1)),cssVar('--serie-2'),{borderDash:G.aux,pointRadius:gPt(pts.length)})]},options:{scales:{x:dateAxis(pts.map(p=>p.d)),y:{beginAtZero:true}}}});
+  setLegend('chProg',[['line','var(--serie)','carga máxima (kg)'],['dots','var(--serie-2)','tonelagem (kg × reps ÷ 100)']]);
   const a=pts[0],b=pts[pts.length-1];$('#pgSummary').innerHTML=`${pts.length} sessões · carga máx ${fmt(a.max)} → <b>${fmt(b.max)} kg</b> (${sgn(b.max-a.max)}) · tonelagem ${fmt(a.ton)} → <b>${fmt(b.ton)} kg</b> · última: ${setsSummary(b.sets)}`;}
 /* ===== Comparativo dinâmico (aba Treino): grandeza × agrupamento, sobre os treinos do período da página */
 let CMP={metric:'ton',by:'letter',letters:null,cycle:'current'};
@@ -2581,7 +2637,9 @@ function renderCmp(){const box=$('#cmpTable');if(!box)return;const sel=$('#cmpMe
   if(CMP.by==='exercise')rows=rows.slice(0,14);
   const exLabel=CMP.by==='exercise'&&!['ton','tonAvg','max','sets'].includes(CMP.metric)?'Tonelagem total (kg)':label;
   {const cc=$('#cmpCard');if(cc)cc.classList.toggle('semdado',!rows.length);}
-  if(rows.length)mkChart('chCmp',{data:{labels:rows.map(r=>r.k),datasets:[dsBar(exLabel,rows.map(r=>+Number(r.v).toFixed(1)),cssVar('--serie'))]},options:{indexAxis:CMP.by==='exercise'?'y':'x',scales:{x:{grid:{display:CMP.by==='exercise'}},y:{beginAtZero:true,ticks:{autoSkip:false}}}}});else if(CH.chCmp){CH.chCmp.destroy();delete CH.chCmp;}
+  /* nome que não cabe numa linha vai em duas ("Treino" / "A", "25/11" / "A"); o rótulo não gira */
+  const cmpLb=k=>CMP.by==='exercise'?k:String(k).includes(' · ')?String(k).split(' · '):/^Treino \S/.test(k)?['Treino',String(k).slice(7)]:k;
+  if(rows.length)mkChart('chCmp',{data:{labels:rows.map(r=>cmpLb(r.k)),datasets:[dsBar(exLabel,rows.map(r=>+Number(r.v).toFixed(1)),cssVar('--serie'))]},options:{indexAxis:CMP.by==='exercise'?'y':'x',plugins:{tooltip:{callbacks:{title:it=>it.length&&rows[it[0].dataIndex]?rows[it[0].dataIndex].k:''}}},scales:{x:{grid:{display:CMP.by==='exercise'}},y:{beginAtZero:true,ticks:{autoSkip:false}}}}});else if(CH.chCmp){CH.chCmp.destroy();delete CH.chCmp;}
   box.innerHTML=rows.length?`<table><thead><tr><th>${CMP.by==='exercise'?'Exercício':CMP.by==='weekday'?'Dia':CMP.by==='date'?'Sessão':'Treino'}</th><th class="num">${CMP.by==='exercise'?'Execuções':'Sessões'}</th><th class="num">${esc(exLabel)}</th></tr></thead><tbody>${rows.map(r=>`<tr><td class="wrap">${esc(r.k)}</td><td class="num">${r.n}</td><td class="num"><b>${fmt(r.v,kgDec(r.v))}</b> ${unit}</td></tr>`).join('')}</tbody></table>`:`<div class="empty">Nenhum treino com séries registradas ${CMP.cycle==='all'?'no período':'no ciclo atual (desde '+dtBR(cycleStart()||CUR)+')'} e nos treinos escolhidos. ${CMP.cycle==='all'?'Amplie o período no filtro do topo.':'Escolha "Todos os ciclos" para ver o histórico anterior.'}</div>`;}
 function renderProto(){const t=S.protoT;$('#trProtoMeta').textContent=t?`${t.name||''}${t.coach?' · '+t.coach:''}${t.since?' · desde '+dtBR(t.since):''}`:'';
   if(!t||!t.workouts){$('#trProto').innerHTML='<div class="empty">Nenhum treino cadastrado. Monte o seu ou envie o arquivo do personal em “Atualizar protocolo”.</div><div class="row"><button class="btn primary" onclick="A.openBuilder()">Montar meu treino</button></div>';return;}
@@ -2653,37 +2711,43 @@ function renderPaineis(){
   /* indicador sem dado não ocupa linha: vai para uma frase só, no fim da lista */
   {const KP=KPI_ROWS;const com=KP.filter(x=>x.v!=='–'),sem=KP.filter(x=>x.v==='–');
   $('#kpiRow').innerHTML=com.map(x=>`<div class="kpi"><span class="l">${x.l}</span><span class="v">${x.v}<small> ${x.u}</small></span><span class="d">${x.d}</span></div>`).join('')+(sem.length?`<div class="mini semdados">Sem dado no período: ${sem.map(x=>x.l.toLowerCase()+' ('+x.d+')').join(' · ')}</div>`:'');}
-  const lab=dates.map(d=>dtShort(d));const step=dates.length>45?Math.ceil(dates.length/30):1;const tick={autoSkip:true,maxTicksLimit:dates.length>45?12:16,maxRotation:0,autoSkipPadding:6};const hj=todayISO();const cS=cssVar('--serie'),cS2=cssVar('--serie-2'),cM=cssVar('--meta');
+  const lab=dates.map(d=>dtShort(d));const step=dates.length>45?Math.ceil(dates.length/30):1;const xA=()=>dateAxis(dates,{diario:true});const pR=gPt(dates.length);const hj=todayISO();const cS=cssVar('--serie'),cS2=cssVar('--serie-2'),cM=cssVar('--meta');
   /* designer 24/11/2026: consumido em tinta (hoje, ainda parcial, mais claro); meta em degrau tracejado; gasto como um traço por dia, sem ligar um dia ao outro */
-  {const mt=dsLine('meta',dates.map(d=>metaFor(d).k),cM,{borderWidth:1.5,stepped:'middle',borderDash:[5,4],order:1});
-  mkChart('chEnergy',{data:{labels:lab,datasets:[dsLine('consumido',dates.map(d=>dayTotals(d).k||null),cS,{spanGaps:false,pointRadius:dates.length>45?2:3.5,pointHoverRadius:5,pointBorderWidth:1.7,pointBorderColor:cS,pointBackgroundColor:dates.map(d=>d===hj?cssVar('--surface'):cS),segment:{borderDash:c=>dates[c.p1DataIndex]===hj?[3,3]:undefined},order:2}),mt,dsLine('gasto',dates.map(d=>hasEnergyData(d)?energy(d).expend:null),cS2,{spanGaps:false,borderWidth:1.5,pointRadius:dates.length>45?0:2,pointHoverRadius:4,order:3})]},options:{scales:{x:{ticks:tick,grid:{display:false}},y:{beginAtZero:true}}}});
-  setLegend('chEnergy',[['line','var(--serie)','consumido'],['dash','var(--serie)','hoje (parcial)',dates.includes(hj)&&dayTotals(hj).k>0],['dash','var(--meta)','meta do dia'],['line','var(--serie-2)','gasto (TMB + ativas)']]);
+  {const mt=dsRef('meta',dates.map(d=>metaFor(d).k),cM,{stepped:'middle',order:1});
+  mkChart('chEnergy',{data:{labels:lab,datasets:[dsLine('consumido',dates.map(d=>dayTotals(d).k||null),cS,{spanGaps:false,pointRadius:pR,pointBorderWidth:G.lwRef,pointBorderColor:cS,pointBackgroundColor:dates.map(d=>d===hj?cssVar('--surface'):cS),segment:{borderDash:c=>dates[c.p1DataIndex]===hj?G.aux:undefined},order:2}),mt,dsLine('gasto',dates.map(d=>hasEnergyData(d)?energy(d).expend:null),cS2,{spanGaps:false,pointRadius:dates.length>G.denso?0:G.ptDenso,order:3})]},options:{scales:{x:xA(),y:{beginAtZero:true}}}});
+  setLegend('chEnergy',[['line','var(--serie)','consumido'],['dots','var(--serie)','hoje (parcial)',dates.includes(hj)&&dayTotals(hj).k>0],['dash','var(--meta)','meta do dia'],['line','var(--serie-2)','gasto (TMB + ativas)']]);
   {const sem=dates.filter(d=>d<=hj&&!(dayTotals(d).k>0)).length;const en=$('#enNote');if(en)en.textContent='kcal por dia'+(sem?` · ${plur(sem,'dia','dias')} sem refeição lançada`:'');}}
   // peso
   const wpts=wd.map(d=>S.days[d].weight);const xs=wd.map(d=>daysBetween(dates[0],d));const lr=linreg(xs,wpts);
   const exPts=examsSorted().filter(e=>e.date>=dates[0]&&e.date<=dates[dates.length-1]);
-  mkChart('chWeight',{data:{labels:lab,datasets:[dsLine('peso',dates.map(d=>S.days[d]&&S.days[d].weight||null),cS,{pointRadius:3}),dsLine('tendência',dates.map((d,i)=>lr&&wd.length>=3?+(lr.a+lr.b*i).toFixed(2):null),cS2,{borderDash:[3,3],borderWidth:1.5}),{type:'scatter',label:'bioimpedância',data:dates.map(d=>{const e=exPts.find(x=>x.date===d);return e?e.peso:null;}),backgroundColor:cssVar('--bg'),borderColor:cS,borderWidth:2,pointRadius:6,pointStyle:'rectRot'}]},options:{scales:{x:{ticks:tick,grid:{display:false}},y:{ticks:{callback:v=>fmt(v,1)}}}}});
+  mkChart('chWeight',{data:{labels:lab,datasets:[dsLine('peso',dates.map(d=>S.days[d]&&S.days[d].weight||null),cS,{pointRadius:pR}),dsLine('tendência',dates.map((d,i)=>lr&&wd.length>=3?+(lr.a+lr.b*i).toFixed(2):null),cS2,{borderDash:G.aux,borderWidth:G.lwRef}),{type:'scatter',label:'bioimpedância',data:dates.map(d=>{const e=exPts.find(x=>x.date===d);return e?e.peso:null;}),backgroundColor:cssVar('--bg'),borderColor:cS,borderWidth:G.lw,pointRadius:G.ptMarca,pointStyle:'rectRot'}]},options:{scales:{x:xA(),y:{ticks:{callback:v=>fmt(v,1)}}}}});
   {const wc=$('#chWeight').closest('.card');if(wc)wc.classList.toggle('semdado',!wd.length&&!exPts.some(e=>e.peso!=null&&dates.includes(e.date)));}
   $('#wtHint').textContent='kg · '+(lr&&wd.length>=3?`tendência ${sgn(lr.b*7,2)} kg/semana`:(wd.length?plur(wd.length,'pesagem','pesagens'):'sem pesagens'));
-  setLegend('chWeight',[['line','var(--serie)','pesagem',wd.length>0],['dash','var(--serie-2)','tendência',!!lr&&wd.length>=3],['diam','var(--serie)','bioimpedância',exPts.some(e=>e.peso!=null&&dates.includes(e.date))]]);
+  setLegend('chWeight',[['line','var(--serie)','pesagem',wd.length>0],['dots','var(--serie-2)','tendência',!!lr&&wd.length>=3],['diam','var(--serie)','bioimpedância',exPts.some(e=>e.peso!=null&&dates.includes(e.date))]]);
   // balanço acumulado
   let acc=0;const w0=wd.length?S.days[wd[0]].weight:null;const expArr=[],realArr=[];
   /* saldo acumulado só em dias com consumo registrado: sem refeições não há saldo */
   dates.forEach(d=>{if(dayTotals(d).k>0)acc+=dayTotals(d).k-energy(d).expend;expArr.push(+(acc/7700).toFixed(2));realArr.push(S.days[d]&&S.days[d].weight&&w0!=null?+(S.days[d].weight-w0).toFixed(2):null);});
-  mkChart('chBalance',{data:{labels:lab,datasets:[dsLine('esperado',expArr,cS2,{borderDash:[5,4]}),dsLine('real',realArr,cS,{pointRadius:3})]},options:{scales:{x:{ticks:tick,grid:{display:false}},y:{ticks:{callback:v=>sgn(v,1)}}}}});
+  mkChart('chBalance',{data:{labels:lab,datasets:[dsRef('esperado',expArr,cS2),dsLine('real',realArr,cS,{pointRadius:pR})]},options:{scales:{x:xA(),y:{ticks:{callback:v=>sgn(v,1)}}}}});
+  setLegend('chBalance',[['dash','var(--serie-2)','variação esperada pelo saldo (kg)'],['line','var(--serie)','variação medida na balança (kg)']]);
   // macros
   /* v49 (24/11/2026, protótipo aprovado): uma faixa de linha por macro e uma de água, cada uma na própria escala e com a sua meta.
      Ponto cheio = dia na meta (≥ 95 %); vazado = abaixo; hoje (parcial) vazado e ligado por pontilhado; dia sem registro interrompe a linha. */
   {const sf=cssVar('--surface');const faixa=(id,note,nome,val,meta,cor,un,dec)=>{const v=dates.map(d=>{const x=val(d);return x>0?x:null;});const m=dates.map(d=>{const x=meta(d);return x>0?x:null;});const ok=i=>v[i]!=null&&m[i]!=null&&v[i]>=m[i]*.95;
-      mkChart(id,{data:{labels:lab,datasets:[dsLine(nome,v,cor,{spanGaps:false,pointRadius:dates.length>45?2:3.5,pointHoverRadius:5,pointBorderWidth:1.7,pointBorderColor:cor,pointBackgroundColor:dates.map((d,i)=>ok(i)&&d!==hj?cor:sf),segment:{borderDash:c=>dates[c.p1DataIndex]===hj?[3,3]:undefined},order:2}),dsLine('meta',m,cM,{borderWidth:1.5,stepped:'middle',borderDash:[5,4],order:1})]},options:{scales:{x:{ticks:tick,grid:{display:false}},y:{beginAtZero:true}}}});
+      mkChart(id,{data:{labels:lab,datasets:[dsLine(nome,v,cor,{spanGaps:false,pointRadius:pR,pointBorderWidth:G.lwRef,pointBorderColor:cor,pointBackgroundColor:dates.map((d,i)=>ok(i)&&d!==hj?cor:sf),segment:{borderDash:c=>dates[c.p1DataIndex]===hj?G.aux:undefined},order:2}),dsRef('meta',m,cM,{stepped:'middle',order:1})]},options:{scales:{x:xA(),y:{beginAtZero:true}}}});
       const reg=dates.map((d,i)=>i).filter(i=>v[i]!=null&&dates[i]!==hj);const n=reg.filter(ok).length;const ms=[...new Set(m.filter(x=>x!=null).map(x=>fmt(x,dec)))];const el=$('#'+note);
       if(el)el.textContent=(ms.length===1?`meta ${ms[0]} ${un} · `:ms.length>1?`meta de ${ms[0]} a ${ms[ms.length-1]} ${un} · `:'')+(reg.length?`na meta em ${n} de ${plur(reg.length,'dia','dias')}`:'sem registro no período');};
     faixa('chMacros','mbNoteP','proteína (g)',d=>dayTotals(d).p,d=>metaFor(d).p,cssVar('--prot'),'g',0);
     faixa('chMacC','mbNoteC','carboidrato (g)',d=>dayTotals(d).c,d=>metaFor(d).c,cssVar('--carb'),'g',0);
     faixa('chMacF','mbNoteF','gordura (g)',d=>dayTotals(d).f,d=>metaFor(d).f,cssVar('--fat'),'g',0);
-    faixa('chWater','mbNoteW','água (L)',d=>((S.days[d]||{}).water||0)/1000,d=>(s.waterGoal||0)/1000,cssVar('--water'),'L',1);}
+    faixa('chWater','mbNoteW','água (L)',d=>((S.days[d]||{}).water||0)/1000,d=>(s.waterGoal||0)/1000,cssVar('--water'),'L',1);
+    /* uma legenda só para as quatro faixas, com o próprio sinal de cada coisa */
+    setLegend('chMacros',[['dot','var(--ink-2)','dia na meta (95 % ou mais)'],['ring','var(--ink-2)','abaixo da meta'],['dash','var(--meta)','meta do dia'],['dots','var(--ink-2)','hoje (parcial)',dates.includes(hj)]]);}
   // volume
-  mkChart('chVolume',{data:{labels:lab,datasets:[dsBar('musculação',dates.map(d=>musMinOf(d)||null),cS,{stack:'v',order:5}),dsBar('cárdio',dates.map(d=>cardioMinOf(d)||null),cS2,{stack:'v',order:5}),...(al=>[al,haloDs(al)])(dsLine('alvo cárdio',dates.map(d=>cardioAlvoDia(d)||null),cM,{borderWidth:1.5,stepped:true,borderDash:[3,3],order:1}))]},options:{scales:{x:{stacked:true,ticks:tick,grid:{display:false}},y:{stacked:true,beginAtZero:true}}}});
+  mkChart('chVolume',{data:{labels:lab,datasets:[dsBar('musculação',dates.map(d=>musMinOf(d)||null),cS,{stack:'v',order:5}),dsBar('cárdio',dates.map(d=>cardioMinOf(d)||null),cS2,{stack:'v',order:5}),...(al=>[al,haloDs(al)])(dsRef('alvo cárdio',dates.map(d=>cardioAlvoDia(d)||null),cM,{stepped:true,order:1}))]},options:{scales:{x:Object.assign(xA(),{stacked:true}),y:{stacked:true,beginAtZero:true}}}});
+  setLegend('chVolume',[['','var(--serie)','musculação'],['','var(--serie-2)','cárdio'],['dash','var(--meta)','alvo de cárdio']]);
+  /* a nota do bloco cabe numa linha; o texto inteiro fica no title */
+  $$('#tab-paineis .card-h>.mini,#tab-paineis .mband-h>.mini').forEach(e=>{e.title=e.textContent;});
   renderCoach(dates);renderTable(dates);
 }
 function coachContext(dates){const eat=dates.filter(d=>dayTotals(d).k>0);const lines=[];const s=settings();
@@ -2719,14 +2783,16 @@ function renderBio(){const PB=periodBounds(RANGES.saude);const ex=examsSorted().
   const pts=ex.filter(e=>keys.some(k=>e[k]!=null));
   $('#bioCmpBtn').classList.toggle('accent',BIOCMP.length>1);
   if(pts.length&&keys.length>1){ // grandezas de unidades diferentes: índice (primeiro exame = 100 %), um eixo só
-    const ds=keys.map((k,i)=>{const base=(pts.find(e=>e[k]!=null)||{})[k];return dsLine(BIO_LABELS[k],pts.map(e=>e[k]!=null&&base?+(e[k]/base*100).toFixed(1):null),PAL[i%PAL.length],{pointRadius:4,tension:.2});});
-    mkChart('chBio',{data:{labels:pts.map(e=>dtShort(e.date)),datasets:ds},options:{plugins:{legend:{display:true,position:'bottom',labels:{boxWidth:10,boxHeight:10,usePointStyle:true}}},scales:{y:{ticks:{callback:v=>fmt(v,0)+' %'}}}}});
+    const ds=keys.map((k,i)=>{const base=(pts.find(e=>e[k]!=null)||{})[k];return dsLine(BIO_LABELS[k],pts.map(e=>e[k]!=null&&base?+(e[k]/base*100).toFixed(1):null),PAL[i%PAL.length],{pointRadius:gPt(pts.length)});});
+    mkChart('chBio',{data:{labels:pts.map(e=>dtShort(e.date)),datasets:ds},options:{scales:{x:dateAxis(pts.map(e=>e.date)),y:{ticks:{callback:v=>fmt(v,0)+' %'}}}}});
+    setLegend('chBio',keys.map((k,i)=>['line',PAL[i%PAL.length],esc(BIO_LABELS[k])]));
     $('#bioRange').innerHTML='Índice: primeiro exame = 100 %. '+keys.map((k,i)=>{const a=pts.find(e=>e[k]!=null),b=[...pts].reverse().find(e=>e[k]!=null);return a&&b?`<b style="color:${PAL[i%PAL.length]}">${esc(BIO_LABELS[k])}</b> ${fmt(a[k],k==='tmb'?0:1)} → ${fmt(b[k],k==='tmb'?0:1)} (${sgn((b[k]/a[k]-1)*100,1)} %)`:'';}).join(' · ');}
   else if(pts.length){/* designer 24/11/2026: eixo proporcional às datas dos exames; faixa de referência desenhada no fundo */
     const xs=pts.map(e=>daysBetween(pts[0].date,e.date));const rg=String(BIO_RANGE[BIOK]||'').match(/\d[\d.]*(?:,\d+)?/g);const nBR=v=>+String(v).replace(/\./g,'').replace(',','.');const lo=rg&&rg.length>=2?nBR(rg[0]):null,hi=rg&&rg.length>=2?nBR(rg[1]):null;const faixa=lo!=null&&hi!=null&&hi>lo;const cF=cssVar('--surface-2');
-    mkChart('chBio',{data:{datasets:[dsLine(BIO_LABELS[BIOK],pts.map((e,i)=>({x:xs[i],y:e[BIOK]})),cssVar('--serie'),{pointRadius:5,clip:8})]},
+    setLegend('chBio',[]);const yr=e=>String(e.date).slice(0,4);const cross=pts.length>1&&yr(pts[0])!==yr(pts[pts.length-1]);
+    mkChart('chBio',{data:{datasets:[dsLine(BIO_LABELS[BIOK],pts.map((e,i)=>({x:xs[i],y:e[BIOK]})),cssVar('--serie'),{pointRadius:gPt(pts.length),clip:8})]},
       plugins:[{id:'faixaRef',beforeDatasetsDraw(c){if(!faixa)return;const a=c.chartArea,y=c.scales.y;const t=Math.max(a.top,y.getPixelForValue(hi)),b=Math.min(a.bottom,y.getPixelForValue(lo));if(!(b>t))return;c.ctx.save();c.ctx.fillStyle=cF;c.ctx.fillRect(a.left,t,a.right-a.left,b-t);c.ctx.restore();}}],
-      options:{scales:{x:{type:'linear',min:0,max:xs[xs.length-1]||1,afterBuildTicks:ax=>{ax.ticks=xs.map(v=>({value:v}));},ticks:{maxRotation:0,autoSkip:true,autoSkipPadding:6,callback:v=>{const i=xs.indexOf(v);return i<0?'':dtShort(pts[i].date);}},grid:{display:false}},y:{title:{display:true,text:BIO_LABELS[BIOK]},ticks:{callback:v=>fmt(v,BIOK==='tmb'?0:1)}}},plugins:{tooltip:{callbacks:{title:it=>it.length&&pts[it[0].dataIndex]?dtBR(pts[it[0].dataIndex].date):''}}}}});
+      options:{scales:{x:{type:'linear',min:0,max:xs[xs.length-1]||1,afterBuildTicks:ax=>{/* uma marca por exame; a que ficaria a menos de 44 px da seguinte fica sem rótulo (conta do exame mais recente para trás) */const W=Math.max(1,ax.width-G.padR);const span=xs[xs.length-1]||1;const t=[];let ult=Infinity;for(let i=xs.length-1;i>=0;i--){const px=xs[i]/span*W;if(ult-px>=G.tickPx){t.unshift({value:xs[i]});ult=px;}}ax.ticks=t;},ticks:{autoSkip:false,callback:(v,j,t)=>{const i=xs.indexOf(v);if(i<0)return '';const p=j>0&&t[j-1]?pts[xs.indexOf(t[j-1].value)]:null;return dtShort(pts[i].date)+(cross&&(!p||yr(p)!==yr(pts[i]))?'/'+String(pts[i].date).slice(2,4):'');}},grid:{display:false}},y:{title:{display:true,text:BIO_LABELS[BIOK]},ticks:{callback:v=>fmt(v,BIOK==='tmb'?0:1)}}},plugins:{tooltip:{callbacks:{title:it=>it.length&&pts[it[0].dataIndex]?dtBR(pts[it[0].dataIndex].date):''}}}}});
     $('#bioRange').textContent=BIO_RANGE[BIOK]?`Referência InBody: ${BIO_RANGE[BIOK]}${faixa?' (faixa cinza no gráfico)':''}`:'';}
   else if(CH.chBio){CH.chBio.destroy();delete CH.chBio;$('#bioRange').textContent='';}
   const cols=[['date','Data'],['tipo','Aparelho'],...EXAM_DEFS];
@@ -2753,7 +2819,7 @@ function renderMeds(){renderRx();const meds=Object.values(S.meds).sort((a,b)=>(a
   const adh=(()=>{let due=0,tk=0;medsF.forEach(m=>{const a=medAdherenceFor(m,dates);due+=a.due;tk+=a.taken;});return {due,taken:tk,pct:due?Math.round(tk/due*100):null};})();
   $('#medAdhHint').textContent=adh.due?`${adh.pct} % · ${adh.taken} de ${adh.due} doses${mf==='*'?' · '+medsF.length+' medicamento'+(medsF.length===1?'':'s')+' ativo'+(medsF.length===1?'':'s'):''}`:'sem doses previstas';
   $('#medAdhTable').innerHTML=medsF.length?`<table><thead><tr><th>Medicamento</th><th class="num">Doses</th><th class="num">Adesão</th><th>Leitura</th></tr></thead><tbody>${medsF.map(m=>{const ins=medInsight(m);const a=medAdherenceFor(m,dates);return `<tr><td class="wrap"><b>${esc(m.name)}</b></td><td class="num">${a.taken}/${a.due}</td><td class="num"><span class="status ${a.pct==null?'':a.pct>=85?'ok':a.pct>=60?'warn':'bad'}">${a.pct!=null?a.pct+' %':'—'}</span></td><td class="wrap mini">${esc(ins.long)}</td></tr>`;}).join('')}</tbody></table>`:'';
-  if(adh.due)mkChart('chMeds',{data:{labels:dates.map(dtShort),datasets:[dsBar('adesão %',perDay,cssVar('--serie'))]},options:{scales:{x:{ticks:{maxTicksLimit:10},grid:{display:false}},y:{min:0,max:100}}}});else if(CH.chMeds){CH.chMeds.destroy();delete CH.chMeds;}
+  if(adh.due)mkChart('chMeds',{data:{labels:dates.map(dtShort),datasets:[dsBar('adesão %',perDay,cssVar('--serie'))]},options:{scales:{x:dateAxis(dates,{diario:true}),y:{min:0,max:100}}}});else if(CH.chMeds){CH.chMeds.destroy();delete CH.chMeds;}
   {const mc=$('#chMeds')&&$('#chMeds').closest('.card');if(mc)mc.classList.toggle('semdado',!adh.due);}}
 function renderClin(){const PB=periodBounds(RANGES.saude);const cl=Object.values(S.clinical).filter(c=>c.date>=PB.from&&c.date<=PB.to).sort((a,b)=>a.date<b.date?1:-1);const al=computeAlerts().filter(a=>a.sub==='clin');
   $('#clinAlerts').innerHTML=al.map(a=>`<div class="note ${a.lv==='bad'?'bad':'warn'}">${esc(a.t)}</div>`).join('');
@@ -3362,7 +3428,7 @@ Object.assign(A,{
     const letters=$$('.repWk:checked').map(c=>c.value);const cmp=$('#repCmp').value;const cycle=$('#repCycle').value;REP={from,to,secs,detail:$('#repDetail').value,obs:$('#repObs').value.trim(),letters,cmp,cycle,bioSet:!!$('#repBio')&&$('#repBio').dataset.auto==='0'};closeSheet();
     if(Store.mode==='cloud'&&!Store.ready){toast('Aguarde sincronizar para numerar o relatório');REP=null;return;}{const now=new Date();const y=now.getFullYear();const n=repNextN(y);REP.year=y;REP.n=n;REP.num=repNumFmt(n,y);REP.emitted=now;REP.saved=false;}
     try{REP.data=reportData(from,to,REP);REP.html=reportHTML(REP.data,REP);REP.text=reportText(REP.data,REP);}catch(e){console.error(e);toast('Falha ao montar o relatório: '+(e.message||e));return;}
-    $('#repBody').innerHTML=REP.html;repMark();$('#report').hidden=false;document.body.style.overflow='hidden';$('#report').scrollTop=0;},
+    $('#repBody').innerHTML=REP.html;repMark();$('#report').hidden=false;document.body.style.overflow='hidden';$('#report').scrollTop=0;repFit();},
   closeReport(){$('#report').hidden=true;document.body.style.overflow='';},
   async printReport(){const dl=DL_READY||await dlNS();const touch=isTouch();/* v46 · A4: no site a impressão sai sempre do PDF (o mesmo do "Baixar PDF", com o QR e as fotos), nunca da tela */if(!dl&&!touch&&!onCF()){try{repFresh();const pv=$('#repProv');if(pv)pv.hidden=true;window.print();repCommit('imprimir');return;}catch(e){const pv=$('#repProv');if(pv)pv.hidden=false;}}if(!REP)return;repFresh();const R=REP;toast('Gerando PDF para imprimir…',4000);try{const blob=await reportPdfFile();await downloadBlob(`relatorio-executivo_${(REP.num||'').replace('/','-')}_${REP.from}_${REP.to}.pdf`,blob,{onDone:()=>repCommit('imprimir',R),title:'Imprimir relatório',srvNote:'É o mesmo PDF do "Baixar PDF". Depois de abrir, toque em compartilhar e em Imprimir (no computador, Arquivo › Imprimir).',btn:touch?'Imprimir ou compartilhar':'Salvar PDF para imprimir',note:touch?'Na folha que abrir, toque em Imprimir. Também dá para salvar em Arquivos ou enviar.':'O PDF vai para a pasta Downloads: abra o arquivo e use Arquivo › Imprimir.'});}catch(e){console.error(e);toast('PDF: '+(e.message||e),4000);}},
   async downloadReport(){if(!REP)return;const name=`relatorio-executivo_${REP.from}_${REP.to}.html`;const doc=`<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Relatório executivo · ${esc(REP.from)} a ${esc(REP.to)}</title><style>body{margin:0;background:#fff}${REP_CSS}</style></head><body>${REP.html}</body></html>`;await download(name,doc);},
@@ -3466,7 +3532,7 @@ function labUpsert(date,lab,markers,notes,source){const same=labsSorted().filter
 /* ============================================================ LABORATORIAIS: todos os marcadores, gráficos múltiplos, insight e PDF */
 function cssId(s){return String(s).replace(/[^a-z0-9]/gi,'_');}
 function labChart(id,s,small){const ref=LAB_REF[s.key]||{};const last=s.pts[s.pts.length-1];const lo=last.low??ref.lo,hi=last.high??ref.hi;
-  mkChart(id,{data:{labels:s.pts.map(p=>dtShort(p.date)),datasets:[dsLine(s.name,s.pts.map(p=>p.v),cssVar('--serie'),{pointRadius:small?3:5,pointBackgroundColor:s.pts.map(p=>(p.flag==='ok'||!p.flag)?cssVar('--serie'):cssVar('--bad'))}),...(hi!=null&&hi<9e5?[dsLine('limite sup.',s.pts.map(()=>hi),cssVar('--muted'),{borderDash:[3,3],borderWidth:1})]:[]),...(lo!=null&&lo>0?[dsLine('limite inf.',s.pts.map(()=>lo),cssVar('--muted'),{borderDash:[3,3],borderWidth:1})]:[])]},options:{scales:{y:{ticks:{maxTicksLimit:small?4:6}},x:{ticks:{maxTicksLimit:small?4:8}}}}});}
+  mkChart(id,{data:{labels:s.pts.map(p=>dtShort(p.date)),datasets:[dsLine(s.name,s.pts.map(p=>p.v),cssVar('--serie'),{pointRadius:gPt(s.pts.length),pointBackgroundColor:s.pts.map(p=>(p.flag==='ok'||!p.flag)?cssVar('--serie'):cssVar('--bad'))}),...(hi!=null&&hi<9e5?[dsRef('limite sup.',s.pts.map(()=>hi),cssVar('--muted'))]:[]),...(lo!=null&&lo>0?[dsRef('limite inf.',s.pts.map(()=>lo),cssVar('--muted'))]:[])]},options:{scales:{y:{ticks:{maxTicksLimit:small?4:6}},x:dateAxis(s.pts.map(p=>p.date))}}});}
 function labInsight(s){const pts=(s.pts||[]).filter(x=>typeof x.v==='number'&&!isNaN(x.v));const n=pts.length;if(!n)return {short:'Sem valor numérico registrado.',long:'Resultado sem valor numérico; não há variação a calcular.',trend:'—',d:0,p:null,out:0};const f=pts[0],l=pts[n-1];const ref=LAB_REF[s.key]||{};const lo=l.low??ref.lo,hi=l.high??ref.hi;const u=s.unit||'';const F=v=>fmt(v,Math.abs(v)%1?2:0);
   const faixa=(lo!=null||hi!=null)?` (faixa ${lo!=null&&lo>0?F(lo):'—'}–${hi!=null&&hi<9e5?F(hi):'—'}${u?' '+u:''})`:'';
   const st=l.flag==='high'?'acima da referência':l.flag==='low'?'abaixo da referência':l.flag==='ok'?'dentro da referência':'sem referência';
