@@ -232,7 +232,9 @@
       else if (a) a.remove();
     } catch (e) {}
   }
-  const NCS = { problem: () => !!message(), paint, localMsg: '', state: () => ({ ready: S.ready, synced: S.synced, stale: S.stale, authErr: S.authErr, srvErr: S.srvErr, quota: S.quota, queued: queued(), docs: Object.keys(S.docs).length, hadCache: HAD_CACHE }) };
+  const NCS = { problem: () => !!message(), paint, localMsg: '',
+    // v58: versões anteriores guardadas pelo site (30 dias) para "Recuperar treino" em Ajustes
+    hist: async col => { const j = await call('GET', '/hist?col=' + encodeURIComponent(col)); return (j && Array.isArray(j.versions)) ? j.versions : []; }, state: () => ({ ready: S.ready, synced: S.synced, stale: S.stale, authErr: S.authErr, srvErr: S.srvErr, quota: S.quota, queued: queued(), docs: Object.keys(S.docs).length, hadCache: HAD_CACHE }) };
   Object.defineProperty(NCS, 'aiTimeout', { get: () => AI_TIMEOUT, set: v => { AI_TIMEOUT = Math.max(50, Number(v) || 180000); } });
   window.ncSync = NCS;
   window.addEventListener('DOMContentLoaded', () => paint());

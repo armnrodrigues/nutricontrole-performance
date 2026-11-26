@@ -1075,13 +1075,14 @@ body.job-on.has-trfoot #toast{bottom:calc(var(--nav-h) + var(--trfoot-h,68px) + 
     </div>
     <div class="card">
       <div class="card-h"><h3>Dados</h3><span class="mini" id="dataStats"></span></div>
-      <p class="mini mb2" id="appVersion">Versão 57 · 26/11/2026</p><p class="mini mb2" id="lastAiErr" hidden></p>
+      <p class="mini mb2" id="appVersion">Versão 58 · 26/11/2026</p><p class="mini mb2" id="lastAiErr" hidden></p>
       <div class="row">
         <button class="btn sm" onclick="A.exportAll()">Exportar backup (JSON)</button>
         <button class="btn sm" onclick="A.exportCSV()">Exportar diário (CSV)</button>
         <label class="btn sm">Importar backup NutriControle<input type="file" id="impFile" accept=".json,application/json" class="sr"></label>
       </div>
       <p class="mini mt2">Aceita também o backup do NutriControle antigo.</p>
+      <div id="histRow" class="row mt2" hidden><button class="btn sm" id="histBtn" onclick="A.openHist()">Recuperar treino apagado ou alterado</button><span class="mini">Versões dos últimos 30 dias, guardadas no site.</span></div>
       <div class="line mt2"><span class="l">Conferir dados <small>consistência dos registros e dos cálculos</small></span><button class="btn sm" id="validBadge" onclick="A.showValidation()">validando…</button></div>
     </div>
     <div class="card" id="shareCard" hidden>
@@ -1346,8 +1347,30 @@ function settings(){return Object.assign({},DEF_SETTINGS,S.settings||{},{profile
 
 /* ============================================================ BANCO (nuvem com fallback local) */
 function thaw(v){try{return typeof structuredClone==='function'?structuredClone(v):JSON.parse(JSON.stringify(v));}catch(e){return JSON.parse(JSON.stringify(v));}}
+/* v58 · PROTEÇÃO DE TREINO (regra R-01 de qa/REGRAS.md). Toda gravação e exclusão de treino passa por aqui.
+   Série salva só sai por ação explícita do usuário: apagar o valor na grade, "Apagar treino"/"Excluir" com confirmação,
+   mover o treino para outra data ou letra, restaurar backup ou versão anterior. Esses caminhos chamam Store.allow(caminho) logo antes.
+   Qualquer outra gravação que tiraria séries é juntada com o que está salvo (as séries ficam) e a tentativa fica registrada. */
+const wkExKey=e=>String((e&&(e.protoName||e.name))||'').trim().toLowerCase();
+const wkFilled=e=>((e&&e.sets)||[]).filter(s=>s&&(s.kg!=null||s.reps!=null)).length;
+function wkSetCount(w){return ((w&&w.exercises)||[]).reduce((n,e)=>n+wkFilled(e),0);}
+function wkGuardLog(kind,path,info){try{const k='ncperf_protecao';const a=JSON.parse(localStorage.getItem(k)||'[]');a.unshift({at:new Date().toISOString(),kind,path,info});localStorage.setItem(k,JSON.stringify(a.slice(0,30)));}catch(e){}try{console.warn('proteção',kind,path,info);}catch(e){}}
+function wkGuard(id,nd){const old=S.workouts&&S.workouts[id];if(!old||!nd||!wkSetCount(old))return null;
+  const nm=new Map((nd.exercises||[]).map(e=>[wkExKey(e),e]));const lost=[];let n=0;
+  (old.exercises||[]).forEach(e=>{const x=nm.get(wkExKey(e)),d=wkFilled(e)-(x?wkFilled(x):0);if(d>0){lost.push(e);n+=d;}});
+  if(!lost.length)return null;
+  const ex=(nd.exercises||[]).map(e=>e);
+  lost.forEach(e=>{const k=wkExKey(e),i=ex.findIndex(x=>wkExKey(x)===k),keep=JSON.parse(JSON.stringify(e));
+    if(i>=0){const om=keep.media||[];(ex[i].media||[]).forEach(m=>{if(!om.some(o=>JSON.stringify(o)===JSON.stringify(m)))om.push(m);});keep.media=om;ex[i]=keep;}else ex.push(keep);});
+  const out=Object.assign({},nd,{exercises:ex});
+  try{const a=computeAdherence(ex,protoWorkout(out.wk));out.adherence=Object.assign({},out.adherence||{},{done:a.done,partial:a.partial,missed:a.missed,extra:a.extra,pct:a.pct,ind:indCounts(a,out.date)});}catch(e){}
+  wkGuardLog('set','workouts/'+id,{mantidas:n,antes:wkSetCount(old),veio:wkSetCount(nd)});
+  if(!wkGuard._t||Date.now()-wkGuard._t>20000){wkGuard._t=Date.now();toast('Proteção: '+(n===1?'1 série salva ia sair':n+' séries salvas iam sair')+' do Treino '+out.wk+' e '+(n===1?'foi mantida':'foram mantidas')+'. Para tirar uma série, apague o valor na grade ou use Apagar treino.',8000);}
+  return out;}
 const Store={
-  mode:'local',db:null,user:null,uid:null,pending:{},inflight:{},ready:false,
+  mode:'local',db:null,user:null,uid:null,pending:{},inflight:{},ready:false,okDrop:{},
+  allow(path){this.okDrop[path]=Date.now();},
+  _ok(path){const t=this.okDrop[path];delete this.okDrop[path];return !!t&&Date.now()-t<30000;},
   async init(){
     try{
       const db=await window.claude?.use?.('db');
@@ -1378,6 +1401,7 @@ const Store={
   async set(path,data){
     if(this.mode==='cloud'&&!this.ready){toast('Aguarde sincronizar com o banco antes de editar',3500);return;}
     const [colName,id]=path.split('/');
+    if(colName==='workouts'&&!this._ok(path)){const g=wkGuard(id,data);if(g)data=g;}
     // aplica localmente de imediato
     const map={days:'days',workouts:'workouts',exams:'exams',labs:'labs',meds:'meds',meddoses:'meddoses',clinical:'clinical',foods:'foods',protocol_history:'protoHist',prescriptions:'rx',train_forms:'tforms'};
     if(map[colName])S[map[colName]][id]=data;else if(path==='settings/main')S.settings=data;else if(path==='protocol/nutrition')S.protoN=data;else if(path==='protocol/training')S.protoT=data;
@@ -1391,6 +1415,7 @@ const Store={
   },
   retryLater(path){this._rt=this._rt||{};if(this._rt[path])return;this._rt[path]=setTimeout(()=>{delete this._rt[path];if(this.pending[path]!==undefined&&!this.inflight[path]){const d=this.pending[path];delete this.pending[path];this.set(path,d);}},5000);},
   async del(path){
+    {const [c0,i0]=path.split('/');if(c0==='workouts'&&!this._ok(path)){const w=S.workouts&&S.workouts[i0];if(w&&wkSetCount(w)>0){wkGuardLog('del',path,{series:wkSetCount(w)});toast('Proteção: este treino tem séries salvas e só sai pelo botão Apagar treino, com confirmação.',7000);return;}}}
     delete this.pending[path];if(this._rt&&this._rt[path]){clearTimeout(this._rt[path]);delete this._rt[path];}if(this.inflight[path]){(this.delAfter=this.delAfter||{})[path]=true;}
     const [colName,id]=path.split('/');const map={days:'days',workouts:'workouts',exams:'exams',labs:'labs',meds:'meds',meddoses:'meddoses',clinical:'clinical',foods:'foods',protocol_history:'protoHist',prescriptions:'rx',train_forms:'tforms'};
     if(map[colName])delete S[map[colName]][id];
@@ -3171,7 +3196,7 @@ const A={
         toast('Treino '+_wk+' já estava salvo: as séries lançadas foram mantidas'+(add?' e o arquivo acrescentou '+plur(add,'exercício','exercícios'):'; o arquivo não trouxe exercício novo')+'.',7000);}}
       TR.parsed=r;TR.parsedKey=_wk+'|'+_dt;TR.editingId=S.workouts[_dt+'_'+_wk]?_dt+'_'+_wk:null;TR.dirty=true;TR.userPick=true;renderParsed();wkAutosave();busy('trStatus',false,'');}catch(e){busy('trStatus',false,aiErr(e));A._wkRead='erro';}finally{const b0=$('#trAnalyze');if(b0)b0.disabled=false;}},
   manualWorkout(){TR.parsed=null;TR.dirty=false;TR.parsedKey=null;TR.editingId=null;ensureParsed();renderParsed();},
-  gSet(ei,i,k,v){{const ev=window.event;if(ev&&ev.target&&ev.target.isConnected===false)return;}const e=TR.parsed&&TR.parsed.exercises[ei];if(!e)return;if(!e.cells)e.cells=setsToCells(e.sets,i+1);while(e.cells.length<=i)e.cells.push({reps:null,kg:null,fail:false});e.cells[i][k]=k==='fail'?!!v:numLoose(v);TR.dirty=true;refreshParsedMeta();wkAutosave();},
+  gSet(ei,i,k,v){{const ev=window.event;if(ev&&ev.target&&ev.target.isConnected===false)return;}const e=TR.parsed&&TR.parsed.exercises[ei];if(!e)return;if(!e.cells)e.cells=setsToCells(e.sets,i+1);while(e.cells.length<=i)e.cells.push({reps:null,kg:null,fail:false});const pv=e.cells[i][k];e.cells[i][k]=k==='fail'?!!v:numLoose(v);if(k!=='fail'&&pv!=null&&e.cells[i][k]==null)TR.userShrink=true;TR.dirty=true;refreshParsedMeta();wkAutosave();},
   gAdd(ei){const e=TR.parsed.exercises[ei];if(!e)return;if(!e.cells)e.cells=setsToCells(e.sets,0);e.cells.push({reps:null,kg:null,fail:false});TR.dirty=true;renderParsed();wkAutosave();},
   exSet(ei,k,v){const e=TR.parsed&&TR.parsed.exercises[ei];if(!e)return;e[k]=numLoose(v);TR.dirty=true;wkAutosave();},
   async exMediaAdd(ei,input){const files=Array.from(input.files||[]);input.value='';const e=TR.parsed&&TR.parsed.exercises[ei];if(!e||!files.length)return;
@@ -3216,9 +3241,17 @@ const A={
   saveWorkout(){if(!TR.parsed)return;if(TR.uploading){toast('Aguarde terminar o envio da foto/vídeo');return;}clearTimeout(AUTOSAVE.t);AUTOSAVE.t=null;const wasDone=TR.editingId&&wkStatus(S.workouts[TR.editingId])==='done';const doc=wkPersist(true);if(!doc)return;
     TR={images:[],parsed:null,adh:null,dirty:false,parsedKey:null,editingId:null};$('#trText').value='';$('#trFiles').value='';$('#trThumbs').innerHTML='';renderAll();toast(wasDone?`Treino ${doc.wk} atualizado · aderência ${doc.adherence.pct} %`:`Treino ${doc.wk} concluído · aderência ${doc.adherence.pct} %`);},
   discardWorkout(){const id=TR.editingId;const w=id?S.workouts[id]:null;if(!w){A.clearParsed();return;}const feito=wkStatus(w)==='done';const nS=(w.exercises||[]).reduce((a,e)=>a+(e.sets||[]).length,0);
-    confirmInline(`Apagar o treino ${w.wk} ${feito?'concluído':'em andamento'} de ${dtBR(w.date)}? ${nS?plur(nS,'série lançada será removida','séries lançadas serão removidas'):'O registro será removido'} e isso não pode ser desfeito.`,()=>{clearTimeout(AUTOSAVE.t);AUTOSAVE.t=null;Store.del('workouts/'+id);const d=getDay(w.date);if(d.session&&d.session.wk===w.wk){delete d.session.wk;saveDay(w.date,d);}TR={images:[],parsed:null,adh:null,dirty:false,parsedKey:null,editingId:null};renderAll();toast(feito?'Treino apagado':'Treino em andamento descartado');});},
+    confirmInline(`Apagar o treino ${w.wk} ${feito?'concluído':'em andamento'} de ${dtBR(w.date)}? ${nS?plur(nS,'série lançada será removida','séries lançadas serão removidas'):'O registro será removido'} e isso não pode ser desfeito.`,()=>{clearTimeout(AUTOSAVE.t);AUTOSAVE.t=null;Store.allow('workouts/'+id);Store.del('workouts/'+id);const d=getDay(w.date);if(d.session&&d.session.wk===w.wk){delete d.session.wk;saveDay(w.date,d);}TR={images:[],parsed:null,adh:null,dirty:false,parsedKey:null,editingId:null};renderAll();toast(feito?'Treino apagado':'Treino em andamento descartado');});},
   reopenWorkout(id){const w=S.workouts[id];if(!w)return;wkFlush();cardOpen('trLogCard',true);TR.userPick=true;TR.editingId=id;TR.parsed={exercises:wkMergePlan(JSON.parse(JSON.stringify(w.exercises||[])),w.wk),duration_min:w.durationMin,cardio_min:w.cardioMin,cardio_fasted:w.cardioFasted,notes:w.notes};$('#trWk').value=w.wk;$('#trDate').value=w.date;TR.dirty=false;TR.parsedKey=w.wk+'|'+w.date;renderParsed();appScrollTop?appScrollTop():window.scrollTo({top:0,behavior:'smooth'});},
-  delWorkout(id){if(!confirmInline('Excluir este treino?',()=>{const w=S.workouts[id];if(TR.editingId===id||(w&&TR.parsedKey===w.wk+'|'+w.date)){clearTimeout(AUTOSAVE.t);AUTOSAVE.t=null;TR={images:[],parsed:null,adh:null,dirty:false,parsedKey:null,editingId:null};}Store.del('workouts/'+id);if(w){const d=getDay(w.date);if(d.session&&d.session.wk===w.wk){delete d.session.wk;saveDay(w.date,d);}}renderAll();toast('Treino excluído');}))return;},
+  async openHist(){A._hist={list:[],err:null};openSheet('Recuperar treino',`<p class="mini">Cada vez que um treino é alterado ou apagado no site, a versão anterior fica guardada por 30 dias. Restaurar grava a versão escolhida no lugar da atual, que também fica guardada.</p><div class="list mt2" id="histList"><p class="mini"><span class="spin"></span> Buscando versões…</p></div>`);
+    try{const vs=await window.ncSync.hist('workouts');A._hist.list=(vs||[]).filter(v=>v&&v.data&&wkSetCount(v.data)>0);}catch(e){A._hist.err=(e&&e.code==='session_expired')?'Sessão expirada: recarregue a página e entre de novo.':'Não consegui buscar as versões agora. Tente de novo com internet.';}
+    histRender();},
+  restoreHist(i){const v=A._hist&&A._hist.list[i];if(!v)return;const l=histLabel(v);
+    confirmInline(`Restaurar o Treino ${l.wk} de ${dtBR(l.date)} com ${plur(l.n,'série','séries')}? A versão que está no app agora fica guardada no histórico.`,()=>{const doc=Object.assign({},thaw(v.data),{updatedAt:new Date().toISOString()});Store.allow(v.path);Store.set(v.path,doc);
+      const d=getDay(doc.date);if(d&&okISO(doc.date)){const s=d.session||{};if(s.wk!==doc.wk){s.wk=doc.wk;d.session=s;saveDay(doc.date,d);}}
+      if(TR.parsedKey===doc.wk+'|'+doc.date&&!TR.dirty){TR.parsed=null;TR.parsedKey=null;TR.editingId=null;}
+      renderAll();toast('Treino '+doc.wk+' de '+dtBR(doc.date)+' restaurado');});},
+  delWorkout(id){if(!confirmInline('Excluir este treino?',()=>{const w=S.workouts[id];if(TR.editingId===id||(w&&TR.parsedKey===w.wk+'|'+w.date)){clearTimeout(AUTOSAVE.t);AUTOSAVE.t=null;TR={images:[],parsed:null,adh:null,dirty:false,parsedKey:null,editingId:null};}Store.allow('workouts/'+id);Store.del('workouts/'+id);if(w){const d=getDay(w.date);if(d.session&&d.session.wk===w.wk){delete d.session.wk;saveDay(w.date,d);}}renderAll();toast('Treino excluído');}))return;},
 
   /* ---------- Painéis */
   async coachAI(){const btn=$('#coachAI');btn.disabled=true;const box=$('#coachAIBox');box.hidden=false;box.innerHTML='<span class="spin"></span> O treinador está lendo os dados…';
@@ -3394,7 +3427,7 @@ const A={
   exportAll(){const out={app:'NutriControle Performance',version:1,exportedAt:new Date().toISOString(),settings:S.settings,protocol:{nutrition:S.protoN,training:S.protoT},days:S.days,workouts:S.workouts,exams:S.exams,labs:S.labs,meds:S.meds,meddoses:S.meddoses,clinical:S.clinical,foods:S.foods,protocol_history:S.protoHist,prescriptions:S.rx,train_forms:S.tforms};download(`ncperf_backup_${todayISO()}.json`,JSON.stringify(out,null,1));},
   exportCSV(){const rows=[['data','tipo','kcal','meta_kcal','prot','carb','gord','fibra','sodio','gasto','saldo','peso','agua','treino','musc_min','cardio_min','ativas_apple','passos','cardio_alvo','dia','ativas_total','musc_min_total']];Object.keys(S.days).sort().forEach(d=>{const t=dayTotals(d),e=energy(d),s=sessionOf(d),m=metaFor(d);rows.push([d,m.label,t.k.toFixed(0),m.k,t.p.toFixed(0),t.c.toFixed(0),t.f.toFixed(0),t.fib.toFixed(0),t.sod.toFixed(0),e.expend.toFixed(0),e.net.toFixed(0),S.days[d].weight??'',S.days[d].water??'',s.wk||'',s.trainMin??'',cardioMinOf(d)||(s.cardioMin??''),s.activeKcal??'',s.steps??'',cardioAlvoDia(d),({descanso:'descanso',cardio:'so-cardio',treino:'treino'})[d<=todayISO()?dayInfo(d).kind:'']||'',Math.round(e.active)||'',musMinOf(d)||'']);});download(`ncperf_diario_${todayISO()}.csv`,rows.map(r=>r.join(';')).join('\n'));},
   async importBackup(file){if(!file)return;let d;try{d=JSON.parse(await blobText(file));}catch(e){toast('Arquivo inválido');return;}
-    if(d.app==='NutriControle Performance'){confirmInline('Restaurar este backup? Os registros do arquivo substituem os de mesma data/id.',async()=>{let c=0;for(const [col,key] of [['days','days'],['workouts','workouts'],['exams','exams'],['labs','labs'],['meds','meds'],['meddoses','meddoses'],['clinical','clinical'],['foods','foods'],['protocol_history','protocol_history'],['prescriptions','prescriptions'],['train_forms','train_forms']]){for(const [id,doc] of Object.entries(d[key]||{})){if(col==='exams'&&doc&&typeof doc==='object')Object.keys(doc).forEach(k=>{if(k!=='date'&&k!=='tipo'&&typeof doc[k]==='string')doc[k]=numLoose(doc[k]);});await Store.set(col+'/'+id,doc);c++;}}if(d.settings)await Store.set('settings/main',Object.assign({},d.settings,{restRuleFrom:okISO(d.settings.restRuleFrom)?d.settings.restRuleFrom:restFrom()}));if(d.protocol?.nutrition)await Store.set('protocol/nutrition',d.protocol.nutrition);if(d.protocol?.training)await Store.set('protocol/training',d.protocol.training);renderAll();toast(`${c} registros restaurados`);});return;}
+    if(d.app==='NutriControle Performance'){confirmInline('Restaurar este backup? Os registros do arquivo substituem os de mesma data/id.',async()=>{let c=0;for(const [col,key] of [['days','days'],['workouts','workouts'],['exams','exams'],['labs','labs'],['meds','meds'],['meddoses','meddoses'],['clinical','clinical'],['foods','foods'],['protocol_history','protocol_history'],['prescriptions','prescriptions'],['train_forms','train_forms']]){for(const [id,doc] of Object.entries(d[key]||{})){if(col==='exams'&&doc&&typeof doc==='object')Object.keys(doc).forEach(k=>{if(k!=='date'&&k!=='tipo'&&typeof doc[k]==='string')doc[k]=numLoose(doc[k]);});if(col==='workouts')Store.allow(col+'/'+id);await Store.set(col+'/'+id,doc);c++;}}if(d.settings)await Store.set('settings/main',Object.assign({},d.settings,{restRuleFrom:okISO(d.settings.restRuleFrom)?d.settings.restRuleFrom:restFrom()}));if(d.protocol?.nutrition)await Store.set('protocol/nutrition',d.protocol.nutrition);if(d.protocol?.training)await Store.set('protocol/training',d.protocol.training);renderAll();toast(`${c} registros restaurados`);});return;}
     if(!d.days){toast('Formato não reconhecido');return;}
     // NutriControle antigo
     confirmInline(`Importar backup do NutriControle antigo? ${Object.keys(d.days).length} dias, ${(d.exams||[]).length} exames, ${(d.customFoods||[]).length} alimentos.`,async()=>{let c=0;
@@ -3470,6 +3503,13 @@ ${JSON_ONLY}
 Formato: {"date":"AAAA-MM-DD|null","tipo":"InBody|FitMass|Outro","peso":kg,"mme":"massa muscular esquelética kg","pgc":"% gordura","gord":"massa de gordura kg","agua":"água corporal total L","prot":"proteína kg","min":"minerais kg","mlg":"massa livre de gordura kg","imc":número,"tmb":"taxa metabólica basal kcal","cq":"relação cintura-quadril","visc":"nível de gordura visceral","smi":"SMI kg/m²","grau":"grau de obesidade %","score":"pontuação InBody","segBE":"massa magra braço esquerdo kg","segBD":"braço direito","segTR":"tronco","segPE":"perna esquerda","segPD":"perna direita"} — todos numéricos ou null.
 CONTEÚDO:
 ${text||'(somente imagens)'}`;}
+/* v58 · versões anteriores dos treinos guardadas pelo site (tabela docs_hist, 30 dias) */
+function histShow(){const r=$('#histRow');if(r)r.hidden=!(window.ncSync&&typeof window.ncSync.hist==='function');}
+function histLabel(v){const w=v.data||{};const [d,k]=String(v.path.split('/')[1]||'').split('_');return {date:w.date||d,wk:w.wk||k,n:wkSetCount(w)};}
+function histRender(){const H=A._hist;const box=$('#histList');if(!box||!H)return;if(H.err){box.innerHTML=`<p class="mini">${esc(H.err)}</p>`;return;}
+  if(!H.list.length){box.innerHTML='<p class="empty">Nenhuma versão anterior de treino nos últimos 30 dias.</p>';return;}
+  box.innerHTML=H.list.map((v,i)=>{const l=histLabel(v);const id=v.path.split('/')[1];const cur=S.workouts[id];const nc=cur?wkSetCount(cur):null;
+    return `<div class="item"><div class="t"><b>Treino ${esc(l.wk)} · ${esc(dtBR(l.date))}</b><small>${plur(l.n,'série','séries')} nesta versão · guardada em ${esc(new Date(v.saved).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}))} · agora: ${cur?plur(nc,'série','séries'):'apagado'}</small></div><button class="btn sm" id="histR${i}" onclick="A.restoreHist(${i})">Restaurar</button></div>`;}).join('');}
 function confirmInline(msg,onYes){openSheet('Confirmar',`<p>${esc(msg)}</p><div class="row end"><button class="btn ghost" onclick="A.closeSheet()">Cancelar</button><button class="btn primary" id="cfYes">Confirmar</button></div>`);$('#cfYes').onclick=()=>{closeSheet();onYes();};return true;}
 Object.assign(A,{
   openReport(){const dates=rangeDatesSel();const from=dates[0],to=dates[dates.length-1];const prev=REP||{secs:REP_SECTIONS.map(s=>s[0]),detail:'resumido',obs:''};const letters=[...new Set([...(((S.protoT||{}).workouts)||[]).map(w=>w.v),...Object.values(S.workouts).map(w=>w.wk),...Object.values(S.days).map(x=>x&&x.session&&x.session.wk).filter(isTrainDay)])].filter(Boolean).sort();
@@ -4033,9 +4073,10 @@ function wkPersist(final){const c=wkCollect();if(!c)return null;const {p,wk,date
   const dur=$('#pDur')?numLoose($('#pDur').value):p.duration_min,car=p.cardio_min??null,fast=p.cardio_fasted??null,notes=$('#pNotes')?($('#pNotes').value.trim()||null):(p.notes||null);
   const status=final?'done':(wkStatus(S.workouts[id])==='done'?'done':'progress');
   const doc={id,date,wk,source:TR.images.length?'print':(prev.source||'texto'),durationMin:dur,cardioMin:car,cardioFasted:fast,exercises:ex,adherence:{done:adh.done,partial:adh.partial,missed:adh.missed,extra:adh.extra,pct:adh.pct,ind:indCounts(adh,date)},notes,rawText:($('#trText')&&$('#trText').value.trim())||prev.rawText||null,status,createdAt:prev.createdAt||now,updatedAt:now,completedAt:final?now:(prev.completedAt||null)};
+  if(TR.userShrink){Store.allow('workouts/'+id);TR.userShrink=false;}
   Store.set('workouts/'+id,doc);
   const oldId=TR.editingId&&TR.editingId!==id?TR.editingId:null;
-  if(oldId&&S.workouts[oldId]){const ow=S.workouts[oldId];Store.del('workouts/'+oldId);if(ow.date!==date){const od=getDay(ow.date);if(od.session&&od.session.wk===ow.wk){delete od.session.wk;saveDay(ow.date,od);}}}
+  if(oldId&&S.workouts[oldId]){const ow=S.workouts[oldId];if(S.workouts[id]&&wkSetCount(S.workouts[id])>=wkSetCount(ow))Store.allow('workouts/'+oldId);Store.del('workouts/'+oldId);if(ow.date!==date){const od=getDay(ow.date);if(od.session&&od.session.wk===ow.wk){delete od.session.wk;saveDay(ow.date,od);}}}
   const d=getDay(date);const s=d.session||{};const hadSt=!!d.status;const chg=hadSt||s.wk!==wk||(doc.durationMin&&!s.trainMin);s.wk=wk;if(doc.durationMin&&!s.trainMin)s.trainMin=doc.durationMin;d.session=s;if(chg)saveDay(date,d);
   TR.editingId=id;TR.parsedKey=wk+'|'+date;AUTOSAVE.at=new Date();AUTOSAVE.atKey=TR.parsedKey;wkSaveState();return doc;}
 function wkSaveState(){footSync();const el=$('#trSaveState');if(!el)return;const id=TR.editingId;const w=id?S.workouts[id]:null;
@@ -4230,7 +4271,7 @@ Object.assign(A,{
 window.A=A;A.goDay=iso=>setDate(iso);A.cmpSet=(k,v)=>{CMP[k]=v;renderCmp();};A.cmpLetter=(l,on)=>{const all=[...new Set([...(((S.protoT||{}).workouts)||[]).map(w=>w.v),...Object.values(S.workouts).map(w=>w.wk)])].filter(Boolean);let cur=CMP.letters?CMP.letters.slice():all.slice();if(on){if(!cur.includes(l))cur.push(l);}else cur=cur.filter(x=>x!==l);CMP.letters=cur.length===all.length?null:cur;renderCmp();};A.togglePbCustom=()=>{$('#pbCustom').classList.toggle('open');};
 
 /* ============================================================ INICIALIZAÇÃO */
-async function init(){
+async function init(){setTimeout(histShow,0);window.addEventListener('DOMContentLoaded',histShow);
   try{applyTheme(localStorage.getItem('ncperf_theme')||'light');applyLayout(localStorage.getItem('ncperf_layout')||'equilibrado');}catch(e){}
   setTimeout(relayout,400);setTimeout(relayout,1500);
   $$('#bottomnav button').forEach(b=>b.onclick=()=>showTab(b.dataset.tab));

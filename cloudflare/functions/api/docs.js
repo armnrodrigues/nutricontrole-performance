@@ -23,9 +23,10 @@ export async function onRequestPut({ request, env }) {
   // versão mais nova (outro aparelho gravou entre a leitura e o envio), nada é gravado: o aparelho lê de novo, junta e reenvia.
   const baseTxt = new URL(request.url).searchParams.get('base');
   const base = baseTxt == null || baseTxt === '' ? NaN : Number(baseTxt);
-  const row = Number.isFinite(base)
-    ? await env.DB.prepare(STAMP_SQL('?3', '?5')).bind(path, path.split('/')[0], body, Date.now(), base).first()
-    : await env.DB.prepare(STAMP_SQL('?3')).bind(path, path.split('/')[0], body, Date.now()).first();
+  const up = Number.isFinite(base)
+    ? env.DB.prepare(STAMP_SQL('?3', '?5')).bind(path, path.split('/')[0], body, Date.now(), base)
+    : env.DB.prepare(STAMP_SQL('?3')).bind(path, path.split('/')[0], body, Date.now());
+  const row = await withHist(env, path, up);
   if (!row) return Response.json({ code: 'conflict', message: 'O servidor tem uma versão mais nova deste registro' }, { status: 409 });
   return Response.json({ ok: true, updated: row.updated });
 }
@@ -33,8 +34,26 @@ export async function onRequestPut({ request, env }) {
 export async function onRequestDelete({ request, env }) {
   const path = new URL(request.url).searchParams.get('path') || '';
   if (!PATH_RE.test(path)) return Response.json({ code: 'invalid_argument', message: 'Caminho inválido' }, { status: 400 });
-  const row = await env.DB.prepare(STAMP_SQL('NULL')).bind(path, path.split('/')[0], null, Date.now()).first();
-  return Response.json({ ok: true, updated: row.updated });
+  const row = await withHist(env, path, env.DB.prepare(STAMP_SQL('NULL')).bind(path, path.split('/')[0], null, Date.now()));
+  return Response.json({ ok: true, updated: row ? row.updated : Date.now() });
+}
+
+// v58 · histórico (regra R-02 de qa/REGRAS.md): antes de gravar ou excluir, a versão que estava no banco vai para docs_hist, no mesmo lote
+// (atômico). Treino: toda versão. Demais registros: no máximo uma a cada 30 min por caminho. Guardado por 30 dias.
+const HIST_SQL = 'INSERT INTO docs_hist(path, col, data, updated, saved) SELECT path, col, data, updated, ?2 FROM docs WHERE path = ?1 AND data IS NOT NULL '
+  + "AND (col = 'workouts' OR NOT EXISTS (SELECT 1 FROM docs_hist h WHERE h.path = ?1 AND h.saved > ?2 - 1800000))";
+const KEEP_MS = 30 * 24 * 3600 * 1000;
+async function withHist(env, path, upStmt) {
+  const now = Date.now();
+  try {
+    const stmts = [env.DB.prepare(HIST_SQL).bind(path, now), upStmt];
+    if (Math.random() < 0.02) stmts.push(env.DB.prepare('DELETE FROM docs_hist WHERE saved < ?1').bind(now - KEEP_MS));
+    const res = await env.DB.batch(stmts);
+    return (res[1] && res[1].results && res[1].results[0]) || null;
+  } catch (e) {
+    if (!/no such table/i.test(String(e && e.message))) throw e;
+    return await upStmt.first(); // tabela ainda não criada: grava sem histórico (o publicar.sh cria pelo schema.sql)
+  }
 }
 
 // Marca de tempo sempre crescente, calculada DENTRO do próprio INSERT (um comando só é atômico no D1):
