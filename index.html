@@ -759,12 +759,14 @@ body.job-on.has-trfoot #toast{bottom:calc(var(--nav-h) + var(--trfoot-h,68px) + 
     </div>
     <textarea id="trText" hidden></textarea>
     <div id="trParsed" class="mt3"></div>
-    <details class="more mt2"><summary>Ler arquivo do treino (print ou foto)</summary>
+    <div id="trLegacy" hidden>
       <label class="drop mt2" id="trDrop"><input hidden type="file" id="trFiles" accept="image/*" multiple><span>Toque para anexar prints ou fotos do treino</span></label>
       <div class="thumbs mt2" id="trThumbs"></div>
-      <div class="row mt2"><button class="btn sm ai" id="trAnalyze" onclick="A.analyzeWorkout()" aria-label="Ler arquivo e preencher a grade do treino">Ler arquivo</button><span class="mini" id="trStatus"></span></div>
-    </details>
+      <div class="row mt2"><button class="btn sm ai" id="trAnalyze" onclick="A.analyzeWorkout()" aria-label="Ler arquivo e preencher a grade do treino">Ler arquivo</button></div>
     </div>
+    </div>
+    <div class="row mt2" id="printRow"><button type="button" class="btn primary sm" id="printBtn" onclick="A.openPrint($('#trDate').value||CUR)">Enviar print ou foto</button><span class="mini" id="trStatus"></span></div>
+    <p class="mini" id="printHint">Print do treino (séries e cargas) ou do Apple Fitness: o app identifica o que é. Séries já salvas não são apagadas.</p>
     <div class="actpend" id="actPendBox" hidden></div>
     <div class="card sub" id="cardioCard">
       <div class="card-h"><h3>Cárdio do dia</h3><span class="mini" id="sessHint"></span></div>
@@ -774,10 +776,10 @@ body.job-on.has-trfoot #toast{bottom:calc(var(--nav-h) + var(--trfoot-h,68px) + 
         <label class="f"><span>Gasto (kcal)</span><input type="number" inputmode="numeric" id="sCardioKcal" placeholder="opcional" min="0" max="5000"></label>
       </div>
       <div class="grid g2 duo mt2" id="cardioActRow"><label class="f"><span>Atividade (opcional)</span><select id="sCardioAct" aria-label="Atividade do cárdio"></select></label><label class="f" id="sCardioActTxtL" hidden><span>Qual atividade?</span><input id="sCardioActTxt" maxlength="40" autocomplete="off" placeholder="ex.: patins"></label></div>
-      <p class="mini mt2" id="cardioNote" data-txt="Lance os minutos aqui ou envie o print pelo botão Apple Fitness, logo abaixo. Sem kcal informada, o cárdio não soma gasto.">Lance os minutos aqui ou envie o print pelo botão Apple Fitness, logo abaixo. Sem kcal informada, o cárdio não soma gasto.</p>
+      <p class="mini mt2" id="cardioNote" data-txt="Lance os minutos aqui ou envie o print do Apple Fitness pelo botão Enviar print ou foto, logo acima. Sem kcal informada, o cárdio não soma gasto.">Lance os minutos aqui ou envie o print do Apple Fitness pelo botão Enviar print ou foto, logo acima. Sem kcal informada, o cárdio não soma gasto.</p>
     </div>
     <div class="card sub" id="sessCard">
-      <div class="card-h"><h3>Sessão do dia: relógio e passos</h3><div class="row"><button class="btn sm" onclick="A.openAppleAI($('#trDate').value||CUR)">Apple Fitness</button></div></div>
+      <div class="card-h"><h3>Sessão do dia: relógio e passos</h3></div>
       <div class="grid g2 duo">
         <label class="f only-train"><span>Treino realizado</span><select id="sWk"></select></label>
         <label class="f only-train"><span>Musculação (min)</span><input type="number" inputmode="numeric" id="sTrainMin" placeholder="0"></label>
@@ -1050,7 +1052,7 @@ body.job-on.has-trfoot #toast{bottom:calc(var(--nav-h) + var(--trfoot-h,68px) + 
     </div>
     <div class="card">
       <div class="card-h"><h3>Dados</h3><span class="mini" id="dataStats"></span></div>
-      <p class="mini mb2" id="appVersion">Versão 54 · 25/11/2026</p><p class="mini mb2" id="lastAiErr" hidden></p>
+      <p class="mini mb2" id="appVersion">Versão 55 · 25/11/2026</p><p class="mini mb2" id="lastAiErr" hidden></p>
       <div class="row">
         <button class="btn sm" onclick="A.exportAll()">Exportar backup (JSON)</button>
         <button class="btn sm" onclick="A.exportCSV()">Exportar diário (CSV)</button>
@@ -1450,8 +1452,8 @@ function agenda(){const t=S.protoT;const today=todayISO(),M=restFrom();const key
   if(s0==null)return AG;
   const by={};for(const k in S.workouts){const w=S.workouts[k];if(w&&w.date>=W&&t.rotation.includes(w.wk))(by[w.date]=by[w.date]||[]).push(w.wk);}
   AG.ok=true;AG.W=W;AG.byDate=by;AG.slot[W]=s0;AG.upTo=W;return AG;}
-function agendaStep(d,s,rot,n,a){let wk=sessionOf(d).wk;if(!(wk&&rot.includes(wk)))wk=(a.byDate[d]||[])[0]||null;const pl=rot[s];
-  if(wk){if(wk===pl)return (s+1)%n;if(!isTrainDay(wk)&&isTrainDay(pl))return s;for(let k=1;k<n;k++)if(rot[(s+k)%n]===wk)return (s+k+1)%n;return (s+1)%n;}
+function agendaStep(d,s,rot,n,a){let wk=sessionOf(d).wk;if(!(wk&&rot.includes(wk)))wk=(a.byDate[d]||[])[0]||null;const pl=rot[s];const sd=swapDec(d);if(!wk&&sd&&d>=a.today&&rot.includes(sd.wk))wk=sd.wk;
+  if(wk){if(wk===pl)return (s+1)%n;if(sd&&sd.wk===wk&&sd.mode==='only')return s;if(!isTrainDay(wk)&&isTrainDay(pl))return s;for(let k=1;k<n;k++)if(rot[(s+k)%n]===wk)return (s+k+1)%n;return (s+1)%n;}
   if(!isTrainDay(pl))return (s+1)%n;
   if(dayStatus(d))return s;
   /* v46 · C: dia passado com musculação lançada (print do Apple Fitness ou minutos) e sem letra = o treino do bloco foi considerado feito conforme o plano:
@@ -1465,7 +1467,11 @@ function agendaStep(d,s,rot,n,a){let wk=sessionOf(d).wk;if(!(wk&&rot.includes(wk
 function agendaSlot(iso){const a=agenda();if(!a.ok||iso<a.W||daysBetween(a.W,iso)>1500)return null;const rot=S.protoT.rotation,n=rot.length;
   while(a.upTo<iso){const d=a.upTo;const nx=addDays(d,1);a.slot[nx]=a.jump&&a.jump.d===nx?a.jump.s:agendaStep(d,a.slot[d],rot,n,a);a.upTo=nx;}return a.slot[iso];}
 function plannedLegacy(iso){const t=S.protoT;if(!t)return null;if(t.plan&&t.plan[iso])return t.plan[iso];const s=legacySlot(iso);return s==null?null:t.rotation[s];}
+/* v55 · troca de treino pelo seletor do Treino do dia (decisão do Antonio, 25/11/2026): settings.swapDec[iso]={wk,mode}.
+   mode 'only' = só este dia: o treino que era do dia passa para o dia seguinte e a sequência segue igual; 'seq' = a sequência continua a partir do treino escolhido. */
+function swapDec(iso){const m=(S.settings||{}).swapDec;const v=m&&m[iso];return v&&v.wk?v:null;}
 function plannedWorkout(iso){const t=S.protoT;if(!t)return null;if(t.plan&&t.plan[iso])return t.plan[iso];if(!(t.rotation&&t.rotation.length))return null;
+  {const sd=swapDec(iso);if(sd&&t.rotation.includes(sd.wk))return sd.wk;}
   const a=agenda();if(!a.ok||iso<a.W)return plannedLegacy(iso);const s=agendaSlot(iso);return s==null?null:t.rotation[s];}
 /* O que o dia foi. kind: 'treino' | 'descanso' | 'cardio' | 'afazer' (hoje) | 'previsto' (futuro) | null (passado anterior ao marco, regra antiga).
    auto = ninguém marcou (dia passado em branco). shift = o bloco de treino previsto passou para o dia seguinte. */
@@ -2288,6 +2294,12 @@ Formato: {"meal": número da refeição 1-6 se o texto indicar ou null, "items":
 TEXTO:
 ${text||'(somente imagens)'}`;
 }
+function promptPrintKind(n){return `Você recebe ${n} imagem(ns). Para cada uma, na ordem em que vieram, diga o que é:
+"series" = print ou foto de um treino de musculação com lista de exercícios e séries, repetições ou cargas (app de treino, planilha, caderno);
+"apple" = tela do app Fitness ou Saúde do iPhone ou do Apple Watch (anéis, calorias ativas, tempo de exercício, frequência cardíaca, resumo de um dia ou de um treino, sem lista de séries);
+"outro" = nenhuma das duas.
+${JSON_ONLY}
+Formato: {"kinds":["series"|"apple"|"outro"]} com exatamente ${n} item(ns).`;}
 function promptApple(text){
   return `Leia o(s) print(s) do app Fitness/Saúde do Apple Watch. Cada print pode ser o resumo de um dia (anéis) ou a tela de UM treino (título, calorias, data e horário, tempo de exercício, FC média, esforço). Extraia a DATA de cada print ("18 de novembro de 2026" → "2026-11-18") e agrupe por dia. Nunca some treinos de dias diferentes. Hoje é ${todayISO()} (${WD[weekdayIdx(todayISO())]}): "Hoje" = ${todayISO()}, "Ontem" = ${addDays(todayISO(),-1)}; data sem ano = o ano mais recente que não fique no futuro. Se um print não mostra data, use null.
 Em "type" copie o título do treino como aparece, sem traduzir e sem trocar por outro parecido. Nunca deduza o tipo pela duração, pelo gasto ou pela frequência cardíaca: se o título está cortado, ilegível ou você não tem certeza, use "type_conf":"baixa" (e "type":null se não leu nada).
@@ -3018,7 +3030,21 @@ const A={
     <label class="drop mt2"><input hidden type="file" id="apFiles" accept="image/*" multiple onchange="A.previewFiles('apFiles','apThumbs')"><span>Tirar foto ou escolher prints da fototeca</span></label><div class="thumbs mt2" id="apThumbs"></div>
     <label class="f mt2"><span>Observação (opcional)</span><input id="apText" placeholder="ex.: o treino de força foi o Treino B"></label>
     <div class="row mt3"><button class="btn accent ai" id="apGo" onclick="A.analyzeApple()">Ler arquivo</button><span class="mini" id="apStatus"></span></div><div id="apResult" class="mt3"></div>`);},
-  async analyzeApple(){const images=filesToImages($('#apFiles').files);if(!images.length){toast('Anexe ao menos um print');return;}$('#apGo').disabled=true;busy('apStatus',true,'Lendo prints…');
+  openPrint(iso){A._apIso=/^\d{4}-\d{2}-\d{2}$/.test(iso||'')?iso:null;openSheet('Enviar print ou foto',`<p class="mini">Pode ser o print do treino (exercícios, séries e cargas) ou do Apple Fitness (resumo do dia ou de um treino). O app identifica cada imagem e as séries já salvas não são apagadas.</p>
+    <label class="drop mt2"><input hidden type="file" id="apFiles" accept="image/*" multiple onchange="A.previewFiles('apFiles','apThumbs')"><span>Tirar foto ou escolher prints da fototeca</span></label><div class="thumbs mt2" id="apThumbs"></div>
+    <label class="f mt2"><span>Observação (opcional)</span><input id="apText" placeholder="ex.: o treino de força foi o Treino B"></label>
+    <div class="row mt3"><button class="btn primary ai" id="apGo" onclick="A.readPrint()">Ler arquivo</button><span class="mini" id="apStatus"></span></div><div id="apResult" class="mt3"></div>`);},
+  async readPrint(){const images=filesToImages($('#apFiles').files);if(!images.length){toast('Anexe ao menos um print');return;}const go=$('#apGo');go.disabled=true;busy('apStatus',true,'Identificando o que é cada imagem…');let kinds=[];
+    try{const r=await aiJSON(promptPrintKind(images.length),{images,tier:'quick'});kinds=(Array.isArray(r&&r.kinds)?r.kinds:[]).map(k=>/^\s*ser/i.test(String(k))?'series':/^\s*app/i.test(String(k))?'apple':'outro');}
+    catch(e){busy('apStatus',false,aiErr(e));const g=$('#apGo');if(g)g.disabled=false;return;}
+    /* resposta fora do formato: segue pelo caminho do Apple Fitness, que mostra o que leu e só grava depois de "Aplicar" */
+    if(kinds.length!==images.length)kinds=images.map(()=>kinds.length===1?kinds[0]:'apple');
+    const ser=images.filter((x,i)=>kinds[i]==='series'),app=images.filter((x,i)=>kinds[i]==='apple');A._printKinds=kinds;
+    if(!ser.length&&!app.length){busy('apStatus',false,'Não reconheci print de treino nem do Apple Fitness nestas imagens. Nada foi alterado.');const g=$('#apGo');if(g)g.disabled=false;return;}
+    if(ser.length){busy('apStatus',true,'Lendo séries e cargas…');if(A._apIso&&$('#trDate')&&!TR.dirty)$('#trDate').value=A._apIso;TR.images=ser;await A.analyzeWorkout();}
+    if(app.length){if(!$('#apStatus'))return;await A.analyzeApple(app);}
+    else{const st=A._wkRead;if($('#apStatus')){if(st==='erro'||st==='vazio'){busy('apStatus',false,st==='erro'?'Não consegui ler o treino. Tente de novo.':'Não encontrei séries de musculação neste arquivo.');const g=$('#apGo');if(g)g.disabled=false;}else{closeSheet();if(st!=='mantido')toast('Treino lido do print: confira as séries na grade.',5000);}}}},
+  async analyzeApple(pre){const images=Array.isArray(pre)?pre:filesToImages($('#apFiles').files);if(!images.length){toast('Anexe ao menos um print');return;}$('#apGo').disabled=true;busy('apStatus',true,'Lendo prints…');
     try{const r=await aiJSON(promptApple($('#apText').value.trim()),{images});const days=appleDays(r);A._ap=days;
       if(!$('#apResult'))return;$('#apResult').innerHTML=days.map((dd,i)=>{const kp=[['Ativas',dd.active_kcal,'kcal'],['Totais',dd.total_kcal,'kcal'],['Passos',dd.steps,''],['Exercício',dd.exercise_min,'min'],['Em pé',dd.stand_hours,'h'],['Distância',dd.distance_km,'km']].filter(x=>x[1]!=null);
         return `<div class="wk-card mt2"><div class="row between"><label class="f" style="margin:0"><span>Dia</span><input type="date" min="2000-01-01" max="2099-12-31" id="apDate_${i}" value="${esc(dd.date||A._apIso||CUR)}" onchange="A.appleDupCheck()"></label><span class="mini" id="apDup_${i}">${dd.date?'':'data não lida no print — confira'}</span></div>
@@ -3040,7 +3066,7 @@ const A={
       if(dd.sleep_hours!=null)d.sleepHours=dd.sleep_hours;if(dd.resting_hr!=null)d.restingHr=dd.resting_hr;if(dd.hrv_ms!=null)d.hrv=dd.hrv_ms;
       saveDay(iso,d);nd++;if(iso!==aberto&&!fora.includes(iso))fora.push(iso);});
     A._ap=null;closeSheet();renderAll();{const mk=takeMark();toast(`${nw} atividade${nw!==1?'s':''} em ${nd} dia${nd!==1?'s':''}${skipped?` · ${skipped} já existia${skipped>1?'m':''}`:''}${np?` · ${np} aguardando categoria`:''}`+(fora.length?` · gravado no dia do print (${fora.map(dtShort).join(', ')}), não no dia aberto (${dtShort(aberto)})`:'')+(mk?' · '+mk:''),mk||np||fora.length?7000:3200);}
-    if(np){A._askMore=more?isoMore||'':null;setTimeout(()=>A.actAsk(),350);}else if(more)setTimeout(()=>A.openAppleAI(isoMore),350);},
+    if(np){A._askMore=more?isoMore||'':null;setTimeout(()=>A.actAsk(),350);}else if(more)setTimeout(()=>A.openPrint(isoMore),350);},
   /* Categoria em dúvida: uma pergunta por vez. A atividade fica em day.actPend (gravada no dia, nada se perde se a folha for fechada)
      até a escolha; só então vira atividade do dia. A resposta é lembrada por nome em settings.actCat. */
   actAsk(){const all=actPendAll();if(!all.length){A._ask=null;return;}const {iso,p}=all[0];A._ask={iso,id:p.id};const nome=actPendName(p);const lembra=!p.low&&!actGeneric(actNorm(p.name));
@@ -3049,10 +3075,10 @@ const A={
     <p class="mini">Lido do Apple Fitness: ${esc(det)}. ${p.low?'O nome do treino não ficou claro na leitura'+(p.sug?' (parece '+ACT_CAT_N[p.sug].toLowerCase()+')':'')+'.':'O app não reconheceu este tipo de atividade.'} ${lembra?'A escolha fica guardada para "'+esc(nome)+'".':'A escolha vale só para este lançamento.'}${all.length>1?' Pergunta 1 de '+all.length+'.':''}</p>
     <div class="catq" id="catQ">${Object.keys(ACT_CAT_N).map(k=>`<button type="button" class="btn${p.sug===k?' primary':''}" data-cat="${k}" onclick="A.actCatPick('${k}')"><span>${ACT_CAT_N[k]}</span><small>${ACT_CAT_D[k]}</small></button>`).join('')}</div>
     <div class="row between"><button type="button" class="btn ghost sm" id="catDrop" onclick="A.actPendDrop()">Descartar esta leitura</button><button type="button" class="btn ghost sm" id="catLater" onclick="A.actAskLater()">Decidir depois</button></div>`);},
-  actAskLater(){closeSheet();const n=actPendAll().length;if(n)toast(`${n} atividade${n>1?'s':''} aguardando categoria. O aviso fica em Treino, acima de Cárdio do dia.`,6000);const m=A._askMore;A._askMore=null;if(m!=null)setTimeout(()=>A.openAppleAI(m||null),350);},
+  actAskLater(){closeSheet();const n=actPendAll().length;if(n)toast(`${n} atividade${n>1?'s':''} aguardando categoria. O aviso fica em Treino, acima de Cárdio do dia.`,6000);const m=A._askMore;A._askMore=null;if(m!=null)setTimeout(()=>A.openPrint(m||null),350);},
   actPendDrop(){const q=A._ask;if(!q)return;const d0=S.days[q.iso];const p0=d0&&(d0.actPend||[]).find(x=>x&&x.id===q.id);if(!p0){A.actNext();return;}
     confirmInline(`Descartar a leitura de ${actPendName(p0)}${p0.min?' ('+fmt(p0.min)+' min)':''} de ${dtShort(q.iso)}? Ela não entra em nenhuma categoria.`,()=>{const d=thaw(getDay(q.iso));d.actPend=(d.actPend||[]).filter(x=>!x||x.id!==q.id);if(!d.actPend.length)delete d.actPend;saveDay(q.iso,d);renderAll();toast('Leitura descartada');A.actNext();});},
-  actNext(){if(actPendAll().length){setTimeout(()=>A.actAsk(),200);return;}A._ask=null;const m=A._askMore;A._askMore=null;if(m!=null)setTimeout(()=>A.openAppleAI(m||null),350);},
+  actNext(){if(actPendAll().length){setTimeout(()=>A.actAsk(),200);return;}A._ask=null;const m=A._askMore;A._askMore=null;if(m!=null)setTimeout(()=>A.openPrint(m||null),350);},
   actCatPick(cat){if(!Object.prototype.hasOwnProperty.call(ACT_CAT_N,cat))return;const q=A._ask;if(!q)return;if(Store.mode==='cloud'&&!Store.ready){toast('Aguarde sincronizar com o banco antes de escolher',3500);return;}
     if(q.act!=null){A.actRecatApply(cat);return;}
     const d=thaw(getDay(q.iso));const p=(d.actPend||[]).find(x=>x&&x.id===q.id);if(!p){closeSheet();A.actNext();return;}
@@ -3095,12 +3121,17 @@ const A={
 
   /* ---------- Treino */
   trFilesChanged(){TR.images=filesToImages($('#trFiles').files);A.previewFiles('trFiles','trThumbs');},
-  async analyzeWorkout(){const text=$('#trText').value.trim();const wk=$('#trWk').value;if(!text&&!TR.images.length){toast('Descreva o treino ou anexe um print');return;}$('#trAnalyze').disabled=true;busy('trStatus',true,'Lendo séries e cargas…');
+  async analyzeWorkout(){const text=$('#trText').value.trim();const wk=$('#trWk').value;if(!text&&!TR.images.length){toast('Descreva o treino ou anexe um print');return;}{const b0=$('#trAnalyze');if(b0)b0.disabled=true;}busy('trStatus',true,'Lendo séries e cargas…');
     try{const r=await aiJSON(promptWorkout(wk,text,TR.images.length>0),{images:TR.images});r.exercises=(r.exercises||[]).map(e=>({name:e.name,sets:(e.sets||[]).map(s=>({reps:s.reps!=null?Number(s.reps):null,kg:s.kg!=null?Number(s.kg):null,fail:!!s.fail,technique:s.technique&&s.technique!=='null'?s.technique:null})),note:e.note||null}));r.duration_min=numLoose(r.duration_min);const aiCar=numLoose(r.cardio_min),aiFast=r.cardio_fasted===true?1:r.cardio_fasted===false?0:null;r.cardio_min=null;r.cardio_fasted=null;r.notes=r.notes==null?'':String(r.notes);
       if(r.workout&&workoutDefs().some(w=>w.v===r.workout)&&!text.match(/treino\s+[a-f]/i))$('#trWk').value=r.workout;if(r.date&&/^\d{4}-\d{2}-\d{2}$/.test(r.date))$('#trDate').value=r.date;
       wkFlush();const _wk=$('#trWk').value,_dt=$('#trDate').value||CUR;{const pv=S.workouts[_dt+'_'+_wk];if(pv){r.cardio_min=pv.cardioMin??null;r.cardio_fasted=pv.cardioFasted??null;}}
       if(aiCar>0&&okISO(_dt)){const dd=thaw(getDay(_dt));const ss=dd.session||{};if(!(Number(ss.cardioMin)>0)){ss.cardioMin=aiCar;if(aiFast!=null)ss.cardioFast=aiFast;dd.session=ss;saveDay(_dt,dd);{const mk=takeMark();toast(`Cárdio lido no print: ${fmt(aiCar)} min, lançado em Cárdio do dia ${dtShort(_dt)}`+(mk?' · '+mk:''),mk?7000:4000);}}}
-      TR.parsed=r;TR.parsedKey=_wk+'|'+_dt;TR.editingId=S.workouts[_dt+'_'+_wk]?_dt+'_'+_wk:null;TR.dirty=true;TR.userPick=true;renderParsed();wkAutosave();busy('trStatus',false,'');}catch(e){busy('trStatus',false,aiErr(e));}finally{$('#trAnalyze').disabled=false;}},
+      {const has=e=>(e.sets||[]).length>0;const lidos=r.exercises.filter(has);const pv=S.workouts[_dt+'_'+_wk];A._wkRead=null;
+       if(!lidos.length){busy('trStatus',false,'');A._wkRead='vazio';toast(pv&&(pv.exercises||[]).some(has)?'O arquivo não trouxe séries de musculação: o treino '+_wk+' salvo foi mantido como está.':'Não encontrei séries de musculação neste arquivo: nada mudou no treino.',6000);return;}
+       if(pv&&(pv.exercises||[]).some(has)){const keep=JSON.parse(JSON.stringify(pv.exercises));let add=0;lidos.forEach(e=>{const i=keep.findIndex(k=>norm(k.protoName||k.name)===norm(e.name)||norm(k.name)===norm(e.name));if(i<0){keep.push(e);add++;}else if(!has(keep[i])){keep[i]=Object.assign({},keep[i],{sets:e.sets});add++;}});
+        r.exercises=wkMergePlan(keep,_wk);if(r.duration_min==null)r.duration_min=pv.durationMin??null;if(!r.notes)r.notes=pv.notes||'';A._wkRead='mantido';
+        toast('Treino '+_wk+' já estava salvo: as séries lançadas foram mantidas'+(add?' e o arquivo acrescentou '+plur(add,'exercício','exercícios'):'; o arquivo não trouxe exercício novo')+'.',7000);}}
+      TR.parsed=r;TR.parsedKey=_wk+'|'+_dt;TR.editingId=S.workouts[_dt+'_'+_wk]?_dt+'_'+_wk:null;TR.dirty=true;TR.userPick=true;renderParsed();wkAutosave();busy('trStatus',false,'');}catch(e){busy('trStatus',false,aiErr(e));A._wkRead='erro';}finally{const b0=$('#trAnalyze');if(b0)b0.disabled=false;}},
   manualWorkout(){TR.parsed=null;TR.dirty=false;TR.parsedKey=null;TR.editingId=null;ensureParsed();renderParsed();},
   gSet(ei,i,k,v){{const ev=window.event;if(ev&&ev.target&&ev.target.isConnected===false)return;}const e=TR.parsed&&TR.parsed.exercises[ei];if(!e)return;if(!e.cells)e.cells=setsToCells(e.sets,i+1);while(e.cells.length<=i)e.cells.push({reps:null,kg:null,fail:false});e.cells[i][k]=k==='fail'?!!v:numLoose(v);TR.dirty=true;refreshParsedMeta();wkAutosave();},
   gAdd(ei){const e=TR.parsed.exercises[ei];if(!e)return;if(!e.cells)e.cells=setsToCells(e.sets,0);e.cells.push({reps:null,kg:null,fail:false});TR.dirty=true;renderParsed();wkAutosave();},
@@ -3146,8 +3177,8 @@ const A={
   clearParsed(){TR.parsed=null;TR.adh=null;TR.dirty=false;TR.parsedKey=null;TR.editingId=null;ensureParsed();renderParsed();},
   saveWorkout(){if(!TR.parsed)return;if(TR.uploading){toast('Aguarde terminar o envio da foto/vídeo');return;}clearTimeout(AUTOSAVE.t);AUTOSAVE.t=null;const wasDone=TR.editingId&&wkStatus(S.workouts[TR.editingId])==='done';const doc=wkPersist(true);if(!doc)return;
     TR={images:[],parsed:null,adh:null,dirty:false,parsedKey:null,editingId:null};$('#trText').value='';$('#trFiles').value='';$('#trThumbs').innerHTML='';renderAll();toast(wasDone?`Treino ${doc.wk} atualizado · aderência ${doc.adherence.pct} %`:`Treino ${doc.wk} concluído · aderência ${doc.adherence.pct} %`);},
-  discardWorkout(){const id=TR.editingId;const w=id?S.workouts[id]:null;if(!w||wkStatus(w)!=='progress'){A.clearParsed();return;}
-    confirmInline(`Apagar o treino ${w.wk} em andamento de ${dtBR(w.date)}? As séries lançadas serão removidas.`,()=>{clearTimeout(AUTOSAVE.t);AUTOSAVE.t=null;Store.del('workouts/'+id);const d=getDay(w.date);if(d.session&&d.session.wk===w.wk){delete d.session.wk;saveDay(w.date,d);}TR={images:[],parsed:null,adh:null,dirty:false,parsedKey:null,editingId:null};renderAll();toast('Treino em andamento descartado');});},
+  discardWorkout(){const id=TR.editingId;const w=id?S.workouts[id]:null;if(!w){A.clearParsed();return;}const feito=wkStatus(w)==='done';const nS=(w.exercises||[]).reduce((a,e)=>a+(e.sets||[]).length,0);
+    confirmInline(`Apagar o treino ${w.wk} ${feito?'concluído':'em andamento'} de ${dtBR(w.date)}? ${nS?plur(nS,'série lançada será removida','séries lançadas serão removidas'):'O registro será removido'} e isso não pode ser desfeito.`,()=>{clearTimeout(AUTOSAVE.t);AUTOSAVE.t=null;Store.del('workouts/'+id);const d=getDay(w.date);if(d.session&&d.session.wk===w.wk){delete d.session.wk;saveDay(w.date,d);}TR={images:[],parsed:null,adh:null,dirty:false,parsedKey:null,editingId:null};renderAll();toast(feito?'Treino apagado':'Treino em andamento descartado');});},
   reopenWorkout(id){const w=S.workouts[id];if(!w)return;wkFlush();cardOpen('trLogCard',true);TR.userPick=true;TR.editingId=id;TR.parsed={exercises:wkMergePlan(JSON.parse(JSON.stringify(w.exercises||[])),w.wk),duration_min:w.durationMin,cardio_min:w.cardioMin,cardio_fasted:w.cardioFasted,notes:w.notes};$('#trWk').value=w.wk;$('#trDate').value=w.date;TR.dirty=false;TR.parsedKey=w.wk+'|'+w.date;renderParsed();appScrollTop?appScrollTop():window.scrollTo({top:0,behavior:'smooth'});},
   delWorkout(id){if(!confirmInline('Excluir este treino?',()=>{const w=S.workouts[id];if(TR.editingId===id||(w&&TR.parsedKey===w.wk+'|'+w.date)){clearTimeout(AUTOSAVE.t);AUTOSAVE.t=null;TR={images:[],parsed:null,adh:null,dirty:false,parsedKey:null,editingId:null};}Store.del('workouts/'+id);if(w){const d=getDay(w.date);if(d.session&&d.session.wk===w.wk){delete d.session.wk;saveDay(w.date,d);}}renderAll();toast('Treino excluído');}))return;},
 
@@ -3940,7 +3971,7 @@ function wkStatus(w){return w?(w.status||'done'):null;}
 function wkCollect(){const p=TR.parsed;if(!p)return null;const {wk,date}=trKey();const id=date+'_'+wk;p.exercises.forEach(e=>{e.sets=cellsToSets(e);});
   const ex=p.exercises.filter(e=>(e.sets||[]).length||e.note||(e.media||[]).length).map(e=>({name:e.name,protoName:e.protoName||null,note:e.note||null,sets:e.sets,rest:e.rest??null,media:e.media||[]}));return {p,wk,date,id,ex};}
 function wkPersist(final){const c=wkCollect();if(!c)return null;const {p,wk,date,id,ex}=c;if(!okISO(date)){toast('Data do treino inválida: use um ano entre 2000 e 2099');return null;}
-  if(!ex.length){if(final){toast(cardioMinOf(date)>0?'O cárdio do dia já está salvo. Sem séries não há treino para concluir: marque "Só cárdio" se não houve musculação.':'Preencha ao menos uma série',cardioMinOf(date)>0?6000:2200);return null;}const cur=S.workouts[id];if(cur&&TR.dirty){Store.del('workouts/'+id);const dd=getDay(date);if(dd.session&&dd.session.wk===wk){delete dd.session.wk;saveDay(date,dd);}TR.editingId=null;wkSaveState();}return null;}
+  if(!ex.length){if(final){toast(cardioMinOf(date)>0?'O cárdio do dia já está salvo. Sem séries não há treino para concluir: marque "Só cárdio" se não houve musculação.':'Preencha ao menos uma série',cardioMinOf(date)>0?6000:2200);return null;}/* v55: treino salvo nunca é apagado por a grade estar vazia; só pelo botão Apagar treino, com confirmação */return null;}
   const prev=S.workouts[id]||{};const now=new Date().toISOString();const adh=computeAdherence(ex,protoWorkout(wk));
   const dur=$('#pDur')?numLoose($('#pDur').value):p.duration_min,car=p.cardio_min??null,fast=p.cardio_fasted??null,notes=$('#pNotes')?($('#pNotes').value.trim()||null):(p.notes||null);
   const status=final?'done':(wkStatus(S.workouts[id])==='done'?'done':'progress');
@@ -3953,7 +3984,7 @@ function wkPersist(final){const c=wkCollect();if(!c)return null;const {p,wk,date
 function wkSaveState(){footSync();const el=$('#trSaveState');if(!el)return;const id=TR.editingId;const w=id?S.workouts[id]:null;
   el.textContent=!w?'Os dados são salvos automaticamente a cada série digitada.':(wkStatus(w)==='done'?'Treino concluído · alterações salvas automaticamente':'Em andamento · salvo automaticamente')+(AUTOSAVE.at&&AUTOSAVE.atKey===TR.parsedKey?' às '+AUTOSAVE.at.toTimeString().slice(0,5):(w&&w.updatedAt?' às '+new Date(w.updatedAt).toTimeString().slice(0,5):''));
   const b=$('#trDoneBtn');if(b){const isDone=wkStatus(w)==='done';b.textContent=isDone?'Treino concluído':'Concluir treino';b.classList.toggle('primary',!isDone);}
-  const x=$('#trDiscardBtn');if(x)x.hidden=!(w&&wkStatus(w)==='progress');}
+  const x=$('#trDiscardBtn');if(x){x.hidden=!w;x.textContent=w&&wkStatus(w)==='done'?'Apagar treino':'Descartar';}}
 function wkAutosave(){clearTimeout(AUTOSAVE.t);AUTOSAVE.t=setTimeout(()=>{AUTOSAVE.t=null;try{wkPersist(false);}catch(e){console.warn('autosave',e);}},600);}
 function wkFlush(){if(AUTOSAVE.t){clearTimeout(AUTOSAVE.t);AUTOSAVE.t=null;try{wkPersist(false);}catch(e){}}}
 /* exercícios do plano que ainda não têm série voltam à grade quando um treino salvo é reaberto */
@@ -4162,7 +4193,7 @@ async function init(){
   $('#acType').onchange=()=>A.acPreset();$('#acMin').oninput=()=>A.acPreset();
   initCollapsible();$('#trFiles').onchange=()=>A.trFilesChanged();const drop=$('#trDrop');
   ['dragover','dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.toggle('over',ev==='dragover');if(ev==='drop'){$('#trFiles').files=e.dataTransfer.files;A.trFilesChanged();}}));
-  $('#trWk').onchange=()=>{wkFlush();TR.userPick=true;const prev=TR.editingId&&S.workouts[TR.editingId];TR.parsed=null;TR.dirty=false;TR.parsedKey=null;TR.editingId=null;ensureParsed();renderParsed();if(prev&&wkStatus(prev)==='progress')toast(`O treino ${prev.wk} de ${dtBR(prev.date)} ficou salvo em andamento`);};
+  $('#trWk').onchange=()=>{wkFlush();TR.userPick=true;const prev=TR.editingId&&S.workouts[TR.editingId];TR.parsed=null;TR.dirty=false;TR.parsedKey=null;TR.editingId=null;ensureParsed();renderParsed();if(prev&&wkStatus(prev)==='progress')toast(`O treino ${prev.wk} de ${dtBR(prev.date)} ficou salvo em andamento`);if((window.event&&window.event.isTrusted)||A._swapForce)swapAsk();};
   $('#trDate').onchange=()=>{wkFlush();TR.userPick=true;TR.parsed=null;TR.dirty=false;TR.parsedKey=null;TR.editingId=null;ensureParsed();renderParsed();};
   $('#pgEx').onchange=()=>renderProgress();$('#labSel').onchange=()=>renderLabs();
   $('#protoFile').onchange=()=>A.protoFileChanged();
@@ -4284,10 +4315,21 @@ function tpDaysRender(){const p=A._tp,g=p.grid,N=g.length,today=todayISO();const
   ${sem.length?`<div class="note warn mt2">${sem.length>1?'Treinos':'Treino'} ${esc(sem.join(', '))} sem dia: ${sem.length>1?'ficam':'fica'} fora da sequência.</div>`:''}
   <div class="row end mt3"><button class="btn ghost" onclick="A.tpBack()">Voltar</button><button class="btn primary" id="tpApply" onclick="A.tpApplyDays()">Aplicar</button></div>`);}
 
+/* ---------- trocar o treino do dia: mostra como fica e pergunta "só este dia" ou "mudar os dias" */
+function swapSave(iso,v){const st=Object.assign({},thaw(S.settings||{}));const m=Object.assign({},st.swapDec||{});m[iso]=v||{wk:null,mode:null};st.swapDec=m;Store.set('settings/main',st);}
+function swapAsk(){const t=S.protoT;const iso=$('#trDate').value||CUR,x=$('#trWk').value;if(!t||!t.rotation||!t.rotation.includes(x)||!okISO(iso)||iso<todayISO())return;const s=agendaSlot(iso);if(s==null)return;
+  const rot=t.rotation,n=rot.length,base=rot[s],cur=swapDec(iso);if(x===base){if(cur){swapSave(iso,null);renderAll();toast('Voltou ao treino previsto: '+rotTag(base).toLowerCase());}return;}if(cur&&cur.wk===x)return;
+  let k=1;for(let j=1;j<n;j++)if(rot[(s+j)%n]===x){k=j;break;}const from=i=>{const a=((i%n)+n)%n;return rot.slice(a).concat(rot.slice(0,a));};const nx=addDays(iso,1);
+  const cell=`<span class="sq"><small>${esc(dayLab(iso))}</small><b>${esc(rotMini(x))}</b></span>`;A._sw={iso,wk:x,base};
+  openSheet('Trocar o treino do dia',`<p>Em ${esc(dtShort(iso))} estava previsto o <b>${esc(rotTag(base))}</b> e você escolheu o <b>${esc(rotTag(x))}</b>.</p>
+  <p class="mt3"><b>Só este dia</b></p><p class="mini">O ${esc(rotTag(base))} passa para o dia seguinte e a sequência segue igual.</p><div class="sqs mt1" id="swOnly">${cell}${seqPreview(from(s),nx,6)}</div>
+  <p class="mt3"><b>Mudar os dias</b></p><p class="mini">A sequência continua a partir do ${esc(rotTag(x))}.</p><div class="sqs mt1" id="swSeq">${cell}${seqPreview(from(s+k+1),nx,6)}</div>
+  <div class="row end mt3"><button class="btn" id="swSeqBtn" onclick="A.swapAnswer('seq')">Mudar os dias</button><button class="btn primary" id="swOnlyBtn" onclick="A.swapAnswer('only')">Só este dia</button></div>`);}
+function roAuto(){const r=A._ro;if(r&&r.auto&&r.pos!=null&&r.seq.length)r.wk=r.seq[Math.min(r.pos,r.seq.length-1)];}
 /* ---------- Reordenar treinos (antes: Programar rotação) */
 function roRender(){const r=A._ro,t=S.protoT;const ws=t.workouts;const tit=v=>v==='OFF'?'':((ws.find(w=>w.v===v)||{}).title||'');const opts=[...new Set(r.seq)];if(!opts.includes(r.wk))r.wk=opts[0]||'';
-  shSet('Reordenar treinos',`<p class="mini">A sequência anda um passo por dia. Use as setas para mudar a ordem; repita um treino ou ponha descanso com os botões abaixo.</p>
-  <div class="list mt2" id="roList">${r.seq.map((v,i)=>`<div class="ro-l"><span class="ro-n">${i+1}</span><span class="ro-t"><b>${esc(rotTag(v))}</b>${tit(v)?` <small class="muted">${esc(tit(v))}</small>`:''}</span><span class="ro-a"><button type="button" class="icon-btn" ${i===0?'disabled':''} onclick="A.roMove(${i},-1)" aria-label="Subir ${esc(rotTag(v))}, posição ${i+1}">↑</button><button type="button" class="icon-btn" ${i===r.seq.length-1?'disabled':''} onclick="A.roMove(${i},1)" aria-label="Descer ${esc(rotTag(v))}, posição ${i+1}">↓</button><button type="button" class="icon-btn" onclick="A.roDel(${i})" aria-label="Tirar ${esc(rotTag(v))}, posição ${i+1}">✕</button></span></div>`).join('')||'<div class="empty">Sequência vazia.</div>'}</div>
+  shSet('Reordenar treinos',`<p class="mini">A sequência anda um passo por dia. Use as setas para mudar a ordem: ela vale na hora, e o treino de hoje passa a ser o que ficar na posição marcada como hoje; repita um treino ou ponha descanso com os botões abaixo.</p>
+  <div class="list mt2" id="roList">${r.seq.map((v,i)=>`<div class="ro-l"><span class="ro-n">${i+1}</span><span class="ro-t"><b>${esc(rotTag(v))}</b>${r.auto&&!r.off&&i===r.pos?' <small class="muted" id="roHoje">· hoje</small>':''}${tit(v)?` <small class="muted">${esc(tit(v))}</small>`:''}</span><span class="ro-a"><button type="button" class="icon-btn" ${i===0?'disabled':''} onclick="A.roMove(${i},-1)" aria-label="Subir ${esc(rotTag(v))}, posição ${i+1}">↑</button><button type="button" class="icon-btn" ${i===r.seq.length-1?'disabled':''} onclick="A.roMove(${i},1)" aria-label="Descer ${esc(rotTag(v))}, posição ${i+1}">↓</button><button type="button" class="icon-btn" onclick="A.roDel(${i})" aria-label="Tirar ${esc(rotTag(v))}, posição ${i+1}">✕</button></span></div>`).join('')||'<div class="empty">Sequência vazia.</div>'}</div>
   <div class="row mt2 ro-add">${ws.map(w=>`<button type="button" class="btn xs" onclick="A.roAdd(${esc(JSON.stringify(w.v))})">+ ${esc(w.v)}</button>`).join('')}<button type="button" class="btn xs" onclick="A.roAdd('OFF')">+ Descanso</button></div>
   <div class="grid g2 mt3"><label class="f"><span>Vale a partir de</span><input type="date" min="2000-01-01" max="2099-12-31" id="rtDate" value="${esc(r.date)}" onchange="A.roSet('date',this.value)"></label><label class="f"><span>Nesse dia o treino é</span><select id="rtWk" onchange="A.roSet('wk',this.value)">${opts.map(l=>`<option value="${esc(l)}" ${l===r.wk?'selected':''}>${esc(rotTag(l))}</option>`).join('')}</select></label></div>
   <label class="ck mt2"><input type="checkbox" id="rtOff" ${r.off?'checked':''} onchange="A.roSet('off',this.checked)"><span>Não seguir sequência (eu escolho o treino a cada dia)</span></label>
@@ -4388,6 +4430,7 @@ function renderTrainExtras(){try{const t=S.protoT;const sq=$('#trSeq');if(sq){sq
 
 Object.assign(A,{
   missOpen(){missOpen();},
+  swapAnswer(mode){const w=A._sw;if(!w)return;swapSave(w.iso,{wk:w.wk,mode});A._sw=null;closeSheet();renderAll();toast(mode==='only'?'Só este dia: '+rotTag(w.wk).toLowerCase()+' agora e '+rotTag(w.base).toLowerCase()+' no dia seguinte':'Dias ajustados: a sequência continua a partir do '+rotTag(w.wk).toLowerCase(),6000);},
   missAnswer(v){const r=missRun();if(!r){closeSheet();return;}const s=Object.assign({},thaw(S.settings||{}));const m=Object.assign({},s.missDec||{});{const a=agenda();const lim=[addDays(todayISO(),-120),(a.ok&&a.W)||'0000-00-00'].sort()[0];Object.keys(m).forEach(k=>{if(k<lim)delete m[k];});}r.days.forEach(d=>{m[d]=v;});s.missDec=m;Store.set('settings/main',s);closeSheet();renderAll();toast(v==='shift'?'Treino passado para frente: hoje é '+rotTag(r.wk).toLowerCase():'Plano mantido: '+[...new Set(r.lost)].map(rotTag).join(', ')+' como não realizado');},
   tpKeep(v){A._tp.keep=!!v;A._tp.grid=null;tpRender();},
   tpDiscard(){A._tp=null;closeSheet();renderAll();toast('Treino descartado: o treino em uso não mudou');},
@@ -4399,13 +4442,15 @@ Object.assign(A,{
   tpBack(){tpRender();},
   tpApplyDays(){const g=A._tp.grid;if(!g.some(Boolean)){toast('Ponha ao menos um treino em um dia');return;}tpCommit(g.map(x=>x||'OFF'),todayISO(),false);},
   openRotation(){const t=S.protoT;if(!t||!t.workouts||!t.workouts.length){toast('Cadastre ou monte um treino primeiro');return;}const letters=t.workouts.map(w=>w.v);const seq=(t.rotation&&t.rotation.length?t.rotation:letters).slice();const an=t.anchor&&seq.includes(t.anchor.wk)?t.anchor:null;const pl=plannedWorkout(CUR);
-    A._ro={seq,date:CUR,wk:seq.includes(pl)?pl:(an?an.wk:seq[0]),off:!(t.rotation&&t.rotation.length)};roRender();},
-  roMove(i,d){const s=A._ro.seq,j=i+d;if(j<0||j>=s.length)return;[s[i],s[j]]=[s[j],s[i]];roRender();},
-  roDel(i){A._ro.seq.splice(i,1);roRender();},
+    const ps=t.rotation&&t.rotation.length?agendaSlot(CUR):null;A._ro={seq,date:CUR,wk:ps!=null?seq[ps]:(seq.includes(pl)?pl:(an?an.wk:seq[0])),off:!(t.rotation&&t.rotation.length),pos:ps,auto:ps!=null};roRender();},
+  roMove(i,d){const s=A._ro.seq,j=i+d;if(j<0||j>=s.length)return;[s[i],s[j]]=[s[j],s[i]];roAuto();roRender();},
+  roDel(i){const r=A._ro;r.seq.splice(i,1);if(r.pos!=null){if(i<r.pos)r.pos--;if(r.pos>=r.seq.length)r.pos=Math.max(0,r.seq.length-1);}roAuto();roRender();},
   roAdd(v){A._ro.seq.push(v);roRender();},
-  roSet(k,v){A._ro[k]=v;roPrev();},
-  saveRotation(){const r=A._ro;if(!S.protoT||!r)return;const t=thaw(S.protoT);if(r.off){delete t.rotation;delete t.anchor;}else{if(!r.seq.some(x=>x!=='OFF')){toast('A sequência precisa de ao menos um treino');return;}if(!r.seq.includes(r.wk)){toast('Escolha o treino do dia inicial');return;}if(!okISO(r.date)){toast('Informe a data');return;}t.rotation=r.seq.slice();t.anchor={date:r.date,wk:r.wk};}
-    Store.set('protocol/training',t);A._ro=null;closeSheet();renderAll();toast('Sequência salva');},
+  roSet(k,v){A._ro[k]=v;if(k==='wk'||k==='date')A._ro.auto=false;roPrev();},
+  saveRotation(){const r=A._ro;if(!S.protoT||!r)return;const t=thaw(S.protoT);if(r.off){delete t.rotation;delete t.anchor;}else{if(!r.seq.some(x=>x!=='OFF')){toast('A sequência precisa de ao menos um treino');return;}if(!r.seq.includes(r.wk)){toast('Escolha o treino do dia inicial');return;}if(!okISO(r.date)){toast('Informe a data');return;}t.rotation=r.seq.slice();if(r.auto&&r.pos!=null&&t.rotation.indexOf(r.wk)!==r.pos)t.rotation=t.rotation.slice(r.pos).concat(t.rotation.slice(0,r.pos));t.anchor={date:r.date,wk:r.wk};
+      /* a ordem nova manda: trocas de um dia só, de hoje em diante, deixam de valer */
+      {const st=Object.assign({},thaw(S.settings||{}));const m=Object.assign({},st.swapDec||{});let ch=false;Object.keys(m).forEach(k=>{if(k>=r.date&&m[k]&&m[k].wk){m[k]={wk:null,mode:null};ch=true;}});if(ch){st.swapDec=m;Store.set('settings/main',st);}}}
+    Store.set('protocol/training',t);A._ro=null;closeSheet();renderAll();toast('Sequência salva'+(!r.off&&r.date===todayISO()?': hoje é '+rotTag(r.wk).toLowerCase():''));},
   openBuilder(){const dr=(S.tforms||{}).rascunho;const from=dr&&Array.isArray(dr.ws)&&dr.ws.length;A._bd={ws:from?thaw(dr.ws):bdFromProto(S.protoT),cur:0,open:-1,fromDraft:!!from};bdRender();},
   bdReset(){A._bd={ws:bdFromProto(S.protoT),cur:0,open:-1,fromDraft:false};Store.del('train_forms/rascunho');bdRender();},
   bdTab(i){A._bd.cur=i;A._bd.open=-1;bdRender();},
