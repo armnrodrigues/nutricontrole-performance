@@ -156,6 +156,7 @@ label.f{display:flex;flex-direction:column;gap:var(--s1);font-size:var(--f-xs);c
 #artNote{font-size:var(--f-xs);color:var(--ink-2);margin:0 0 var(--s2);padding:0 0 var(--s2);border-bottom:1px solid var(--line)}
 #histList .item .hist-b{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;align-items:center}
 #histList .hist-more{margin:0 0 8px 14px;padding-left:10px;border-left:2px solid var(--line)}
+html.nc-wait main :is(input,select,textarea,button,label,a,[onclick]){pointer-events:none}
 #syncBar[hidden].hold{display:flex!important;visibility:hidden}
 #syncBar .dot{width:8px;height:8px;border-radius:50%;background:var(--muted);flex:none}
 #syncBar.ok .dot{background:var(--good)}
@@ -1139,7 +1140,7 @@ body.job-on.has-trfoot #toast{bottom:calc(var(--nav-h) + var(--trfoot-h,68px) + 
     </div>
     <div class="card">
       <div class="card-h"><h3>Sobre o app</h3></div>
-      <p class="mini mb2" id="appVersion">Versão 61 · 26/11/2026</p><p class="mini mb2" id="lastAiErr" hidden></p>
+      <p class="mini mb2" id="appVersion">Versão 62 · 26/11/2026</p><p class="mini mb2" id="lastAiErr" hidden></p>
       <div class="ponte in"><span>Backup, exportar, restaurar e conferir dados</span><button type="button" class="btn sm ghost" id="vdConfig" onclick="A.goDados('backup')">Ver em Dados ›</button></div>
     </div>
   </div>
@@ -1434,6 +1435,7 @@ const Store={
   allow(path){this.okDrop[path]=Date.now();},
   _ok(path){const t=this.okDrop[path];delete this.okDrop[path];return !!t&&Date.now()-t<30000;},
   async init(){
+    /* v62 · M-18: trava silenciosa desde a abertura até o app saber de onde lê */document.documentElement.classList.add('nc-wait');
     try{
       const db=await window.claude?.use?.('db');
       if(db){this.db=db;this.mode='cloud';try{const u=await claude.use('user');this.user=u;this.uid=u?await u.id():null;}catch(e){}}
@@ -1444,13 +1446,14 @@ const Store={
   },
   loadLocal(){
     try{const d=JSON.parse(localStorage.getItem(LS_KEY)||'null');if(d)Object.assign(S,d);}catch(e){}
-    bump();this.ready=true;ensureRestRule();syncBar('warn',(window.ncSync&&window.ncSync.localMsg)||'Modo local: os dados ficam só neste navegador. Para sincronizar, use o site (nutricontrole.pages.dev) ou o link do Claude.');
+    bump();this.ready=true;document.documentElement.classList.remove('nc-wait');ensureRestRule();syncBar('warn',(window.ncSync&&window.ncSync.localMsg)||'Modo local: os dados ficam só neste navegador. Para sincronizar, use o site (nutricontrole.pages.dev) ou o link do Claude.');
     renderAll();
   },
   saveLocal(){try{localStorage.setItem(LS_KEY,JSON.stringify(S));this._full=false;}catch(e){if(!this._full){this._full=true;toast('Este navegador ficou sem espaço: as últimas alterações não foram guardadas. Exporte o backup em Dados › Backup e recuperação.',8000);}}},
   watchCloud(){
+    /* v62 · M-18: campos travados em silêncio até a primeira leitura do banco */document.documentElement.classList.add('nc-wait');
     const db=this.db;let got=0;const need=14;let timer=setTimeout(()=>{if(!this.ready&&!(window.ncSync&&window.ncSync.problem()))syncBar('warn','Ainda sem resposta do banco… verifique a conexão.');},10000);
-    const done=()=>{got++;if(got>=need&&!this.ready){this.ready=true;clearTimeout(timer);ensureRestRule();const cf=window.ncSync;if(cf&&cf.problem()){cf.paint();}else{syncBar('ok','Sincronizado na nuvem'+(this.uid?'':' · somente leitura'));setTimeout(()=>{if(!(cf&&cf.problem()))syncBarOff();},4000);}}renderAll();};
+    const done=()=>{got++;if(got>=need&&!this.ready){this.ready=true;clearTimeout(timer);document.documentElement.classList.remove('nc-wait');ensureRestRule();const cf=window.ncSync;if(cf&&cf.problem()){cf.paint();}else if(!this.uid)syncBar('ok','Sincronizado na nuvem · somente leitura');else syncBarOff();}renderAll();};
     const col=(name,target,order)=>{let q=db.collection(name);if(order)q=q.orderBy(order,'desc');q=q.limit(1000);let first=true;
       // data() chega CONGELADO (Object.freeze profundo): sem clonar, qualquer edição em um documento já existente
       // (push/splice em refeições, peso, água…) falha em silêncio. Por isso tudo entra no estado como cópia mutável.
@@ -1463,7 +1466,7 @@ const Store={
   },
   /* grava um documento por vez por caminho, juntando edições rápidas */
   async set(path,data){
-    if(this.mode==='cloud'&&!this.ready){toast('Aguarde sincronizar com o banco antes de editar',3500);return;}
+    if(this.mode==='cloud'&&!this.ready){return;}
     const [colName,id]=path.split('/');
     if(colName==='workouts'&&!this._ok(path)){const g=wkGuard(id,data);if(g)data=g;}
     // aplica localmente de imediato
@@ -1574,7 +1577,7 @@ function agenda(){const t=S.protoT;const today=todayISO(),M=restFrom();const key
   const by={};for(const k in S.workouts){const w=S.workouts[k];if(w&&w.date>=W&&t.rotation.includes(w.wk))(by[w.date]=by[w.date]||[]).push(w.wk);}
   AG.ok=true;AG.W=W;AG.byDate=by;AG.slot[W]=s0;AG.upTo=W;return AG;}
 function agendaStep(d,s,rot,n,a){let wk=sessionOf(d).wk;if(!(wk&&rot.includes(wk)))wk=(a.byDate[d]||[])[0]||null;const pl=rot[s];const sd=swapDec(d);if(!wk&&sd&&d>=a.today&&rot.includes(sd.wk))wk=sd.wk;
-  if(wk){if(wk===pl)return (s+1)%n;if(sd&&sd.wk===wk&&sd.mode==='only')return s;if(!isTrainDay(wk)&&isTrainDay(pl))return s;for(let k=1;k<n;k++)if(rot[(s+k)%n]===wk)return (s+k+1)%n;return (s+1)%n;}
+  if(wk){if(wk===pl)return (s+1)%n;if(sd&&sd.wk===wk&&sd.mode==='day')return (s+1)%n;if(sd&&sd.wk===wk&&sd.mode==='only')return s;if(!isTrainDay(wk)&&isTrainDay(pl))return s;for(let k=1;k<n;k++)if(rot[(s+k)%n]===wk)return (s+k+1)%n;return (s+1)%n;}
   if(!isTrainDay(pl))return (s+1)%n;
   if(dayStatus(d))return s;
   /* v46 · C: dia passado com musculação lançada (print do Apple Fitness ou minutos) e sem letra = o treino do bloco foi considerado feito conforme o plano:
@@ -1589,7 +1592,9 @@ function agendaSlot(iso){const a=agenda();if(!a.ok||iso<a.W||daysBetween(a.W,iso
   while(a.upTo<iso){const d=a.upTo;const nx=addDays(d,1);a.slot[nx]=a.jump&&a.jump.d===nx?a.jump.s:agendaStep(d,a.slot[d],rot,n,a);a.upTo=nx;}return a.slot[iso];}
 function plannedLegacy(iso){const t=S.protoT;if(!t)return null;if(planHas(t,iso))return t.plan[iso]||null;const s=legacySlot(iso);return s==null?null:t.rotation[s];}
 /* v55 · troca de treino pelo seletor do Treino do dia (decisão do Antonio, 25/11/2026): settings.swapDec[iso]={wk,mode}.
-   mode 'only' = só este dia: o treino que era do dia passa para o dia seguinte e a sequência segue igual; 'seq' = a sequência continua a partir do treino escolhido. */
+   mode 'only' = só este dia: o treino que era do dia passa para o dia seguinte e a sequência segue igual; 'seq' = a sequência continua a partir do treino escolhido.
+   v62 (decisão do Antonio, 26/11/2026): a troca no dia grava mode 'day': o treino que sai fica sem fazer e os próximos dias ficam como previstos.
+   'only' e 'seq' não são mais gravados; os que já existem continuam valendo para os dias em que foram feitos. */
 function swapDec(iso){const m=(S.settings||{}).swapDec;const v=m&&m[iso];return v&&v.wk?v:null;}
 /* v60 · P2 (decisão do Antonio, 26/11; regra R-05): o previsto de cada dia que já passou fica como estava quando a sequência, a ordem,
    a data de início ou o treino mudam. freezePast compara o previsto de cada dia passado (de 01/11/2026 a ontem) antes e depois da mudança e
@@ -3231,7 +3236,7 @@ const A={
   actPendDrop(){const q=A._ask;if(!q)return;const d0=S.days[q.iso];const p0=d0&&(d0.actPend||[]).find(x=>x&&x.id===q.id);if(!p0){A.actNext();return;}
     confirmInline(`Descartar a leitura de ${actPendName(p0)}${p0.min?' ('+fmt(p0.min)+' min)':''} de ${dtShort(q.iso)}? Ela não entra em nenhuma categoria.`,()=>{const d=thaw(getDay(q.iso));d.actPend=(d.actPend||[]).filter(x=>!x||x.id!==q.id);if(!d.actPend.length)delete d.actPend;saveDay(q.iso,d);renderAll();toast('Leitura descartada');A.actNext();});},
   actNext(){if(actPendAll().length){setTimeout(()=>A.actAsk(),200);return;}A._ask=null;const m=A._askMore;A._askMore=null;if(m!=null)setTimeout(()=>A.openPrint(m||null),350);},
-  actCatPick(cat){if(!Object.prototype.hasOwnProperty.call(ACT_CAT_N,cat))return;const q=A._ask;if(!q)return;if(Store.mode==='cloud'&&!Store.ready){toast('Aguarde sincronizar com o banco antes de escolher',3500);return;}
+  actCatPick(cat){if(!Object.prototype.hasOwnProperty.call(ACT_CAT_N,cat))return;const q=A._ask;if(!q)return;if(Store.mode==='cloud'&&!Store.ready){return;}
     if(q.act!=null){A.actRecatApply(cat);return;}
     const d=thaw(getDay(q.iso));const p=(d.actPend||[]).find(x=>x&&x.id===q.id);if(!p){closeSheet();A.actNext();return;}
     d.actPend=d.actPend.filter(x=>!x||x.id!==q.id);if(!d.actPend.length)delete d.actPend;
@@ -3249,7 +3254,7 @@ const A={
     const depois=d.activities.filter(x=>x.src==='Apple'&&actIsStr(x)).reduce((t,x)=>t+(x.min||0),0);const s=d.session||{};if(depois>antes)s.trainMin=Math.max(s.trainMin||0,depois);else if(depois<antes&&(s.trainMin||0)===antes)s.trainMin=depois||null;d.session=s;
     saveDay(q.iso,d);const nn=actNorm(nome);if(!actGeneric(nn))actRemember(nn,cat);closeSheet();renderAll();{const mk=takeMark();toast(`${nome}: ${ACT_CAT_N[cat]}`+(mk?' · '+mk:''),mk?7000:3200);}},
   /* Cárdio do dia: qual foi a atividade (opcional). Lista fechada ou "Outra" com texto; o que a tabela diz que não é cárdio não entra aqui. */
-  cardioActSet(){const sel=$('#sCardioAct'),tx=$('#sCardioActTxt');if(!sel||!tx)return;const iso=CUR;if(Store.mode==='cloud'&&!Store.ready){toast('Aguarde sincronizar com o banco antes de editar',3500);return;}let v=sel.value;
+  cardioActSet(){const sel=$('#sCardioAct'),tx=$('#sCardioActTxt');if(!sel||!tx)return;const iso=CUR;if(Store.mode==='cloud'&&!Store.ready){return;}let v=sel.value;
     if(v==='__o'){AC.cardioOther=iso;$('#sCardioActTxtL').hidden=false;const t=tx.value.replace(/\s+/g,' ').trim().slice(0,40);const cur=sessionOf(iso).cardioAct||'';
       if(!t){if(!cur||CARDIO_ACTS.includes(cur))v='';else return;}
       else{const c=actClass(t);if(c.cat==='musculacao'){toast(`${t} é musculação: lance o tempo em Musculação (min), em Sessão do dia. Não foi gravado no cárdio.`,6500);tx.value='';return;}
@@ -3258,7 +3263,7 @@ const A={
     const d=thaw(getDay(iso));const s=d.session||{};if((s.cardioAct||'')===v)return;if(v)s.cardioAct=v;else delete s.cardioAct;d.session=s;saveDay(iso,d);renderAll();},
   /* Dia sem treino (regra de 22/11/2026): marca ou desmarca "Descanso completo" / "Só cárdio" no documento do dia (campo novo day.status).
      Nada mais muda no documento. O deslocamento da agenda é conta de leitura (agendaStep), então desmarcar desfaz. */
-  setDayStatus(k){if(k!=='descanso'&&k!=='cardio')return;const iso=CUR;if(Store.mode==='cloud'&&!Store.ready){toast('Aguarde sincronizar com o banco antes de editar',3500);return;}
+  setDayStatus(k){if(k!=='descanso'&&k!=='cardio')return;const iso=CUR;if(Store.mode==='cloud'&&!Store.ready){return;}
     try{flushPend();}catch(e){}wkFlush();const cur=dayStatus(iso);const next=cur===k?null:k;
     if(next){const ws=Object.values(S.workouts).filter(w=>w&&w.date===iso&&(w.exercises||[]).length);
       if(ws.length){toast(`Este dia tem o treino ${ws.map(w=>w.wk).join(' e ')} registrado. Para marcar ${next==='descanso'?'descanso':'só cárdio'}, exclua o treino no histórico.`,6000);return;}
@@ -3369,7 +3374,7 @@ const A={
     ${EXAM_DEFS.map(([k,l])=>`<label class="f"><span>${esc(l)}</span><input type="number" step="0.01" inputmode="decimal" id="ex_${k}" value="${esc(e[k]??'')}"></label>`).join('')}</div>${(()=>{/* v61 · D-08: o peso do dia é lançado em Hoje; o exame oferece gravar o peso dele como peso do dia */const dw=(S.days[e.date||CUR]||{}).weight;return `<label class="row opt mt2"><input type="checkbox" id="ex_wday" ${dw?'':'checked'}> <span id="ex_wdayTxt">Gravar também como peso do dia${dw?` (o dia já tem ${fmt(dw,1)} kg)`:''}</span></label>`;})()}<div class="row end mt3"><button class="btn primary" onclick="A.saveExam()">Salvar</button></div>`);},
   /* v61 · D-08: trocar a data do exame refaz a oferta (marcada só se aquele dia ainda não tem peso) */
   exWdaySync(){const cb=$('#ex_wday'),t=$('#ex_wdayTxt'),d=($('#ex_date')||{}).value;if(!cb||!t||!d)return;const dw=(S.days[d]||{}).weight;cb.checked=!dw;t.textContent='Gravar também como peso do dia'+(dw?` (o dia já tem ${fmt(dw,1)} kg)`:'');},
-  saveExam(){const date=$('#ex_date').value;if(!date){toast('Informe a data');return;}if(Store.mode==='cloud'&&!Store.ready){toast('Aguarde sincronizar com o banco antes de editar',3500);return;}const obj={date,tipo:$('#ex_tipo').value};EXAM_DEFS.forEach(([k])=>{obj[k]=(k==='tmb'?numInt:numLoose)($('#ex_'+k).value);});const orig=A._exOrig||null;
+  saveExam(){const date=$('#ex_date').value;if(!date){toast('Informe a data');return;}if(Store.mode==='cloud'&&!Store.ready){return;}const obj={date,tipo:$('#ex_tipo').value};EXAM_DEFS.forEach(([k])=>{obj[k]=(k==='tmb'?numInt:numLoose)($('#ex_'+k).value);});const orig=A._exOrig||null;
     const wd=!!($('#ex_wday')&&$('#ex_wday').checked)&&obj.peso!=null&&obj.peso>=30&&obj.peso<=400;
     const go=()=>{Store.set('exams/'+date,obj);if(orig&&orig!==date)Store.del('exams/'+orig);if(wd){const d=getDay(date);d.weight=obj.peso;saveDay(date,d);}A._exOrig=null;closeSheet();renderAll();toast('Exame salvo — TMB e indicadores atualizados'+(wd?` · peso do dia ${dtShort(date)}: ${fmt(obj.peso,1)} kg`:''));};
     if(orig!==date&&S.exams&&S.exams[date]){openSheet('Confirmar',`<p>${esc(`Já existe um exame em ${dtBR(date)}. Substituir pelo que você acabou de preencher?`)}</p><div class="row end"><button class="btn ghost" id="exBack">Voltar ao formulário</button><button class="btn primary" id="cfYes">Substituir</button></div>`);$('#cfYes').onclick=()=>{closeSheet();go();};$('#exBack').onclick=()=>{A.openExamForm(orig,obj);};return;}go();},
@@ -4526,17 +4531,11 @@ function tpDaysRender(){const p=A._tp,g=p.grid,N=g.length,today=todayISO();const
   ${sem.length?`<div class="note warn mt2">${sem.length>1?'Treinos':'Treino'} ${esc(sem.join(', '))} sem dia: ${sem.length>1?'ficam':'fica'} fora da sequência.</div>`:''}
   <div class="row end mt3"><button class="btn ghost" onclick="A.tpBack()">Voltar</button><button class="btn primary" id="tpApply" onclick="A.tpApplyDays()">Aplicar</button></div>`);}
 
-/* ---------- trocar o treino do dia: mostra como fica e pergunta "só este dia" ou "mudar os dias" */
+/* ---------- trocar o treino do dia (v62): vale só para o dia; a agenda dos dias seguintes não muda. Mudar a ordem é no Protocolo */
 function swapSave(iso,v){const st=Object.assign({},thaw(S.settings||{}));const m=Object.assign({},st.swapDec||{});{const lim=addDays(todayISO(),-120);Object.keys(m).forEach(k=>{if(k<lim)delete m[k];});}/* v60 · M-19 */m[iso]=v||{wk:null,mode:null};st.swapDec=m;Store.set('settings/main',st);}
 function swapAsk(){const t=S.protoT;const iso=CUR,x=$('#trWk').value;if(!t||!t.rotation||!t.rotation.includes(x)||!okISO(iso)||iso<todayISO())return;const s=agendaSlot(iso);if(s==null)return;
   const rot=t.rotation,n=rot.length,base=rot[s],cur=swapDec(iso);if(x===base){if(cur){swapSave(iso,null);renderAll();toast('Voltou ao treino previsto: '+rotTag(base));}return;}if(cur&&cur.wk===x)return;
-  let k=1;for(let j=1;j<n;j++)if(rot[(s+j)%n]===x){k=j;break;}const from=i=>{const a=((i%n)+n)%n;return rot.slice(a).concat(rot.slice(0,a));};const nx=addDays(iso,1);
-  if(from(s).join('|')===from(s+k+1).join('|')){swapSave(iso,{wk:x,mode:'only'});renderAll();toast(rotTag(x)+' em '+dtShort(iso)+'; a sequência dos próximos dias segue igual',5000);return;}
-  const cell=`<span class="sq"><small>${esc(dayLab(iso))}</small><b>${esc(rotMini(x))}</b></span>`;A._wkSw={iso,wk:x,base};
-  openSheet('Trocar o treino do dia',`<p>Em ${esc(dtShort(iso))} estava previsto o <b>${esc(rotTag(base))}</b> e você escolheu o <b>${esc(rotTag(x))}</b>.</p>
-  <p class="mt3"><b>Só este dia</b></p><p class="mini">O ${esc(rotTag(base))} passa para o dia seguinte e a sequência segue igual.</p><div class="sqs mt1" id="swOnly">${cell}${seqPreview(from(s),nx,6)}</div>
-  <p class="mt3"><b>Mudar os dias</b></p><p class="mini">A sequência continua a partir do ${esc(rotTag(x))}.</p><div class="sqs mt1" id="swSeq">${cell}${seqPreview(from(s+k+1),nx,6)}</div>
-  <div class="row end mt3"><button class="btn" id="swSeqBtn" onclick="A.swapAnswer('seq')">Mudar os dias</button><button class="btn primary" id="swOnlyBtn" onclick="A.swapAnswer('only')">Só este dia</button></div>`);}
+  swapSave(iso,{wk:x,mode:'day'});renderAll();toast(`${rotTag(x)} em ${dtShort(iso)}. O ${rotTag(base)} fica sem fazer e os próximos dias seguem a agenda.`,6000);}
 function roAuto(){const r=A._ro;if(r&&r.auto&&r.pos!=null&&r.seq.length)r.wk=r.seq[Math.min(r.pos,r.seq.length-1)];}
 /* ---------- Reordenar treinos (antes: Programar rotação) */
 function roRender(){const r=A._ro,t=S.protoT;const ws=t.workouts;const tit=v=>v==='OFF'?'':((ws.find(w=>w.v===v)||{}).title||'');const opts=[...new Set(r.seq)];if(!opts.includes(r.wk))r.wk=opts[0]||'';
@@ -4642,7 +4641,6 @@ function renderTrainExtras(){try{const t=S.protoT;{const np=$('#trNoProto');if(n
 
 Object.assign(A,{
   missOpen(){missOpen();},
-  swapAnswer(mode){const w=A._wkSw;if(!w)return;swapSave(w.iso,{wk:w.wk,mode});A._wkSw=null;closeSheet();renderAll();toast(mode==='only'?'Só este dia: '+rotTag(w.wk)+' agora e '+rotTag(w.base)+' no dia seguinte':'Dias ajustados: a sequência continua a partir do '+rotTag(w.wk),6000);},
   missAnswer(v){const r=missRun();if(!r){closeSheet();return;}const s=Object.assign({},thaw(S.settings||{}));const m=Object.assign({},s.missDec||{});{const a=agenda();const lim=[addDays(todayISO(),-120),(a.ok&&a.W)||'0000-00-00'].sort()[0];Object.keys(m).forEach(k=>{if(k<lim)delete m[k];});}r.days.forEach(d=>{m[d]=v;});s.missDec=m;Store.set('settings/main',s);closeSheet();renderAll();toast(v==='shift'?'Treino passado para frente: hoje é '+rotTag(r.wk).toLowerCase():'Plano mantido: '+[...new Set(r.lost)].map(rotTag).join(', ')+' como não realizado');},
   tpKeep(v){A._tp.keep=!!v;A._tp.grid=null;tpRender();},
   tpDiscard(){A._tp=null;closeSheet();renderAll();toast('Treino descartado: o treino em uso não mudou');},
