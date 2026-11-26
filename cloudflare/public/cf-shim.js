@@ -180,7 +180,8 @@
         // o servidor recusou este registro (caminho inválido ou grande demais): sai da fila, mas o usuário é avisado
         if (JSON.stringify(OUT[path]) === sent) { delete OUT[path]; delete BASE[path]; GONE.add(path); persistOut(); saveBase(); }
         console.warn('registro recusado pelo servidor', path, e);
-        try { if (typeof toast === 'function') toast('O servidor recusou um registro (' + path + '): ' + (e.message || 'inválido'), 7000); } catch (_) {}
+        // v60 · M-06 (regra R-07): o aviso diz o registro como o app mostra ("o Treino E de 25/11"), nunca o caminho do banco
+        try { if (typeof toast === 'function') toast('O site não aceitou gravar ' + (typeof window.recLabel === 'function' ? window.recLabel(path) : 'um registro') + (/grande demais/i.test(String(e.message || '')) ? ' (ficou grande demais)' : '') + '. O que está na tela não foi para o site: exporte um backup em Ajustes.', 7000); } catch (_) {}
       }
     }
     saveCache();

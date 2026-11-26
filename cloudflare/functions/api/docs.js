@@ -26,7 +26,12 @@ export async function onRequestPut({ request, env }) {
   const up = Number.isFinite(base)
     ? env.DB.prepare(STAMP_SQL('?3', '?5')).bind(path, path.split('/')[0], body, Date.now(), base)
     : env.DB.prepare(STAMP_SQL('?3')).bind(path, path.split('/')[0], body, Date.now());
-  const row = await withHist(env, path, up);
+  // v60 · P8: treino que perde séries guarda a versão de antes mesmo dentro da janela de 10 min
+  let force = 0;
+  if (path.split('/')[0] === 'workouts') {
+    try { const old = await env.DB.prepare('SELECT data FROM docs WHERE path = ?1').bind(path).first(); if (old && old.data && setCount(JSON.parse(old.data)) > setCount(JSON.parse(body))) force = 1; } catch (e) {}
+  }
+  const row = await withHist(env, path, up, Number.isFinite(base) ? base : null, force);
   if (!row) return Response.json({ code: 'conflict', message: 'O servidor tem uma versão mais nova deste registro' }, { status: 409 });
   return Response.json({ ok: true, updated: row.updated });
 }
@@ -34,19 +39,25 @@ export async function onRequestPut({ request, env }) {
 export async function onRequestDelete({ request, env }) {
   const path = new URL(request.url).searchParams.get('path') || '';
   if (!PATH_RE.test(path)) return Response.json({ code: 'invalid_argument', message: 'Caminho inválido' }, { status: 400 });
-  const row = await withHist(env, path, env.DB.prepare(STAMP_SQL('NULL')).bind(path, path.split('/')[0], null, Date.now()));
+  const row = await withHist(env, path, env.DB.prepare(STAMP_SQL('NULL')).bind(path, path.split('/')[0], null, Date.now()), null, 1); // exclusão: sempre guarda a versão de antes
   return Response.json({ ok: true, updated: row ? row.updated : Date.now() });
 }
 
 // v58 · histórico (regra R-02 de qa/REGRAS.md): antes de gravar ou excluir, a versão que estava no banco vai para docs_hist, no mesmo lote
-// (atômico). Treino: toda versão. Demais registros: no máximo uma a cada 30 min por caminho. Guardado por 30 dias.
+// (atômico). Guardado por 30 dias.
+// v60 · P8 (decisão do Antonio, 26/11): treino guarda no máximo uma versão a cada 10 min por caminho (antes: toda versão, uma a cada número
+// digitado); demais registros: uma a cada 30 min. SEMPRE guarda (?4 = 1) antes de uma exclusão e quando a gravação tira séries do treino.
+// Gravação condicional recusada (409, ?3 = base mais velha que o banco) não guarda nada (antes entrava uma versão a mais sem ter gravado).
+// Parâmetros: ?1 caminho, ?2 agora, ?3 base (ou NULL), ?4 forçar (1 ou 0).
 const HIST_SQL = 'INSERT INTO docs_hist(path, col, data, updated, saved) SELECT path, col, data, updated, ?2 FROM docs WHERE path = ?1 AND data IS NOT NULL '
-  + "AND (col = 'workouts' OR NOT EXISTS (SELECT 1 FROM docs_hist h WHERE h.path = ?1 AND h.saved > ?2 - 1800000))";
+  + 'AND (?3 IS NULL OR updated <= ?3) '
+  + "AND (?4 = 1 OR NOT EXISTS (SELECT 1 FROM docs_hist h WHERE h.path = ?1 AND h.saved > ?2 - (CASE WHEN docs.col = 'workouts' THEN 600000 ELSE 1800000 END)))";
 const KEEP_MS = 30 * 24 * 3600 * 1000;
-async function withHist(env, path, upStmt) {
+const setCount = w => ((w && w.exercises) || []).reduce((n, e) => n + ((e && e.sets) || []).filter(s => s && (s.kg != null || s.reps != null)).length, 0);
+async function withHist(env, path, upStmt, base, force) {
   const now = Date.now();
   try {
-    const stmts = [env.DB.prepare(HIST_SQL).bind(path, now), upStmt];
+    const stmts = [env.DB.prepare(HIST_SQL).bind(path, now, base == null ? null : base, force ? 1 : 0), upStmt];
     if (Math.random() < 0.02) stmts.push(env.DB.prepare('DELETE FROM docs_hist WHERE saved < ?1').bind(now - KEEP_MS));
     const res = await env.DB.batch(stmts);
     return (res[1] && res[1].results && res[1].results[0]) || null;

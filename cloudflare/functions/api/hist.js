@@ -1,4 +1,6 @@
-// v58 · GET /api/hist?col=workouts  -> versões anteriores dos registros dessa coleção nos últimos 30 dias (mais recentes primeiro, até 300).
+// v58 · GET /api/hist?col=workouts  -> versões anteriores dos registros dessa coleção nos últimos 30 dias (mais recentes primeiro).
+// v60 · P8: até 12 versões por caminho (as mais recentes) e até 600 no total; antes eram as 300 mais recentes de todos juntos, o que cobria poucos dias.
+// A tela agrupa por treino e mostra a melhor versão de cada um.
 // Alimenta "Recuperar treino apagado ou alterado" em Ajustes. Só leitura; a restauração é uma gravação normal (PUT /api/docs), que por sua vez
 // guarda no histórico a versão que estava antes.
 const COL_RE = /^[a-z_]{2,40}$/;
@@ -9,7 +11,8 @@ export async function onRequestGet({ request, env }) {
   if (!COL_RE.test(col)) return Response.json({ code: 'invalid_argument', message: 'Coleção inválida' }, { status: 400 });
   let results = [];
   try {
-    ({ results } = await env.DB.prepare('SELECT path, col, data, updated, saved FROM docs_hist WHERE col = ?1 AND saved > ?2 AND json_valid(data) ORDER BY saved DESC LIMIT 300')
+    ({ results } = await env.DB.prepare('SELECT path, col, data, updated, saved FROM docs_hist h WHERE col = ?1 AND saved > ?2 AND json_valid(data) '
+      + 'AND (SELECT COUNT(*) FROM docs_hist h2 WHERE h2.path = h.path AND h2.saved > h.saved AND h2.saved > ?2) < 12 ORDER BY saved DESC LIMIT 600')
       .bind(col, Date.now() - KEEP_MS).all());
   } catch (e) {
     if (!/no such table/i.test(String(e && e.message))) throw e;
