@@ -344,9 +344,18 @@ table.es input[type=number]{width:88px}table.es td,table.es th{padding:var(--s1)
 /* par de blocos com gráfico: lado a lado só quando cada um tiver a largura mínima; senão, um embaixo do outro */
 .grid.g2:has(>.card){grid-template-columns:repeat(auto-fit,minmax(max(min(var(--col-min),100%),calc(50% - var(--s5)/2)),1fr));gap:var(--s4) var(--s5);align-items:start}
 /* bloco com gráfico: título numa linha e a nota embaixo, numa linha só (vizinhos começam o gráfico na mesma altura) */
-.card:has(>.chart,>.mband)>.card-h:has(>.mini){display:grid;grid-template-columns:minmax(0,1fr);gap:0}
-.card:has(>.chart,>.mband)>.card-h>.mini{text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card:has(>.chart,>.mband,>.mgrid)>.card-h:has(>.mini){display:grid;grid-template-columns:minmax(0,1fr);gap:0}
+.card:has(>.chart,>.mband,>.mgrid)>.card-h>.mini{text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 @media (max-width:500px){.mband-h{flex-direction:column;align-items:stretch;gap:0}.mband-h .mini{text-align:left}}
+/* v56 · Macros e água em grade: duas colunas só quando cada faixa tiver a largura mínima (--col-min), pela mesma regra dos pares de blocos;
+   abaixo disso as quatro ficam empilhadas, como eram. Em duas colunas toda faixa leva a linha de cima e a nota desce para baixo do nome. */
+.mgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(max(min(var(--col-min),100%),calc(50% - var(--s5)/2)),1fr));gap:0 var(--s5)}
+.mgrid>.mband{min-width:0}
+.card:has(>.mgrid){container-type:inline-size}
+@container (min-width:624px){/* 624 px = 2 × --col-min + --s5: a largura em que a grade acima passa a duas colunas */
+  .mgrid>.mband,.mgrid>.mband:first-of-type{border-top:1px solid var(--line);padding-top:var(--s3)}
+  .mgrid .mband-h{flex-direction:column;align-items:stretch;gap:0}.mgrid .mband-h .mini{text-align:left}
+}
 
 /* ---------- Treino */
 .sess{margin-bottom:var(--s2);display:flex;flex-wrap:wrap;align-items:baseline;gap:0 var(--s2)}
@@ -434,6 +443,14 @@ table.es input[type=number]{width:88px}table.es td,table.es th{padding:var(--s1)
   main,#topbar{margin-left:122px}
 }
 @media (min-width:900px) and (max-height:520px){#bottomnav{top:auto;bottom:var(--s3)}}
+/* v56 · janela larga e baixa (Duo aberto deitado): o cabeçalho preso cabe numa linha, régua de dias à esquerda e data e botões à direita.
+   Só onde ele fica preso (acima de 900 px de largura) e até 720 px de altura; nada muda em celular em pé nem em tela alta. */
+@media (min-width:901px) and (max-height:720px){
+  #topbar{flex-direction:row;align-items:center;gap:var(--s3)}
+  #topbar .tb-row{order:2;flex:none}
+  #topbar .brand{display:none}
+  #topbar .weekbar{order:1;flex:1}
+}
 
 /* ---------- Grupo muscular: figura (frente e costas) e janela. Cores só por variável; o secundário é a cor do principal a ~45 %. */
 :root{--m-principal:var(--link);--m-estab:var(--link);--m-base:var(--line-2);--m-corpo:var(--surface-2);--m-traco:var(--surface);--m-rotulo:var(--muted);--m-sec-op:.45}
@@ -689,6 +706,9 @@ body.job-on.has-trfoot #toast{bottom:calc(var(--nav-h) + var(--trfoot-h,68px) + 
 .legend i.ring{border:2px solid currentColor;border-radius:50%;background:none}
 .legend i.line,.legend i.dash,.legend i.dots{width:var(--s4)}
 .legend i.diam{width:8px;height:8px;border:2px solid currentColor;border-radius:0;background:none;transform:rotate(45deg);vertical-align:0}
+.legend i.band{width:var(--s4);border:1px solid var(--line-2);border-radius:0}
+.legend i.tri{clip-path:polygon(50% 0,100% 100%,0 100%);border-radius:0}
+.legend i.tri.down{clip-path:polygon(0 0,100% 0,50% 100%)}
 </style>
 <header id="topbar">
   <div class="tb-row">
@@ -869,10 +889,12 @@ body.job-on.has-trfoot #toast{bottom:calc(var(--nav-h) + var(--trfoot-h,68px) + 
 
   <div class="card wide">
       <div class="card-h"><h3>Macros e água por dia</h3><span class="mini">g e L por dia, cada faixa na sua escala · dia sem registro interrompe a linha</span></div>
+      <div class="mgrid">
       <div class="mband"><div class="mband-h"><b><i style="background:var(--prot)"></i>Proteína</b><span class="mini" id="mbNoteP"></span></div><div class="chart band"><canvas id="chMacros"></canvas></div></div>
       <div class="mband"><div class="mband-h"><b><i style="background:var(--carb)"></i>Carboidrato</b><span class="mini" id="mbNoteC"></span></div><div class="chart band"><canvas id="chMacC"></canvas></div></div>
       <div class="mband"><div class="mband-h"><b><i style="background:var(--fat)"></i>Gordura</b><span class="mini" id="mbNoteF"></span></div><div class="chart band"><canvas id="chMacF"></canvas></div></div>
       <div class="mband"><div class="mband-h"><b><i style="background:var(--water)"></i>Água</b><span class="mini" id="mbNoteW"></span></div><div class="chart band"><canvas id="chWater"></canvas></div></div>
+      </div>
       <div class="legend" id="mbLegend"></div>
   </div>
 
@@ -910,6 +932,7 @@ body.job-on.has-trfoot #toast{bottom:calc(var(--nav-h) + var(--trfoot-h,68px) + 
       <div class="card-h"><h3>Evolução por marcador</h3><div class="row"><select id="labSel" class="sel-inline" aria-label="Marcador" onchange="renderLabs()"></select></div></div>
       
       <div id="labCharts"><div class="chart"><canvas id="chLab"></canvas></div></div>
+      <div class="legend" id="labLegend"></div>
       <div class="mini mt2" id="labRangeTxt"></div>
     </div>
     <div class="card wide">
@@ -1052,7 +1075,7 @@ body.job-on.has-trfoot #toast{bottom:calc(var(--nav-h) + var(--trfoot-h,68px) + 
     </div>
     <div class="card">
       <div class="card-h"><h3>Dados</h3><span class="mini" id="dataStats"></span></div>
-      <p class="mini mb2" id="appVersion">Versão 55 · 25/11/2026</p><p class="mini mb2" id="lastAiErr" hidden></p>
+      <p class="mini mb2" id="appVersion">Versão 56 · 25/11/2026</p><p class="mini mb2" id="lastAiErr" hidden></p>
       <div class="row">
         <button class="btn sm" onclick="A.exportAll()">Exportar backup (JSON)</button>
         <button class="btn sm" onclick="A.exportCSV()">Exportar diário (CSV)</button>
@@ -2176,7 +2199,7 @@ function labKeyFor(name){const n=norm(name||'');if(!n)return null;const W=x=>nor
   return best;}
 function labFlag(mk){const lo=mk.low??mk.lo,hi=mk.high??mk.hi;if(mk.value==null||(lo==null&&hi==null))return '';if(lo!=null&&mk.value<lo)return 'low';if(hi!=null&&mk.value>hi)return 'high';return 'ok';}
 function labsSorted(){return Object.values(S.labs).filter(l=>l.date).sort((a,b)=>a.date<b.date?-1:1);}
-function labSeries(list){const by={};(list||labsSorted()).forEach(l=>(l.markers||[]).forEach(m=>{if(typeof m.value!=='number'||isNaN(m.value))return;const k=m.key||norm(m.name);if(!by[k])by[k]={key:k,name:m.name,unit:m.unit,pts:[]};by[k].pts.push({date:l.date,v:m.value,low:m.low,high:m.high,flag:labFlag(m)});}));return by;}
+function labSeries(list){const by={};(list||labsSorted()).forEach(l=>(l.markers||[]).forEach(m=>{if(typeof m.value!=='number'||isNaN(m.value))return;const k=m.key||norm(m.name);if(!by[k])by[k]={key:k,name:m.name,unit:m.unit,pts:[]};by[k].pts.push({date:l.date,v:m.value,low:m.low,high:m.high,flag:labFlag(m),src:m.refSrc});}));return by;}
 
 /* ============================================================ ALERTAS */
 function computeAlerts(){
@@ -2408,7 +2431,7 @@ const CH={};
    tendência, hoje (parcial) e série de apoio = pontilhado [3,3]; exame de bioimpedância = losango.
    Eixo Y com largura fixa (44 px; 56 quando o número não cabe) e a mesma folga à direita, para vizinhos começarem e acabarem na mesma vertical.
    Eixo de datas: uma função (dateAxis), cerca de 44 px por rótulo, passo de lista fixa, contado de hoje para trás; rótulo nunca gira. */
-const G={yW:44,yW2:56,padR:20,tickPx:44,passos:[1,2,3,7,14,30,60,90,180,365],lw:2,lwRef:1.5,pt:3,ptDenso:2,ptHover:5,ptMarca:6,denso:45,meta:[5,4],aux:[3,3]};
+const G={yW:44,yW2:56,padR:20,tickPx:44,passos:[1,2,3,7,14,21,30,60,90,180,365],lw:2,lwRef:1.5,pt:3,ptDenso:2,ptHover:5,ptMarca:6,ptQuad:4,denso:45,meta:[5,4],aux:[3,3]};
 const gPx=n=>parseFloat(cssVar(n))||0;
 const gPt=n=>n>G.denso?G.ptDenso:G.pt;
 /* eixo X de datas, o mesmo para todos. isos = data (AAAA-MM-DD) de cada ponto. Com {diario:true} os pontos são dias corridos: o passo sai da lista fixa
@@ -2425,7 +2448,7 @@ function mkChart(id,cfg){if(typeof Chart==='undefined'){const el=document.getEle
   const ink=cssVar('--ink-2'),grid=cssVar('--grid'),font=cssVar('--font-body');
   Chart.defaults.color=ink;Chart.defaults.font.family=font;Chart.defaults.font.size=gPx('--f-xs')||12;
   cfg.options=cfg.options||{};cfg.options.responsive=true;cfg.options.maintainAspectRatio=false;cfg.options.animation=false;
-  cfg.options.plugins=Object.assign({legend:{display:false},tooltip:{mode:'index',intersect:false,filter:i=>!(i.dataset&&i.dataset._halo),backgroundColor:cssVar('--ink'),titleColor:cssVar('--bg'),bodyColor:cssVar('--bg'),padding:gPx('--s2'),cornerRadius:gPx('--r-sm')}},cfg.options.plugins||{});
+  {const pl=cfg.options.plugins||{};cfg.options.plugins=Object.assign({legend:{display:false}},pl,{tooltip:Object.assign({mode:'index',intersect:false,filter:i=>!(i.dataset&&i.dataset._halo),backgroundColor:cssVar('--ink'),titleColor:cssVar('--bg'),bodyColor:cssVar('--bg'),padding:gPx('--s2'),cornerRadius:gPx('--r-sm')},pl.tooltip||{})});}
   cfg.options.interaction={mode:'index',intersect:false};
   const sc=cfg.options.scales=cfg.options.scales||{};['x','y'].forEach(k=>{sc[k]=sc[k]||{};});const deitado=cfg.options.indexAxis==='y';
   Object.entries(sc).forEach(([k,s])=>{s.grid=Object.assign({color:grid,drawBorder:false},s.grid||{});s.ticks=Object.assign({color:cssVar('--muted')},s.ticks||{});s.border=Object.assign({color:cssVar('--axis')},s.border||{});const af=s.afterFit;
@@ -2437,7 +2460,7 @@ function mkChart(id,cfg){if(typeof Chart==='undefined'){const el=document.getEle
 /* contorno na cor do fundo para uma linha continuar visível quando passa por cima das barras */
 function haloDs(d){return Object.assign({},d,{label:'',_halo:true,borderColor:cssVar('--bg'),backgroundColor:cssVar('--bg'),borderWidth:(d.borderWidth||2)+3,borderDash:[],order:(d.order||0)+1,pointRadius:0,pointHoverRadius:0});}
 /* legenda montada a partir do que está desenhado: [tipo ('' caixa, line, dash, dot, diam), cor, texto, mostrar?] */
-/* tipos: '' caixa (barra), line, dash (meta, alvo), dots (pontilhado), dot (ponto cheio), ring (ponto vazado), diam (losango) */
+/* tipos: '' caixa (barra), line, dash (meta, alvo), dots (pontilhado), dot (ponto cheio), ring (ponto vazado), diam (losango), band (faixa de referência), tri e 'tri down' (ponto acima e abaixo da faixa) */
 function setLegend(id,items){const c=document.getElementById(id);const cd=c&&c.closest('.card');const lg=cd&&cd.querySelector('.legend');if(!lg)return;lg.innerHTML=items.filter(x=>x&&x[3]!==false).map(([k,cor,t])=>`<span><i${k?` class="${k}"`:''} style="${['dash','dots','ring','diam'].includes(k)?'color':'background'}:${cor}"></i>${t}</span>`).join('');}
 const dsLine=(label,data,color,extra={})=>Object.assign({type:'line',label,data,borderColor:color,backgroundColor:color,borderWidth:G.lw,pointRadius:0,pointHoverRadius:G.ptHover,tension:0,spanGaps:true},extra);
 /* linha de referência (meta, alvo, esperado, limite): tracejada e mais fina que a série */
@@ -2756,8 +2779,13 @@ function renderPaineis(){
     /* uma legenda só para as quatro faixas, com o próprio sinal de cada coisa */
     setLegend('chMacros',[['dot','var(--ink-2)','dia na meta (95 % ou mais)'],['ring','var(--ink-2)','abaixo da meta'],['dash','var(--meta)','meta do dia'],['dots','var(--ink-2)','hoje (parcial)',dates.includes(hj)]]);}
   // volume
-  mkChart('chVolume',{data:{labels:lab,datasets:[dsBar('musculação',dates.map(d=>musMinOf(d)||null),cS,{stack:'v',order:5}),dsBar('cárdio',dates.map(d=>cardioMinOf(d)||null),cS2,{stack:'v',order:5}),...(al=>[al,haloDs(al)])(dsRef('alvo cárdio',dates.map(d=>cardioAlvoDia(d)||null),cM,{stepped:true,order:1}))]},options:{scales:{x:Object.assign(xA(),{stacked:true}),y:{stacked:true,beginAtZero:true}}}});
-  setLegend('chVolume',[['','var(--serie)','musculação'],['','var(--serie-2)','cárdio'],['dash','var(--meta)','alvo de cárdio']]);
+  /* v56 (25/11/2026, protótipo aprovado): musculação em barra (um treino por dia; dia sem treino fica sem barra) e cárdio em linha, na mesma base do alvo
+     (antes o cárdio era empilhado sobre a musculação e o alvo cruzava a barra errada). Os minutos são os mesmos (musMinOf, cardioMinOf, cardioAlvoDia).
+     O cárdio vale 0 no dia que conta para o alvo e ficou sem cárdio; em dia sem registro, de descanso completo ou futuro a linha é interrompida. */
+  {const car=dsLine('cárdio',dates.map(d=>{const m=cardioMinOf(d);return m>0?m:cardioAlvoDia(d)>0?0:null;}),cS2,{spanGaps:false,pointStyle:'rect',pointRadius:dates.length>G.denso?G.ptDenso:G.ptQuad,pointBorderWidth:G.lwRef,pointBorderColor:cS2,pointBackgroundColor:cssVar('--surface'),order:2});
+   const al=dsRef('alvo cárdio',dates.map(d=>cardioAlvoDia(d)||null),cM,{stepped:true,order:1});
+   mkChart('chVolume',{data:{labels:lab,datasets:[dsBar('musculação',dates.map(d=>musMinOf(d)||null),cS,{order:6}),car,haloDs(Object.assign({},car,{order:3})),al,haloDs(Object.assign({},al,{order:3}))]},options:{scales:{x:xA(),y:{beginAtZero:true}}}});}
+  setLegend('chVolume',[['','var(--serie)','musculação (barra)'],['line','var(--serie-2)','cárdio (linha)'],['dash','var(--meta)','alvo de cárdio']]);
   /* a nota do bloco cabe numa linha; o texto inteiro fica no title */
   $$('#tab-paineis .card-h>.mini,#tab-paineis .mband-h>.mini').forEach(e=>{e.title=e.textContent;});
   renderCoach(dates);renderTable(dates);
@@ -2814,9 +2842,12 @@ function renderLabs(){const PB=periodBounds(RANGES.saude);const labsP=labsSorted
   const al=computeAlerts().filter(a=>a.sub==='labs');$('#labAlerts').innerHTML=al.length?al.map(a=>`<div class="note ${a.lv==='warn'?'warn':''}">${esc(a.t)}</div>`).join(''):(keys.length?'<div class="note ok">Todos os marcadores do último exame dentro da referência.</div>':'<div class="empty">Nenhum exame laboratorial. Importe o PDF ou a foto do laudo.</div>');
   const sel=$('#labSel');const sig=keys.join('|');if(sel.dataset.sig!==sig){const cur=sel.value||'*';sel.innerHTML='<option value="*">Todos os marcadores</option>'+keys.map(k=>`<option value="${esc(k)}">${esc(ser[k].name)}</option>`).join('');sel.dataset.sig=sig;sel.value=(cur==='*'||keys.includes(cur))?cur:'*';}
   const k=sel.value||'*';Object.keys(CH).filter(x=>x.startsWith('chLab')).forEach(x=>{CH[x].destroy();delete CH[x];});const box=$('#labCharts');
-  if(k==='*'){box.innerHTML=keys.length?`<div class="grid g2 labgrid">${keys.map(key=>`<div class="labcell"><div class="mini" style="font-weight:600;margin-bottom:4px">${esc(ser[key].name)} <span class="muted">${esc(ser[key].unit||'')}</span></div><div class="chart sm"><canvas id="chLab_${cssId(key)}"></canvas></div><div class="mini mt1">${esc(labInsight(ser[key]).short)}</div></div>`).join('')}</div>`:'<div class="empty">Nenhum exame laboratorial no período.</div>';
-    keys.forEach(key=>labChart('chLab_'+cssId(key),ser[key],true));const qual=labsP.reduce((n,l)=>n+(l.markers||[]).filter(m=>typeof m.value!=='number'||isNaN(m.value)).length,0);$('#labRangeTxt').textContent=keys.length?`${keys.length} marcadores · ${labsP.length} exame${labsP.length===1?'':'s'} no período · ponto vermelho = fora da referência${qual?` · ${qual} resultado${qual===1?'':'s'} sem número (ver histórico)`:''}`:'';}
-  else{const s=ser[k];box.innerHTML='<div class="chart"><canvas id="chLab"></canvas></div>';if(s){labChart('chLab',s,false);const ref=LAB_REF[k]||{};const lo=s.pts[s.pts.length-1].low??ref.lo,hi=s.pts[s.pts.length-1].high??ref.hi;$('#labRangeTxt').textContent=`Referência: ${lo!=null&&lo>0?fmt(lo,lo%1?2:0):'—'} a ${hi!=null&&hi<9e5?fmt(hi,hi%1?2:0):'—'} ${s.unit||''} · ${s.pts[s.pts.length-1].low!=null?'do laudo':'geral (homem adulto)'} · ${labInsight(s).short}`;}else $('#labRangeTxt').textContent='';}
+  if(k==='*'){box.innerHTML=keys.length?`<div class="grid g2 labgrid">${keys.map(key=>`<div class="labcell"><div class="mini" style="font-weight:600;margin-bottom:4px">${esc(ser[key].name)} <span class="muted">${esc(ser[key].unit||'')}</span></div><div class="chart sm"><canvas id="chLab_${cssId(key)}"></canvas></div><div class="mini mt1">${esc(labInsight(ser[key]).short)}</div><div class="mini">${esc((o=>o.semRef&&!o.n?'Sem faixa de referência':(o.semRef?'':'Faixa '+o.ref+' · ')+o.fora)(labFora(ser[key])))}</div></div>`).join('')}</div>`:'<div class="empty">Nenhum exame laboratorial no período.</div>';
+    keys.forEach(key=>labChart('chLab_'+cssId(key),ser[key],true));const qual=labsP.reduce((n,l)=>n+(l.markers||[]).filter(m=>typeof m.value!=='number'||isNaN(m.value)).length,0);$('#labRangeTxt').textContent=keys.length?`${keys.length} marcadores · ${labsP.length} exame${labsP.length===1?'':'s'} no período${qual?` · ${qual} resultado${qual===1?'':'s'} sem número (ver histórico)`:''}`:'';}
+  else{const s=ser[k];box.innerHTML='<div class="chart"><canvas id="chLab"></canvas></div>';if(s){labChart('chLab',s,false);const o=labFora(s);$('#labRangeTxt').textContent=`${o.semRef?'Sem faixa de referência':`Referência: ${o.ref} · ${o.R.laudo?'do laudo':'geral (homem adulto)'}`}${o.fora?' · '+o.fora:''} · ${labInsight(s).short}`;}else $('#labRangeTxt').textContent='';}
+  /* legenda do que está desenhado: faixa, ponto dentro e os triângulos que existirem */
+  {const L=(k==='*'?keys:[k]).filter(x=>ser[x]).map(x=>labFora(ser[x]));const tem=f=>L.some(o=>o.fl.includes(f));const ref=L.some(o=>!o.semRef);const lg=$('#labLegend');
+   if(!L.length){if(lg)lg.innerHTML='';}else setLegend(k==='*'?'chLab_'+cssId(keys[0]):'chLab',[['band','var(--surface-2)','faixa de referência',ref],['dot','var(--serie)','dentro da faixa',ref||tem('ok')],['tri','var(--bad)','acima da faixa',tem('high')],['tri down','var(--bad)','abaixo da faixa',tem('low')]]);}
   const labs=labsP.slice().reverse();$('#labCount').textContent=labs.length+' no período';
   $('#labTable').innerHTML=labs.length?labs.map(l=>`<details style="margin-bottom:8px"><summary style="cursor:pointer;font-weight:600">${dtBR(l.date)} · ${esc(l.lab||'laboratório')} <small class="muted">${(l.markers||[]).length} analitos · ${(l.markers||[]).filter(m=>labFlag(m)!=='ok'&&labFlag(m)).length} fora</small></summary><table class="mt2"><thead><tr><th>Analito</th><th class="num">Valor</th><th>Un.</th><th>Ref.</th><th></th></tr></thead><tbody>${(l.markers||[]).map(m=>{const f=labFlag(m);return `<tr><td class="wrap">${esc(m.name)}</td><td class="num"><b>${m.value!=null?fmt(m.value,m.value%1?2:0):esc(m.text||'')}</b></td><td>${esc(m.unit||'')}</td><td>${m.low!=null?fmt(m.low,m.low%1?2:0):''}${m.low!=null||m.high!=null?' – ':''}${m.high!=null?fmt(m.high,m.high%1?2:0):''}</td><td><span class="status ${f==='ok'?'ok':f?'bad':''}">${f==='high'?'alto':f==='low'?'baixo':f==='ok'?'ok':''}</span></td></tr>`;}).join('')}</tbody></table>${l.notes?`<div class="mini mt2">${esc(l.notes)}</div>`:''}<div class="row end mt2"><button class="btn xs danger" onclick="A.delLab('${l.id}')" aria-label="Excluir exame">Excluir</button></div></details>`).join(''):'';}
 function renderMeds(){renderRx();const meds=Object.values(S.meds).sort((a,b)=>(a.active===false)-(b.active===false)||a.name.localeCompare(b.name));
@@ -3562,8 +3593,27 @@ function labUpsert(date,lab,markers,notes,source){const same=labsSorted().filter
   return {doc,added,updated,msg:`Exame de ${dtBR(date)} atualizado: ${added} novo${added===1?'':'s'}, ${updated} atualizado${updated===1?'':'s'} (${doc.markers.length} analitos)`};}
 /* ============================================================ LABORATORIAIS: todos os marcadores, gráficos múltiplos, insight e PDF */
 function cssId(s){return String(s).replace(/[^a-z0-9]/gi,'_');}
-function labChart(id,s,small){const ref=LAB_REF[s.key]||{};const last=s.pts[s.pts.length-1];const lo=last.low??ref.lo,hi=last.high??ref.hi;
-  mkChart(id,{data:{labels:s.pts.map(p=>dtShort(p.date)),datasets:[dsLine(s.name,s.pts.map(p=>p.v),cssVar('--serie'),{pointRadius:gPt(s.pts.length),pointBackgroundColor:s.pts.map(p=>(p.flag==='ok'||!p.flag)?cssVar('--serie'):cssVar('--bad'))}),...(hi!=null&&hi<9e5?[dsRef('limite sup.',s.pts.map(()=>hi),cssVar('--muted'))]:[]),...(lo!=null&&lo>0?[dsRef('limite inf.',s.pts.map(()=>lo),cssVar('--muted'))]:[])]},options:{scales:{y:{ticks:{maxTicksLimit:small?4:6}},x:dateAxis(s.pts.map(p=>p.date))}}});}
+/* v56 (25/11/2026, protótipo aprovado): a faixa de referência (mínimo a máximo) é o fundo do gráfico, no lugar das duas linhas tracejadas.
+   Só mínimo: a faixa vai do mínimo ao topo. Só máximo: da base ao máximo. Sem referência: não há faixa.
+   Resultado fora da faixa vira triângulo (para cima = acima, para baixo = abaixo) além da cor, e a frase embaixo lista os exames fora. */
+const refBand={id:'refBand',beforeDatasetsDraw(c,_,o){if(!o||(o.lo==null&&o.hi==null))return;const {ctx,chartArea:a,scales:{y}}=c;const cl=v=>Math.min(a.bottom,Math.max(a.top,v));
+  const top=o.hi!=null?cl(y.getPixelForValue(o.hi)):a.top,bot=o.lo!=null?cl(y.getPixelForValue(o.lo)):a.bottom;if(!(bot>top))return;ctx.save();ctx.fillStyle=cssVar('--surface-2');ctx.fillRect(a.left,top,a.right-a.left,bot-top);
+  ctx.strokeStyle=cssVar('--line-2');ctx.lineWidth=1;ctx.beginPath();if(o.hi!=null){ctx.moveTo(a.left,Math.round(top)+.5);ctx.lineTo(a.right,Math.round(top)+.5);}if(o.lo!=null){ctx.moveTo(a.left,Math.round(bot)+.5);ctx.lineTo(a.right,Math.round(bot)+.5);}ctx.stroke();ctx.restore();}};
+/* referência desenhada: a do último exame (do laudo) ou, se ele veio sem nenhuma, a geral. Nunca um lado de cada: laudo só com mínimo não ganha o máximo da tabela geral.
+   Mínimo 0 e máximo sem teto não são limite (cortes de antes); na tabela geral 999 também é "sem máximo" (HDL), e não vira faixa. */
+function labRef(s){const ref=LAB_REF[s.key]||{};const last=s.pts[s.pts.length-1]||{};const laudo=(last.low!=null||last.high!=null)&&last.src!=='geral';const lo=laudo?last.low:(last.low??ref.lo),hi=laudo?last.high:(last.high??ref.hi);
+  return {lo:lo!=null&&lo>0?lo:null,hi:hi!=null&&hi<9e5&&!(hi===LAB_SEM_TETO&&ref.hi===LAB_SEM_TETO)?hi:null,laudo};}
+const LAB_SEM_TETO=999;
+/* situação de cada exame no gráfico: a que o próprio exame já tem (labFlag, a mesma do Histórico); se ele veio sem referência, a comparação com a faixa desenhada */
+function labFora(s){const R=labRef(s);const pts=s.pts;const F=v=>fmt(v,Math.abs(v)%1?2:0);const u=s.unit?' '+s.unit:'';const semRef=R.lo==null&&R.hi==null;
+  const fl=pts.map(p=>p.flag?p.flag:semRef?'':R.lo!=null&&p.v<R.lo?'low':R.hi!=null&&p.v>R.hi?'high':'ok');
+  const ref=semRef?'':R.lo==null?`até ${F(R.hi)}${u}`:R.hi==null?`a partir de ${F(R.lo)}${u}`:`${F(R.lo)} a ${F(R.hi)}${u}`;
+  const g=k=>pts.filter((p,i)=>fl[i]===k).map(p=>`${dtShort(p.date)} (${F(p.v)})`).join(', ');const a=g('high'),b=g('low');const n=fl.filter(f=>f==='high'||f==='low').length;
+  const fora=n?`${n} de ${plur(pts.length,'exame','exames')} fora da faixa: ${a?'acima em '+a:''}${a&&b?'; ':''}${b?'abaixo em '+b:''}`:semRef?'':pts.length===1?'dentro da faixa':'nenhum exame fora da faixa';
+  return {R,fl,ref,semRef,fora,n};}
+function labChart(id,s,small){const {R,fl}=labFora(s);const cS=cssVar('--serie'),bad=cssVar('--bad');const fora=f=>f==='high'||f==='low';const r0=gPt(s.pts.length);const all=[...s.pts.map(p=>p.v),...(R.lo!=null?[R.lo]:[]),...(R.hi!=null?[R.hi]:[])];
+  mkChart(id,{plugins:[refBand],data:{labels:s.pts.map(p=>dtShort(p.date)),datasets:[dsLine(s.name,s.pts.map(p=>p.v),cS,{clip:G.ptMarca+G.lw,pointStyle:fl.map(f=>fora(f)?'triangle':'circle'),pointRotation:fl.map(f=>f==='low'?180:0),pointRadius:fl.map(f=>fora(f)?G.ptMarca:r0),pointHoverRadius:fl.map(f=>fora(f)?G.ptMarca:G.ptHover),pointBackgroundColor:fl.map(f=>fora(f)?bad:cS),pointBorderColor:fl.map(f=>fora(f)?bad:cS)})]},
+    options:{scales:{y:{suggestedMin:Math.min(...all),suggestedMax:Math.max(...all),ticks:{maxTicksLimit:small?4:6}},x:dateAxis(s.pts.map(p=>p.date))},plugins:{refBand:{lo:R.lo,hi:R.hi},tooltip:{callbacks:{afterLabel(c){const f=fl[c.dataIndex];return fora(f)?(f==='high'?'acima':'abaixo')+' da faixa de referência':f==='ok'?'dentro da faixa de referência':'';}}}}}});}
 function labInsight(s){const pts=(s.pts||[]).filter(x=>typeof x.v==='number'&&!isNaN(x.v));const n=pts.length;if(!n)return {short:'Sem valor numérico registrado.',long:'Resultado sem valor numérico; não há variação a calcular.',trend:'—',d:0,p:null,out:0};const f=pts[0],l=pts[n-1];const ref=LAB_REF[s.key]||{};const lo=l.low??ref.lo,hi=l.high??ref.hi;const u=s.unit||'';const F=v=>fmt(v,Math.abs(v)%1?2:0);
   const faixa=(lo!=null||hi!=null)?` (faixa ${lo!=null&&lo>0?F(lo):'—'}–${hi!=null&&hi<9e5?F(hi):'—'}${u?' '+u:''})`:'';
   const st=l.flag==='high'?'acima da referência':l.flag==='low'?'abaixo da referência':l.flag==='ok'?'dentro da referência':'sem referência';
