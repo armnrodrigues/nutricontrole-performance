@@ -21,6 +21,7 @@
       let j = null;
       // o limite de tempo vale também para a leitura do corpo: resposta que para no meio conta como "sem conexão"
       try { j = await r.json(); } catch (e) { if (ac.signal.aborted) throw err('offline', 'Sem conexão com o servidor'); }
+      if (r.ok && !j) throw err('not_json', 'Resposta inesperada do site');
       if (!r.ok || !j) throw err((j && j.code) || 'http_' + r.status, (j && j.message) || ('Erro ' + r.status));
       return j;
     } finally { clearTimeout(tm); }
@@ -78,6 +79,18 @@
     t.forEach(x => take(x, false)); m.forEach(x => take(x, true));
     return out;
   }
+  // QA 9 (P-01) · treino digitado em dois aparelhos: a lista de exercícios é juntada por exercício (nome do protocolo ou nome).
+  // O que só um aparelho mexeu fica; exercício mexido nos dois: fica o que tem mais séries lançadas (empate: o deste aparelho).
+  const exKey = e => String((e && (e.protoName || e.name)) || '').trim().toLowerCase();
+  const nSets = e => ((e && e.sets) || []).filter(x => x && (x.kg != null || x.reps != null)).length;
+  function mergeEx(b, m, t) {
+    b = Array.isArray(b) ? b : []; const bm = new Map(b.map(e => [exKey(e), e])), tm = new Map(t.map(e => [exKey(e), e])), seen = new Set(), out = [];
+    m.forEach(e => { const k = exKey(e), o = tm.get(k), bb = bm.get(k); seen.add(k);
+      if (!o) { if (!bb || !same(e, bb)) out.push(e); return; }            // o outro aparelho tirou: só fica se este mexeu nele
+      out.push(bb && same(e, bb) ? o : bb && same(o, bb) ? e : (nSets(o) > nSets(e) ? o : e)); });
+    t.forEach(e => { const k = exKey(e); if (!seen.has(k) && !(bm.has(k) && same(e, bm.get(k)))) out.push(e); }); // o outro pôs ou mexeu e este não tem
+    return out;
+  }
   function merge3(base, mine, theirs, depth, lists) {
     if (!isObj(mine) || !isObj(theirs)) return mine;
     base = isObj(base) ? base : {}; const out = {};
@@ -87,6 +100,7 @@
       else if (same(t, b)) { if (k in mine) out[k] = m; }                                 // só este aparelho mexeu
       else if (depth > 0 && isObj(m) && isObj(t)) out[k] = merge3(b, m, t, depth - 1, lists);    // os dois mexeram: desce um nível
       else if (lists && (Array.isArray(m) || m === undefined) && (Array.isArray(t) || t === undefined) && (Array.isArray(m) || Array.isArray(t))) { const r = mergeArr(b, m || [], t || []); if (r.length || k in mine) out[k] = r; } // lista: junta item a item
+      else if (lists === 'wk' && k === 'exercises' && Array.isArray(m) && Array.isArray(t)) out[k] = mergeEx(b, m, t); // treino: junta por exercício
       else if (k in mine) out[k] = m;                                                     // mesmo campo nos dois: vale o deste aparelho (como antes)
     });
     return out;
@@ -130,7 +144,7 @@
       if (OUT[d.path] !== undefined) {                // edição local ainda não enviada: junta com o que o servidor tem de novo
         S.ver[d.path] = d.updated;                    // versão do servidor que este aparelho leu: vai como "base" no envio (C2-02)
         if (OUT[d.path] !== null && d.data != null && d.path in BASE && !same(d.data, BASE[d.path])) {
-          const m = merge3(BASE[d.path], OUT[d.path], d.data, 2, /^days\//.test(d.path));
+          const m = merge3(BASE[d.path], OUT[d.path], d.data, 2, /^days\//.test(d.path) || (/^workouts\//.test(d.path) && 'wk'));
           if (!(d.path in VIEW)) VIEW[d.path] = clone(OUT[d.path]);
           OUT[d.path] = m; S.docs[d.path] = clone(m); BASE[d.path] = clone(d.data); persistOut(); saveBase(); changed = true; MERGED.add(d.path);
         }
@@ -201,6 +215,7 @@
     if (S.authErr) return { text: 'Sessão expirada. Entre de novo para sincronizar.' + pend, act: 'Entrar de novo', fn: () => location.reload() };
     if (S.quota) return { text: 'Este aparelho está sem espaço para guardar as alterações pendentes (' + n + '). Não feche esta página até a sincronização voltar.' };
     if (S.srvErr === 'offline') return { text: (S.ready ? 'Sem conexão: usando a cópia deste aparelho.' : 'Sem conexão com o servidor: seus dados ainda não foram carregados.') + pend, act: 'Tentar de novo', fn: () => sync() };
+    if (S.srvErr === 'not_json') return { text: 'O site respondeu com uma página no lugar dos dados (login vencido ou Wi-Fi pedindo aceite). Entre de novo ou aceite o Wi-Fi.' + pend, act: 'Abrir de novo', fn: () => location.reload() };
     if (S.srvErr) return { text: (S.ready ? 'Servidor fora do ar: usando a cópia deste aparelho.' : 'Servidor fora do ar: não foi possível ler seus dados. Nada será gravado até voltar.') + pend, act: 'Tentar de novo', fn: () => sync() };
     return null;
   }
@@ -249,7 +264,7 @@
       async set(data) {
         BUSY[path] = (BUSY[path] || 0) + 1;
         try {
-          if (path in VIEW) { const raw = clone(data); if (S.docs[path] !== undefined) data = merge3(VIEW[path], data, S.docs[path], 2, /^days\//.test(path)); VIEW[path] = raw; MERGED.add(path); }
+          if (path in VIEW) { const raw = clone(data); if (S.docs[path] !== undefined) data = merge3(VIEW[path], data, S.docs[path], 2, /^days\//.test(path) || (/^workouts\//.test(path) && 'wk')); VIEW[path] = raw; MERGED.add(path); }
           if (OUT[path] === undefined) { BASE[path] = S.docs[path] === undefined ? null : clone(S.docs[path]); saveBase(); }
           S.docs[path] = clone(data);
           OUT[path] = clone(data); persistOut(); saveCache();
@@ -363,6 +378,7 @@
       AI_COPY.sampling_disabled = 'A IA ainda não está ligada neste site: falta cadastrar a chave da Anthropic no Cloudflare.';
       AI_COPY.not_granted = SESSION_MSG;
       AI_COPY.session_expired = SESSION_MSG;
+      AI_COPY.offline = 'Sem conexão: a leitura por IA precisa de internet. Tente de novo quando a rede voltar.';
     } catch (e) {}
   });
 
