@@ -1075,7 +1075,7 @@ body.job-on.has-trfoot #toast{bottom:calc(var(--nav-h) + var(--trfoot-h,68px) + 
     </div>
     <div class="card">
       <div class="card-h"><h3>Dados</h3><span class="mini" id="dataStats"></span></div>
-      <p class="mini mb2" id="appVersion">Versão 58 · 26/11/2026</p><p class="mini mb2" id="lastAiErr" hidden></p>
+      <p class="mini mb2" id="appVersion">Versão 59 · 26/11/2026</p><p class="mini mb2" id="lastAiErr" hidden></p>
       <div class="row">
         <button class="btn sm" onclick="A.exportAll()">Exportar backup (JSON)</button>
         <button class="btn sm" onclick="A.exportCSV()">Exportar diário (CSV)</button>
@@ -3196,7 +3196,16 @@ const A={
         toast('Treino '+_wk+' já estava salvo: as séries lançadas foram mantidas'+(add?' e o arquivo acrescentou '+plur(add,'exercício','exercícios'):'; o arquivo não trouxe exercício novo')+'.',7000);}}
       TR.parsed=r;TR.parsedKey=_wk+'|'+_dt;TR.editingId=S.workouts[_dt+'_'+_wk]?_dt+'_'+_wk:null;TR.dirty=true;TR.userPick=true;renderParsed();wkAutosave();busy('trStatus',false,'');}catch(e){busy('trStatus',false,aiErr(e));A._wkRead='erro';}finally{const b0=$('#trAnalyze');if(b0)b0.disabled=false;}},
   manualWorkout(){TR.parsed=null;TR.dirty=false;TR.parsedKey=null;TR.editingId=null;ensureParsed();renderParsed();},
-  gSet(ei,i,k,v){{const ev=window.event;if(ev&&ev.target&&ev.target.isConnected===false)return;}const e=TR.parsed&&TR.parsed.exercises[ei];if(!e)return;if(!e.cells)e.cells=setsToCells(e.sets,i+1);while(e.cells.length<=i)e.cells.push({reps:null,kg:null,fail:false});const pv=e.cells[i][k];e.cells[i][k]=k==='fail'?!!v:numLoose(v);if(k!=='fail'&&pv!=null&&e.cells[i][k]==null)TR.userShrink=true;TR.dirty=true;refreshParsedMeta();wkAutosave();},
+  gSet(ei,i,k,v){{const ev=window.event;if(ev&&ev.target&&ev.target.isConnected===false)return;}const e=TR.parsed&&TR.parsed.exercises[ei];if(!e)return;if(!e.cells)e.cells=setsToCells(e.sets,i+1);while(e.cells.length<=i)e.cells.push({reps:null,kg:null,fail:false});const pv=e.cells[i][k];e.cells[i][k]=k==='fail'?!!v:numLoose(v);
+    /* v59 · R-01: série salva esvaziada na grade só sai com confirmação */
+    if(k!=='fail'&&pv!=null&&e.cells[i].kg==null&&e.cells[i].reps==null){const {wk,date}=trKey();const sv=S.workouts[date+'_'+wk];const se=sv&&(sv.exercises||[]).find(x=>wkExKey(x)===wkExKey(e));
+      const filled=e.cells.filter(c=>c&&(c.kg!=null||c.reps!=null)).length;
+      if(se&&filled<wkFilled(se)){e.cells[i][k]=pv;const cell=Object.assign({},e.cells[i]);A._rmSet={ei,i,cell};renderParsed();
+        openSheet('Tirar esta série?',`<p>A série ${i+1} de <b>${esc(e.protoName||e.name)}</b> (${cell.kg!=null?esc(fmt(cell.kg))+' kg':''}${cell.kg!=null&&cell.reps!=null?' × ':''}${cell.reps!=null?esc(fmt(cell.reps))+' repetições':''}) já está salva. Tirar a série do treino?</p><div class="row end mt3"><button class="btn" id="rmSetNo" onclick="A.rmSetAnswer(false)">Manter</button><button class="btn primary" id="rmSetYes" onclick="A.rmSetAnswer(true)">Tirar a série</button></div>`);return;}}
+    TR.dirty=true;refreshParsedMeta();wkAutosave();},
+  rmSetAnswer(yes){const r=A._rmSet;A._rmSet=null;closeSheet();if(!r||!TR.parsed)return;const e=TR.parsed.exercises[r.ei];if(!e||!e.cells||!e.cells[r.i])return;
+    if(yes){e.cells[r.i].kg=null;e.cells[r.i].reps=null;e.cells[r.i].fail=false;TR.userShrink=true;TR.dirty=true;renderParsed();refreshParsedMeta();wkFlush();wkAutosave();toast('Série tirada do treino');}
+    else{renderParsed();toast('Série mantida');}},
   gAdd(ei){const e=TR.parsed.exercises[ei];if(!e)return;if(!e.cells)e.cells=setsToCells(e.sets,0);e.cells.push({reps:null,kg:null,fail:false});TR.dirty=true;renderParsed();wkAutosave();},
   exSet(ei,k,v){const e=TR.parsed&&TR.parsed.exercises[ei];if(!e)return;e[k]=numLoose(v);TR.dirty=true;wkAutosave();},
   async exMediaAdd(ei,input){const files=Array.from(input.files||[]);input.value='';const e=TR.parsed&&TR.parsed.exercises[ei];if(!e||!files.length)return;

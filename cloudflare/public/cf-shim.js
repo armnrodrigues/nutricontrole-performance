@@ -99,8 +99,8 @@
       if (same(m, b)) { if (k in theirs) out[k] = t; }                                   // este aparelho não mexeu: vale o servidor
       else if (same(t, b)) { if (k in mine) out[k] = m; }                                 // só este aparelho mexeu
       else if (depth > 0 && isObj(m) && isObj(t)) out[k] = merge3(b, m, t, depth - 1, lists);    // os dois mexeram: desce um nível
-      else if (lists && (Array.isArray(m) || m === undefined) && (Array.isArray(t) || t === undefined) && (Array.isArray(m) || Array.isArray(t))) { const r = mergeArr(b, m || [], t || []); if (r.length || k in mine) out[k] = r; } // lista: junta item a item
       else if (lists === 'wk' && k === 'exercises' && Array.isArray(m) && Array.isArray(t)) out[k] = mergeEx(b, m, t); // treino: junta por exercício
+      else if (lists && (Array.isArray(m) || m === undefined) && (Array.isArray(t) || t === undefined) && (Array.isArray(m) || Array.isArray(t))) { const r = mergeArr(b, m || [], t || []); if (r.length || k in mine) out[k] = r; } // lista: junta item a item
       else if (k in mine) out[k] = m;                                                     // mesmo campo nos dois: vale o deste aparelho (como antes)
     });
     return out;
