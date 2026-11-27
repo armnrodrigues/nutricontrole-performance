@@ -1140,7 +1140,7 @@ body.job-on.has-trfoot #toast{bottom:calc(var(--nav-h) + var(--trfoot-h,68px) + 
     </div>
     <div class="card">
       <div class="card-h"><h3>Sobre o app</h3></div>
-      <p class="mini mb2" id="appVersion">Versão 63 · 26/11/2026</p><p class="mini mb2" id="lastAiErr" hidden></p>
+      <p class="mini mb2" id="appVersion">Versão 64 · 26/11/2026</p><p class="mini mb2" id="lastAiErr" hidden></p>
       <div class="ponte in"><span>Backup, exportar, restaurar e conferir dados</span><button type="button" class="btn sm ghost" id="vdConfig" onclick="A.goDados('backup')">Ver em Dados ›</button></div>
     </div>
   </div>
@@ -1526,13 +1526,15 @@ function coachBalance(avg,g){
 const PNA={ver:-1,list:null};
 function protoNHist(){if(PNA.ver!==DATA_VER||!PNA.list){PNA.ver=DATA_VER;PNA.list=Object.values(S.protoHist||{}).filter(h=>h&&h.kind==='nutrition'&&h.snapshot&&h.snapshot.dayTypes&&h.at).map(h=>{const dt=new Date(h.at);return {d:isNaN(dt)?null:isoOf(dt),at:String(h.at),n:h.snapshot};}).filter(x=>x.d).sort((a,b)=>a.at<b.at?-1:a.at>b.at?1:0);}return PNA.list;}
 function protoNAt(iso){const cur=S.protoN||null;if(!okISO(iso))return cur;if(iso>=todayISO()){/* v63: protocolo novo que começa no futuro: até a véspera vale a versão anterior (a última do histórico que começou antes; cópias do próprio protocolo novo, guardadas ao editar metas antes do início, não contam) */if(cur&&okISO(cur.since)&&iso<cur.since){const l=protoNHist().filter(x=>!(okISO(x.n.since)&&x.n.since>=cur.since)&&!(x.n.name===cur.name&&(x.n.source||'')===(cur.source||'')));if(l.length)return l[l.length-1].n;}return cur;}const h=protoNHist().find(x=>x.d>iso);return h?h.n:cur;}
-function dayType(iso){return dayTypeOf(protoN(),iso);}
+/* v64: de hoje em diante, antes do "Vale a partir de" de um protocolo novo, vale a versão anterior também para refeições e plano */
+function protoNFor(iso){return okISO(iso)&&iso>=todayISO()?(protoNAt(iso)||protoN()):protoN();}
+function dayType(iso){return dayTypeOf(protoNFor(iso),iso);}
 function dayTypeOf(p,iso){if(!p||!p.dayTypes)return null;/* v63 · ciclo de dietas (pedido do Antonio, 26/11/2026): do início em diante o tipo do dia segue a sequência; antes dele, o dia da semana */{const t=cycleTypeOf(p,iso);if(t)return t;}const wd=weekdayIdx(iso);const t=(p.weekdays||{})[wd]||(p.weekdays||{})[String(wd)];return t&&p.dayTypes[t]?t:Object.keys(p.dayTypes)[0];}
 function tgCySeqHTML(n,seq,len){const types=Object.keys(n.dayTypes||{});return Array.from({length:len},(x,i)=>{const v=(seq&&seq[i])||types[0];return `<label class="f"><span>Dia ${i+1}</span><select data-cy="${i}">${types.map(k=>`<option value="${esc(k)}" ${v===k?'selected':''}>${esc(n.dayTypes[k].label||k)}</option>`).join('')}</select></label>`;}).join('');}
 function cycleOk(p){const cy=p&&p.cycle;return !!(cy&&okISO(cy.start)&&Array.isArray(cy.seq)&&cy.seq.length&&cy.seq.every(t=>p.dayTypes&&p.dayTypes[t]));}
 function cycleTypeOf(p,iso){if(!cycleOk(p)||!okISO(iso)||iso<p.cycle.start)return null;return p.cycle.seq[daysBetween(p.cycle.start,iso)%p.cycle.seq.length];}
 function metaFor(iso){const p=protoNAt(iso);const t=dayTypeOf(p,iso);if(p&&t)return Object.assign({label:t},p.dayTypes[t]);return Object.assign({label:'sem protocolo'},DEF_META);}
-function mealDefs(){const p=protoN();if(p&&Array.isArray(p.meals)&&p.meals.length)return p.meals.map((m,i)=>Object.assign({n:i+1,name:'Refeição '+(i+1)},m));return [1,2,3,4,5].map(i=>({n:i,name:'Refeição '+i}));}
+function mealDefs(){const p=protoNFor(typeof CUR==='string'?CUR:todayISO());if(p&&Array.isArray(p.meals)&&p.meals.length)return p.meals.map((m,i)=>Object.assign({n:i+1,name:'Refeição '+(i+1)},m));return [1,2,3,4,5].map(i=>({n:i,name:'Refeição '+i}));}
 function plannedItems(meal,iso){if(!meal.items)return [];if(Array.isArray(meal.items))return meal.items;const t=dayType(iso);return meal.items[t]||meal.items.all||[];}
 function cardioTargetFor(iso){const p=protoNAt(iso);const c=(p&&p.cardio)||{trainDay:60,offDay:110};const s=sessionOf(iso);let treinou=(s.wk&&s.wk!=='OFF'&&s.wk!=='CARDIO')||trainedOn(iso);
   /* v60 · P6 (decisão do Antonio, 26/11): hoje e dias futuros sem nada lançado e sem marca de descanso seguem o treino previsto (alvo de dia de treino desde a manhã) */
@@ -3118,7 +3120,7 @@ const A={
   editMealTime(n){const defs=mealDefs();const md=defs.find(m=>m.n===n);if(!md)return;const d=getDay(CUR);const today=(d.mealTimes||{})[n]||'';
     openSheet(`Horário · ${md.name}`,`<div class="grid g2"><label class="f"><span>Horário padrão (protocolo)</span><input type="time" id="mtStd" value="${esc(md.time||'')}"></label><label class="f"><span>Só hoje (${dtBR(CUR)})</span><input type="time" id="mtDay" value="${esc(today)}"></label></div><div class="row end mt3"><button class="btn ghost sm" onclick="A.editMealTimes()">Todas as refeições</button><button class="btn primary" onclick="A.saveMealTime(${n})">Salvar</button></div>`);},
   saveMealTime(n){const std=$('#mtStd').value||null,day=$('#mtDay').value||null;const defs=mealDefs();const md=defs.find(m=>m.n===n);
-    if(std!==(md.time||null)){const p=S.protoN?JSON.parse(JSON.stringify(S.protoN)):{name:'Meu plano',dayTypes:{bulk:Object.assign({label:'Padrão'},DEF_META)},weekdays:{0:'bulk',1:'bulk',2:'bulk',3:'bulk',4:'bulk',5:'bulk',6:'bulk'}};p.meals=(p.meals&&p.meals.length?p.meals:defs.map(m=>({name:m.name,time:m.time||null})));const i=defs.findIndex(m=>m.n===n);if(p.meals[i]){p.meals[i].time=std;if(S.protoN)histSave({at:new Date().toISOString(),kind:'nutrition',source:'edição manual',summary:`Horário da ${md.name} → ${std||'sem horário'}`,snapshot:S.protoN});Store.set('protocol/nutrition',p);}}
+    if(std!==(md.time||null)&&protoNFor(CUR)===S.protoN){const p=S.protoN?JSON.parse(JSON.stringify(S.protoN)):{name:'Meu plano',dayTypes:{bulk:Object.assign({label:'Padrão'},DEF_META)},weekdays:{0:'bulk',1:'bulk',2:'bulk',3:'bulk',4:'bulk',5:'bulk',6:'bulk'}};p.meals=(p.meals&&p.meals.length?p.meals:defs.map(m=>({name:m.name,time:m.time||null})));const i=defs.findIndex(m=>m.n===n);if(p.meals[i]){p.meals[i].time=std;if(S.protoN)histSave({at:new Date().toISOString(),kind:'nutrition',source:'edição manual',summary:`Horário da ${md.name} → ${std||'sem horário'}`,snapshot:S.protoN});Store.set('protocol/nutrition',p);}}
     const d=getDay(CUR);d.mealTimes=d.mealTimes||{};if(day)d.mealTimes[n]=day;else delete d.mealTimes[n];saveDay(CUR,d);closeSheet();renderAll();toast('Horário salvo');},
   delEntry(n,i){const iso=CUR;const e0=(getDay(iso).meals[n]||[])[i];if(!e0)return;confirmInline(`Remover ${e0.n} (${fmt(e0.g)} ${e0.base==='ml'?'mL':'g'}) desta refeição?`,()=>{const d=getDay(iso);const arr=d.meals[n]||[];const e=arr[i];if(!e||e.n!==e0.n)return;arr.splice(i,1);saveDay(iso,d);renderAll();toast('Removido');});},
   /* v45 · Alimentos: editor na linha, trocar e repetir ontem */
